@@ -46,7 +46,21 @@
   .bahas ol { margin:.25rem 0; padding-left:1.25rem; } .bahas li, .rumus p { margin:.4rem 0; }
   .hasil { font-weight:600; margin-top:.5rem; }
   .ok { color:var(--ok); } .bad { color:var(--bad); }
-  #skor { font-weight:700; align-self:center; }
+  #skor, #waktu { font-weight:700; align-self:center; font-variant-numeric:tabular-nums; }
+  .kartu small { display:block; color:var(--muted); font-size:.85rem; }
+  .nomor { display:grid; grid-template-columns:repeat(auto-fill, minmax(44px, 1fr)); gap:.35rem; margin:.5rem 0; }
+  .nomor button { padding:0; }
+  .nomor .isi { background:var(--acc); color:#fff; }
+  .nomor .ragu { background:#f3d77a; color:var(--fg); border-color:#b38f00; }
+  .nomor .kini { outline:3px solid var(--fg); outline-offset:1px; }
+  label.ragu { display:inline-flex; min-height:auto; padding:0; margin-left:.75rem; font-size:.9rem; font-weight:400; }
+  .bar.nav { position:static; justify-content:space-between; }
+  @media print {
+    .bar, .nomor, details, a { display:none !important; }
+    body.cetak .soal[hidden], body.cetak .jenis[hidden], body.cetak .bahas[hidden] { display:block !important; }
+    body { background:#fff; font-size:13px; } .soal { break-inside:avoid; border-color:#999; }
+    .bahas { background:none; border:1px solid #999; }
+  }
 </style>
 </head>
 <body>
@@ -456,16 +470,17 @@ bs: [
     bahas: L`<ol><li>Total kartu: $n(S) = ${h} + ${c} + ${j} = ${t}$.</li><li>JavaScript: $P = \frac{${j}}{${t}}$${frac(j, t) === `${j}/${t}` ? '' : ` = ${frac(j, t).replace(/(\d+)\/(\d+)/, '\\frac{$1}{$2}')}`}.</li><li>HTML: $P = \frac{${h}}{${t}}$${frac(h, t) === `${h}/${t}` ? '' : ` = ${frac(h, t).replace(/(\d+)\/(\d+)/, '\\frac{$1}{$2}')}`}.</li><li>Bukan CSS: $1 - \frac{${c}}{${t}} = \frac{${t - c}}{${t}}$. Cek: kartu bukan CSS = HTML + JS $= ${h} + ${j} = ${t - c}$. Cocok.</li><li>Ambil 2 sekaligus: $$C(${t}, 2) = \frac{${t} \times ${t - 1}}{2} = ${C(t, 2)}$$ Angka ${t * (t - 1)} adalah jebakan (belum dibagi 2).</li></ol>` }; },
 ],
 mcma: [
-  () => { const n = R(4, 6), d = R(5, 8);
-    const s1 = tw(fact(n), fact(n) + 10), s3 = tw(C(d, 2), d * (d - 1)), s4 = tw(24, 12);
+  () => { const n = R(4, 6), d = R(5, 8), k = pick([3, 4]), pin = fact(10) / fact(10 - k), kata = pick(['WEB', 'CSS', 'HTML', 'DATA', 'KODE']);
+    const sus = fact(kata.length) / [...new Set(kata)].reduce((p, c) => p * fact(kata.split(c).length - 1), 1);
+    const s1 = tw(fact(n), fact(n) + 10), s2 = tw(pin, 10 ** k), s3 = tw(C(d, 2), d * (d - 1)), s4 = tw(24, 12), s5 = tw(sus, fact(kata.length) === sus ? sus / 2 : fact(kata.length));
     return { type: 'mcma', q: 'Pilih semua pernyataan yang benar.', st: [
       [`${n}! = ${fmt(s1.v)}`, s1.t],
-      [`Banyak PIN 3 digit dari angka 0–9 yang semua digitnya berbeda adalah 720`, true],
+      [`Banyak PIN ${k} digit dari angka 0–9 yang semua digitnya berbeda adalah ${fmt(s2.v)}`, s2.t],
       [`Banyak cara memilih 2 ketua tim dari ${d} anggota adalah ${s3.v}`, s3.t],
       [`Banyak susunan 3 huruf berbeda dari A, B, C, D (urutan diperhatikan) adalah ${s4.v}`, s4.t],
-      [`Banyak susunan huruf dari kata WEB adalah 6`, true]],
+      [`Banyak susunan huruf dari kata ${kata} adalah ${s5.v}`, s5.t]],
     rumus: L`<p>Faktorial $n! = n \times (n-1) \times \cdots \times 1$ adalah banyak cara menyusun $n$ benda berbeda.</p><p>Aturan perkalian: jika langkah pertama punya $a$ pilihan dan langkah kedua $b$ pilihan, totalnya $a \times b$.</p><p>Urutan penting (PIN, susunan huruf, jabatan berbeda): permutasi $P(n,k) = \frac{n!}{(n-k)!}$. Urutan tidak penting (memilih anggota): kombinasi $C(n,k) = \frac{n!}{k!\,(n-k)!}$.</p>`,
-    bahas: L`<ol><li>A. $${n}! = ${Array.from({ length: n }, (_, i) => n - i).join(' \\times ')} = ${fmt(fact(n))}$.</li><li>B. PIN: digit 1 ada 10 pilihan, digit 2 tinggal 9, digit 3 tinggal 8. $10 \times 9 \times 8 = 720$. Benar.</li><li>C. Dua ketua tim setara, urutan tidak penting: $C(${d}, 2) = \frac{${d} \times ${d - 1}}{2} = ${C(d, 2)}$.</li><li>D. Urutan diperhatikan: $4 \times 3 \times 2 = 24$.</li><li>E. Huruf W, E, B berbeda semua: $3! = 3 \times 2 \times 1 = 6$. Benar.</li></ol>` }; },
+    bahas: L`<ol><li>A. $${n}! = ${Array.from({ length: n }, (_, i) => n - i).join(' \\times ')} = ${fmt(fact(n))}$.</li><li>B. PIN: digit 1 ada 10 pilihan, digit 2 tinggal 9, dan seterusnya. $${Array.from({ length: k }, (_, i) => 10 - i).join(' \\times ')} = ${fmt(pin)}$. Angka ${fmt(10 ** k)} adalah jebakan (digit boleh berulang).</li><li>C. Dua ketua tim setara, urutan tidak penting: $C(${d}, 2) = \frac{${d} \times ${d - 1}}{2} = ${C(d, 2)}$.</li><li>D. Urutan diperhatikan: $4 \times 3 \times 2 = 24$.</li><li>E. Kata ${kata} punya ${kata.length} huruf${sus === fact(kata.length) ? `, semuanya berbeda: $${kata.length}! = ${sus}$` : ` dengan huruf kembar. Susunan yang hanya menukar huruf kembar terlihat sama, jadi bagi faktorial banyak kembarnya: $\\frac{${kata.length}!}{2!} = ${sus}$`}.</li></ol>` }; },
 ]},
 
 pecahan: { nama: 'Pecahan, Persen & Aritmetika Sosial', rumus: L`$$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$ Persen: $$p\% \times H = \frac{p}{100} \times H$$ Bunga tunggal: $$B = M \times \frac{p}{100} \times t$$`,
@@ -681,8 +696,25 @@ mcma: [
     bahas: L`<ol><li>$A + B$: jumlahkan per posisi. $$\begin{pmatrix}${a}+${e} & ${b}+${f}\\ ${c}+${g} & ${d}+${h}\end{pmatrix} = ${mx(a + e, b + f, c + g, d + h)}$$</li><li>$\det A = ${a} \times ${d} - ${b} \times ${c} = ${a * d} - ${b * c} = ${a * d - b * c}$.</li><li>$A - B$: kurangkan per posisi. $$\begin{pmatrix}${a}-${e} & ${b}-${f}\\ ${c}-${g} & ${d}-${h}\end{pmatrix} = ${mx(a - e, b - f, c - g, d - h)}$$</li><li>$\det B = ${e} \times ${h} - ${f} \times ${g} = ${e * h} - ${f * g} = ${e * h - f * g}$.</li><li>Bandingkan setiap elemen pernyataan dengan hasil di atas; satu elemen berbeda saja sudah membuatnya salah.</li></ol>` }; },
 ]},
 
-programLinear: { nama: 'Program Linear', rumus: L`Langkah: susun model matematika (pertidaksamaan kendala), gambar daerah penyelesaian, tentukan titik pojok, lalu uji tiap titik ke fungsi tujuan $$f(x, y) = px + qy$$ Nilai optimum ada di salah satu titik pojok.`,
+programLinear: { nama: 'Program Linear', rumus: L`Langkah: susun model matematika (pertidaksamaan kendala), gambar daerah penyelesaian, tentukan titik pojok, lalu uji tiap titik ke fungsi tujuan $$f(x, y) = px + qy$$ Nilai optimum ada di salah satu titik pojok. Menentukan daerah: uji titik $(0, 0)$; jika pertidaksamaan benar, daerahnya memuat $O$.`,
 pg: [
+  () => { const p1 = R(5, 8), p2 = R(2, p1 - 2), q2 = R(5, 8), q1 = R(2, q2 - 2), det = 1 / (p1 * q2) - 1 / (q1 * p2), Xp = [(1 / q2 - 1 / q1) / det, (1 / p1 - 1 / p2) / det];
+    const reg = { bb: [[0, 0], [p2, 0], Xp, [0, q1]], ba: [[p2, 0], [p1, 0], Xp], ab: [[0, q1], Xp, [0, q2]], aa: [Xp, [p1, 0], [9, 0], [9, 9], [0, 9], [0, q2]] };
+    const rom = shuffle(['I', 'II', 'III', 'IV']), lab = {}; Object.keys(reg).forEach((k, i) => lab[k] = rom[i]);
+    const k = pick(Object.keys(reg)), c1 = (n, v) => (n === 1 ? '' : n) + v;
+    const ineq = (p, q, s) => { const g = gcd(p, q); return `${c1(q / g, 'x')} + ${c1(p / g, 'y')} ${s === 'b' ? '≤' : '≥'} ${p * q / g}`; };
+    const i1 = ineq(p1, q1, k[0]), i2 = ineq(p2, q2, k[1]), sisi = s => s === 'b' ? 'memuat O (di bawah garis)' : 'tidak memuat O (di atas garis)';
+    const Xs = x => 30 + x * 24, Ys = y => 246 - y * 24;
+    let g = '';
+    for (let i = 1; i <= 9; i++) g += `<line x1="${Xs(i)}" x2="${Xs(i)}" y1="${Ys(0)}" y2="${Ys(9)}" stroke="#e2e4e0"/><line y1="${Ys(i)}" y2="${Ys(i)}" x1="${Xs(0)}" x2="${Xs(9)}" stroke="#e2e4e0"/><text x="${Xs(i)}" y="${Ys(0) + 15}" text-anchor="middle">${i}</text><text x="${Xs(0) - 5}" y="${Ys(i) + 4}" text-anchor="end">${i}</text>`;
+    g += `<line x1="${Xs(0)}" x2="${Xs(9.4)}" y1="${Ys(0)}" y2="${Ys(0)}" stroke="#555a57"/><line x1="${Xs(0)}" x2="${Xs(0)}" y1="${Ys(0)}" y2="${Ys(9.4)}" stroke="#555a57"/><text x="${Xs(0) - 5}" y="${Ys(0) + 15}" text-anchor="end">O</text>`;
+    [[p1, q1, 'g'], [p2, q2, 'h']].forEach(([p, q, n]) => g += `<line x1="${Xs(p)}" y1="${Ys(0)}" x2="${Xs(0)}" y2="${Ys(q)}" stroke="#0f6b4f" stroke-width="2"/><text x="${Xs(p * .5) + 6}" y="${Ys(q * .5) - 6}" fill="#0f6b4f" font-style="italic">${n}</text>`);
+    Object.entries(reg).forEach(([kk, P]) => g += `<text x="${Xs(P.reduce((s, v) => s + v[0], 0) / P.length)}" y="${Ys(P.reduce((s, v) => s + v[1], 0) / P.length) + 5}" text-anchor="middle" font-weight="700" font-size="15">${lab[kk]}</text>`);
+    const fig = svg(270, 270, `Garis g melalui (${p1}, 0) dan (0, ${q1}). Garis h melalui (${p2}, 0) dan (0, ${q2}). Daerah: ${Object.entries(reg).map(([kk]) => `${lab[kk]} ${{ bb: 'di bawah kedua garis', ba: 'di bawah g dan di atas h', ab: 'di atas g dan di bawah h', aa: 'di atas kedua garis' }[kk]}`).join('; ')}`, g);
+    return pg(`Perhatikan gambar berikut. Daerah penyelesaian sistem pertidaksamaan ${i1}; ${i2}; x ≥ 0; y ≥ 0 adalah daerah ....${fig}`,
+      lab[k], [...rom, `${lab.bb} dan ${lab.aa}`],
+      L`<p>Setiap pertidaksamaan linear membagi bidang menjadi dua bagian yang dibatasi garisnya. Garis $ax + by = c$ digambar melalui titik potong sumbu: $(\tfrac{c}{a}, 0)$ dan $(0, \tfrac{c}{b})$.</p><p>Untuk menentukan sisi mana yang dipakai, uji titik $O(0, 0)$ yang tidak terletak pada garis. Jika pertidaksamaan bernilai benar, daerahnya adalah sisi yang memuat $O$; jika salah, sisi seberangnya.</p><p>Daerah penyelesaian sistem adalah irisan semua daerah, ditambah $x \ge 0$ dan $y \ge 0$ (kuadran I).</p>`, '',
+      L`<ol><li>Cocokkan garis: ${i1.replace(/[≤≥]/, '=')} melalui $(${p1}, 0)$ dan $(0, ${q1})$, yaitu garis $g$. ${i2.replace(/[≤≥]/, '=')} melalui $(${p2}, 0)$ dan $(0, ${q2})$, yaitu garis $h$.</li><li>Uji $O(0, 0)$ pada ${i1}: $0 ${k[0] === 'b' ? '\le' : '\ge'} ${p1 * q1 / gcd(p1, q1)}$ ${k[0] === 'b' ? 'benar' : 'salah'}, jadi daerahnya ${sisi(k[0])} $g$.</li><li>Uji $O(0, 0)$ pada ${i2}: $0 ${k[1] === 'b' ? '\le' : '\ge'} ${p2 * q2 / gcd(p2, q2)}$ ${k[1] === 'b' ? 'benar' : 'salah'}, jadi daerahnya ${sisi(k[1])} $h$.</li><li>Irisan keduanya di kuadran I adalah daerah ${lab[k]}.</li><li>Cek dengan satu titik di daerah ${lab[k]}, misalnya $(${dl(reg[k].reduce((s, v) => s + v[0], 0) / reg[k].length)}, ${dl(reg[k].reduce((s, v) => s + v[1], 0) / reg[k].length)})$: titik itu memenuhi kedua pertidaksamaan.</li></ol>`); },
   () => { const p = R(2, 5), q = R(2, 5), x1 = R(4, 8), y3 = R(4, 8), x2 = R(2, x1 - 1), y2 = R(2, y3 - 1);
     const v = [p * x1, q * y3, p * x2 + q * y2], mx = Math.max(...v);
     return pg(`Nilai maksimum f(x, y) = ${p}x + ${q}y pada daerah dengan titik pojok (0, 0), (${x1}, 0), (${x2}, ${y2}), dan (0, ${y3}) adalah ....`,
@@ -874,11 +906,11 @@ const ikon = id => `<svg class="ikon" viewBox="0 0 24 24" aria-hidden="true">${I
 function tampilMenu() {
   app.innerHTML = `<p>Soal dibangkitkan acak dengan gaya PEMANTAPAN TKA. "Tampilkan rumus" hanya berisi rumus umum; pembahasan lengkap muncul setelah jawaban diperiksa.</p>
   <nav class="menu">
-    <a class="kartu" href="#simulasi">${ikon('simulasi')}<span><b>Simulasi TKA</b><span>25 soal campuran: 17 PG, 4 Benar/Salah, 4 MCMA</span></span></a>
+    <a class="kartu" href="#simulasi">${ikon('simulasi')}<span><b>Simulasi TKA</b><span>25 soal, 75 menit: 17 PG, 4 Benar/Salah, 4 MCMA</span><small>${riwayatTeks('simulasi')}</small></span></a>
     <a class="kartu" href="#materi">${ikon('materi')}<span><b>Materi &amp; Rumus</b><span>Ringkasan rumus semua materi</span></span></a>
   </nav>
   <h2>Latihan per materi</h2>
-  <nav class="menu">${Object.entries(T).map(([id, t]) => `<a class="kartu" href="#latihan-${id}">${ikon(id)}<b>${t.nama}</b></a>`).join('')}</nav>`;
+  <nav class="menu">${Object.entries(T).map(([id, t]) => `<a class="kartu" href="#latihan-${id}">${ikon(id)}<span><b>${t.nama}</b><small>${riwayatTeks(id)}</small></span></a>`).join('')}</nav>`;
 }
 
 function tampilMateri() {
@@ -887,55 +919,138 @@ function tampilMateri() {
   math(app);
 }
 
-function buatSimulasi() {
-  const ambil = (k, n) => shuffle(Object.values(T).flatMap(t => t[k] || [])).slice(0, n).map(g => g());
-  return [...ambil('pg', 17), ...ambil('bs', 4), ...ambil('mcma', 4)];
-}
-const buatLatihan = id => [...T[id].pg, ...(T[id].bs || []), ...(T[id].mcma || [])].map(g => g());
+// Every generator gets a stable key so "ulangi yang salah" can rebuild the same question type.
+const GEN = {};
+Object.entries(T).forEach(([id, t]) => ['pg', 'bs', 'mcma'].forEach(k => (t[k] || []).forEach((g, i) => GEN[`${id}.${k}.${i}`] = g)));
+const bangun = keys => keys.map(k => ({ ...GEN[k](), src: k }));
+const kunciDari = (pre, k) => Object.keys(GEN).filter(x => x.split('.')[pre ? 0 : 1] === (pre || k));
 
-function tampilKuis(b, judul) { builder = b; judulKuis = judul; soal = b(); renderKuis(); }
+function buatSimulasi() {
+  const ambil = (k, n) => shuffle(kunciDari(null, k)).slice(0, n);
+  return bangun([...ambil('pg', 17), ...ambil('bs', 4), ...ambil('mcma', 4)]);
+}
+const buatLatihan = id => bangun(kunciDari(id));
+
+// ===== penyimpanan (localStorage) =====
+const simpan = (k, v) => { try { localStorage.setItem('tka:' + k, JSON.stringify(v)); } catch (e) {} };
+const muat = k => { try { return JSON.parse(localStorage.getItem('tka:' + k)); } catch (e) { return null; } };
+const WAKTU = 75 * 60; // ponytail: durasi simulasi tetap 75 menit; jadikan pilihan jika ingin latihan dengan durasi lain.
+let st = null, timer = null;
+
+function tampilKuis(b, judul, id) {
+  builder = b; judulKuis = judul;
+  st = muat('kuis:' + id);
+  if (!st || !st.soal) { st = { id, soal: b(), jawab: [], ragu: [], salah: [], mulai: Date.now(), cek: false, pos: 0 }; simpan('kuis:' + id, st); }
+  soal = st.soal; renderKuis();
+}
+
+function relatif(t) {
+  const m = Math.round((Date.now() - t) / 60000);
+  return m < 1 ? 'baru saja' : m < 60 ? `${m} menit lalu` : m < 1440 ? `${Math.round(m / 60)} jam lalu` : `${Math.round(m / 1440)} hari lalu`;
+}
+const riwayatTeks = id => { const r = (muat('riwayat') || {})[id]; return r && r.length ? `Terakhir ${r[r.length - 1].b}/${r[r.length - 1].n}, ${relatif(r[r.length - 1].t)}` : ''; };
 
 function renderKuis() {
-  const judul = { pg: 'Pilihan Ganda', bs: 'PG Kompleks (Benar/Salah)', mcma: 'MCMA (pilih semua yang benar)' };
+  clearInterval(timer);
+  const sim = st.id === 'simulasi', judul = { pg: 'Pilihan Ganda', bs: 'PG Kompleks (Benar/Salah)', mcma: 'MCMA (pilih semua yang benar)' };
   let html = `<p><a href="#">← Menu</a></p><h2>${judulKuis}</h2>
-  <div class="bar"><button id="baru">Soal baru</button><button id="cek" class="primary">Periksa jawaban</button><span id="skor" aria-live="polite"></span></div>`;
+  <div class="bar"><button id="baru">Soal baru</button><button id="cek" class="primary">Periksa jawaban</button>${st.salah.length ? `<button id="ulang">Ulangi yang salah (${st.salah.length})</button>` : ''}<button id="cetak">Cetak</button>${sim ? '<span id="waktu" aria-live="off"></span>' : ''}<span id="skor" aria-live="polite"></span></div>`;
+  if (sim) html += `<nav class="nomor" aria-label="Nomor soal">${soal.map((_, i) => `<button data-n="${i}" aria-label="Soal ${i + 1}">${i + 1}</button>`).join('')}</nav>`;
   let bag = '';
   soal.forEach((s, i) => {
-    if (s.type !== bag) { bag = s.type; html += `<h2>${judul[bag]}</h2>`; }
-    html += `<fieldset class="soal"><legend><b>${i + 1}.</b></legend><div>${s.q}</div>`;
+    if (s.type !== bag) { bag = s.type; html += `<h2 class="jenis" data-j="${bag}">${judul[bag]}</h2>`; }
+    html += `<fieldset class="soal" id="s${i}"><legend><b>${i + 1}.</b>${sim ? ` <label class="ragu"><input type="checkbox" data-ragu="${i}">Ragu-ragu</label>` : ''}</legend><div>${s.q}</div>`;
     if (s.type === 'pg') html += s.opts.map((o, j) => `<label><input type="radio" name="q${i}" value="${j}">${'ABCDE'[j]}. ${o}</label>`).join('');
     if (s.type === 'bs') html += `<table><tr><th>Pernyataan</th><th>Benar</th><th>Salah</th></tr>` + s.st.map((t, j) =>
       `<tr><td>${t[0]}</td><td class="c"><label><input type="radio" name="q${i}_${j}" value="1" aria-label="Pernyataan ${j + 1} benar"></label></td><td class="c"><label><input type="radio" name="q${i}_${j}" value="0" aria-label="Pernyataan ${j + 1} salah"></label></td></tr>`).join('') + '</table>';
     if (s.type === 'mcma') html += s.st.map((t, j) => `<label><input type="checkbox" name="q${i}" value="${j}">${'ABCDE'[j]}. ${t[0]}</label>`).join('');
     html += `<div class="hasil" id="h${i}"></div><div class="bahas" id="b${i}" hidden><b>Pembahasan</b><div>${s.bahas}</div></div><details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}</div></details></fieldset>`;
   });
+  if (sim) html += `<div class="bar nav"><button id="prev">← Sebelumnya</button><button id="next">Berikutnya →</button></div>`;
   app.innerHTML = html;
-  document.getElementById('baru').onclick = () => { soal = builder(); renderKuis(); window.scrollTo(0, 0); };
-  document.getElementById('cek').onclick = periksa;
+  const $ = id => document.getElementById(id);
+
+  // restore answers, then save on every change
+  st.jawab.forEach((v, i) => (v || []).forEach(x => { const el = document.querySelector(`#s${i} input[value="${x.split(':')[1]}"][name="${x.split(':')[0]}"]`); if (el) el.checked = true; }));
+  st.ragu.forEach(i => { const el = document.querySelector(`[data-ragu="${i}"]`); if (el) el.checked = true; });
+  app.onchange = e => {
+    const f = e.target.closest('fieldset'); if (!f) return;
+    const i = +f.id.slice(1);
+    if (e.target.dataset.ragu) st.ragu = e.target.checked ? [...new Set([...st.ragu, i])] : st.ragu.filter(x => x !== i);
+    else st.jawab[i] = [...f.querySelectorAll('input:checked:not([data-ragu])')].map(x => `${x.name}:${x.value}`);
+    simpan('kuis:' + st.id, st); tandai();
+  };
+
+  $('baru').onclick = () => {
+    if (!st.cek && st.jawab.some(v => v && v.length) && !confirm('Jawaban yang sudah diisi akan hilang. Buat soal baru?')) return;
+    simpan('kuis:' + st.id, null); tampilKuis(builder, judulKuis, st.id); window.scrollTo(0, 0);
+  };
+  $('cek').onclick = () => { if (st.cek) return; if (sim && !st.cek && soal.some((_, i) => !(st.jawab[i] || []).length) && !confirm('Masih ada soal yang belum dijawab. Periksa sekarang?')) return; periksa(); };
+  $('cetak').onclick = () => { document.body.classList.add('cetak'); window.print(); document.body.classList.remove('cetak'); };
+  if ($('ulang')) $('ulang').onclick = () => {
+    const keys = st.salah; simpan('kuis:' + st.id, { id: st.id, soal: bangun(keys), jawab: [], ragu: [], salah: [], mulai: Date.now(), cek: false, pos: 0 });
+    tampilKuis(builder, judulKuis, st.id); window.scrollTo(0, 0);
+  };
+
+  if (sim) {
+    const ke = n => { st.pos = Math.max(0, Math.min(soal.length - 1, n)); simpan('kuis:' + st.id, st); tandai(); window.scrollTo(0, 0); };
+    document.querySelectorAll('.nomor button').forEach(b => b.onclick = () => ke(+b.dataset.n));
+    $('prev').onclick = () => ke(st.pos - 1); $('next').onclick = () => ke(st.pos + 1);
+    const jam = () => {
+      const sisa = WAKTU - Math.floor((Date.now() - st.mulai) / 1000);
+      if (st.cek) { $('waktu').textContent = ''; return clearInterval(timer); }
+      if (sisa <= 0) { clearInterval(timer); alert('Waktu habis. Jawaban diperiksa otomatis.'); return periksa(); }
+      $('waktu').textContent = `⏱ ${String(Math.floor(sisa / 60)).padStart(2, '0')}:${String(sisa % 60).padStart(2, '0')}`;
+      $('waktu').className = sisa < 300 ? 'bad' : '';
+    };
+    jam(); timer = setInterval(jam, 1000);
+  }
+  tandai();
+  if (st.cek) periksa(true);
   math(app);
 }
 
-function periksa() {
-  let benar = 0;
+// Simulasi shows one question at a time (except when printing or after checking); number buttons show answered/doubtful state.
+function tandai() {
+  if (st.id !== 'simulasi') return;
+  soal.forEach((s, i) => {
+    document.getElementById('s' + i).hidden = !st.cek && i !== st.pos;
+    const b = document.querySelector(`.nomor [data-n="${i}"]`);
+    b.className = [(st.jawab[i] || []).length ? 'isi' : '', st.ragu.includes(i) ? 'ragu' : '', i === st.pos && !st.cek ? 'kini' : ''].join(' ');
+  });
+  document.querySelectorAll('.jenis').forEach(h => h.hidden = !st.cek && soal[st.pos].type !== h.dataset.j);
+  document.querySelector('.nav').hidden = st.cek;
+}
+
+function periksa(ulang) {
+  let benar = 0; const salah = [];
   soal.forEach((s, i) => {
     let ok, kunci;
     if (s.type === 'pg') { const v = document.querySelector(`[name=q${i}]:checked`); ok = v && +v.value === s.ans; kunci = 'ABCDE'[s.ans]; }
     if (s.type === 'bs') { ok = s.st.every((t, j) => { const v = document.querySelector(`[name=q${i}_${j}]:checked`); return v && (v.value === '1') === t[1]; }); kunci = s.st.map((t, j) => `${j + 1}=${t[1] ? 'B' : 'S'}`).join(', '); }
     if (s.type === 'mcma') { const v = [...document.querySelectorAll(`[name=q${i}]:checked`)].map(x => +x.value); ok = s.st.every((t, j) => t[1] === v.includes(j)); kunci = s.st.map((t, j) => t[1] ? 'ABCDE'[j] : '').join('') || '(tidak ada yang benar)'; }
-    if (ok) benar++;
+    if (ok) benar++; else if (s.src) salah.push(s.src);
     const h = document.getElementById('h' + i);
     h.className = 'hasil ' + (ok ? 'ok' : 'bad');
     h.textContent = ok ? '✓ Benar' : `✗ Salah. Kunci: ${kunci}`;
     document.getElementById('b' + i).hidden = false;
   });
   document.getElementById('skor').textContent = `Skor: ${benar} / ${soal.length}`;
+  if (ulang) return;
+  const r = muat('riwayat') || {};
+  (r[st.id] = r[st.id] || []).push({ b: benar, n: soal.length, t: Date.now() });
+  r[st.id] = r[st.id].slice(-10);
+  simpan('riwayat', r);
+  st.cek = true; st.salah = salah; simpan('kuis:' + st.id, st);
+  renderKuis();
 }
 
 function route() {
   const h = location.hash;
-  if (h === '#simulasi') tampilKuis(buatSimulasi, 'Simulasi TKA');
+  clearInterval(timer);
+  if (h === '#simulasi') tampilKuis(buatSimulasi, 'Simulasi TKA', 'simulasi');
   else if (h === '#materi') tampilMateri();
-  else if (h.startsWith('#latihan-') && T[h.slice(9)]) { const id = h.slice(9); tampilKuis(() => buatLatihan(id), 'Latihan: ' + T[id].nama); }
+  else if (h.startsWith('#latihan-') && T[h.slice(9)]) { const id = h.slice(9); tampilKuis(() => buatLatihan(id), 'Latihan: ' + T[id].nama, id); }
   else tampilMenu();
   window.scrollTo(0, 0);
 }
