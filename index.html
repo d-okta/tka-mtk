@@ -149,24 +149,24 @@ bangunDatar: { nama: 'Bangun Datar', rumus: L`Persegi panjang: $$K = 2\,(p+\ell)
 pg: [
   () => { const p = R(8, 20), l = R(3, p - 1), k = 2 * (p + l);
     return pg(`Sebuah persegi panjang berukuran panjang ${p} cm dan lebar ${l} cm. Keliling persegi panjang tersebut adalah ....`,
-      k, [p + l, p * l, 2 * p * l, k + 2], L`$$K = 2\,(p + \ell)$$`, ' cm',
-      L`$$K = 2\,(${p} + ${l}) = 2 \times ${p + l} = ${k}\ \text{cm}$$`); },
+      k, [p + l, p * l, 2 * p * l, k + 2], L`<p>Keliling adalah panjang seluruh tepi bangun, seperti berjalan mengelilingi pinggirnya satu putaran.</p><p>Persegi panjang punya 2 sisi panjang dan 2 sisi lebar, jadi $$K = p + \ell + p + \ell = 2\,(p + \ell)$$</p><p>Langkah: jumlahkan panjang dan lebar, lalu kalikan 2. Satuannya tetap cm (bukan cm²) karena keliling adalah panjang.</p>`, ' cm',
+      L`<ol><li>Tulis yang diketahui: $p = ${p}$ cm, $\ell = ${l}$ cm.</li><li>Jumlahkan satu panjang dan satu lebar (setengah keliling): $$${p} + ${l} = ${p + l}$$</li><li>Ada dua pasang sisi, jadi kalikan 2: $$K = 2 \times ${p + l} = ${k}\ \text{cm}$$</li><li>Cek dengan menjumlahkan keempat sisi satu per satu: $${p} + ${l} + ${p} + ${l} = ${k}$. Hasilnya sama.</li></ol>`); },
   () => { const a = 2 * R(3, 8), t = R(4, 12), Ls = a * t / 2;
     return pg(`Luas segitiga dengan alas ${a} cm dan tinggi ${t} cm adalah ....`,
-      Ls, [a * t, a + t, 2 * (a + t), 2 * a * t], L`$$L = \tfrac12\,a\,t$$`, ' cm²',
-      L`$$L = \tfrac12 \times ${a} \times ${t} = ${Ls}\ \text{cm}^2$$`); },
+      Ls, [a * t, a + t, 2 * (a + t), 2 * a * t], L`<p>Segitiga adalah setengah dari persegi panjang yang alasnya $a$ dan tingginya $t$. Luas persegi panjang itu $a \times t$, jadi $$L = \tfrac12\,a\,t$$</p><p>Tinggi harus tegak lurus terhadap alas. Langkah: kalikan alas dan tinggi, lalu bagi 2. Satuan luas adalah cm².</p>`, ' cm²',
+      L`<ol><li>Diketahui: alas $a = ${a}$ cm, tinggi $t = ${t}$ cm.</li><li>Hitung luas persegi panjang pembungkusnya: $$${a} \times ${t} = ${a * t}$$</li><li>Segitiga hanya setengahnya, jadi bagi 2: $$L = \frac{${a * t}}{2} = ${Ls}\ \text{cm}^2$$</li><li>Cek: urutan boleh dibalik, $\tfrac12 \times ${a} = ${a / 2}$, lalu $${a / 2} \times ${t} = ${Ls}$. Hasilnya sama.</li></ol>`); },
   () => { const r = pick([7, 14, 21]), Ls = 22 * r * r / 7;
     return pg(`Luas lingkaran dengan jari-jari ${r} cm (π = 22/7) adalah ....`,
-      fmt(Ls), [fmt(44 * r / 7), fmt(Ls / 2), fmt(Ls * 2), fmt(22 * r / 7), fmt(Ls + 22)], L`$$L = \pi r^2, \quad \pi = \tfrac{22}{7}$$`, ' cm²',
-      L`$$L = \tfrac{22}{7} \times ${r} \times ${r} = ${fmt(Ls)}\ \text{cm}^2$$`); },
+      fmt(Ls), [fmt(44 * r / 7), fmt(Ls / 2), fmt(Ls * 2), fmt(22 * r / 7), fmt(Ls + 22)], L`<p>Luas lingkaran adalah banyak daerah di dalam lingkaran: $$L = \pi r^2 = \pi \times r \times r$$</p><p>$r$ adalah jari-jari (jarak pusat ke tepi). Jika yang diketahui diameter, bagi 2 dahulu. Pakai $\pi = \tfrac{22}{7}$ jika jari-jari kelipatan 7, supaya 7 bisa dicoret.</p><p>Jangan tertukar dengan keliling $2\pi r$ (itu panjang tepi, bukan daerah).</p>`, ' cm²',
+      L`<ol><li>Diketahui $r = ${r}$ cm. Karena ${r} kelipatan 7, pakai $\pi = \tfrac{22}{7}$.</li><li>Tulis rumusnya: $$L = \tfrac{22}{7} \times ${r} \times ${r}$$</li><li>Coret 7 dengan salah satu ${r}: $${r} : 7 = ${r / 7}$, sehingga $$L = 22 \times ${r / 7} \times ${r} = ${fmt(Ls)}\ \text{cm}^2$$</li><li>Cek kasar: $\pi \approx 3$, jadi $L \approx 3 \times ${r * r} = ${3 * r * r}$. Hasil ${fmt(Ls)} sedikit di atasnya, masuk akal.</li></ol>`); },
   () => { const r = pick([7, 14, 21]), K = 44 * r / 7;
     return pg(`Keliling lingkaran dengan jari-jari ${r} cm (π = 22/7) adalah ....`,
-      fmt(K), [fmt(22 * r * r / 7), fmt(K / 2), fmt(K * 2), fmt(22 * r / 7)], L`$$K = 2\pi r$$`, ' cm',
-      L`$$K = 2 \times \tfrac{22}{7} \times ${r} = ${fmt(K)}\ \text{cm}$$`); },
+      fmt(K), [fmt(22 * r * r / 7), fmt(K / 2), fmt(K * 2), fmt(22 * r / 7)], L`<p>Keliling lingkaran adalah panjang tepinya. Untuk semua lingkaran, keliling dibagi diameter selalu sama dengan $\pi$, jadi $K = \pi d = 2\pi r$.</p><p>Pakai $\pi = \tfrac{22}{7}$ jika jari-jari kelipatan 7. Satuan keliling cm, bukan cm².</p>`, ' cm',
+      L`<ol><li>Diketahui $r = ${r}$ cm, jadi diameter $d = 2 \times ${r} = ${2 * r}$ cm.</li><li>Tulis rumusnya: $$K = \pi d = \tfrac{22}{7} \times ${2 * r}$$</li><li>Coret 7: $${2 * r} : 7 = ${2 * r / 7}$, sehingga $$K = 22 \times ${2 * r / 7} = ${fmt(K)}\ \text{cm}$$</li><li>Cek kasar: $\pi \approx 3$, jadi $K \approx 3 \times ${2 * r} = ${6 * r}$. Hasil ${fmt(K)} sedikit di atasnya, masuk akal.</li></ol>`); },
   () => { const l = pick([14, 28]), p = R(15, 30), pp = p * l, sl = 11 * l * l / 28, tot = pp + sl;
     return pg(`Perhatikan bangun berikut. Bangun terdiri dari persegi panjang ${p} cm × ${l} cm dan setengah lingkaran berdiameter ${l} cm. Luas bangun tersebut adalah .... (π = 22/7)${svgGabungan(p, l)}`,
-      fmt(tot), [fmt(pp), fmt(pp + 2 * sl), fmt(pp + 4 * sl), fmt(pp - sl)], L`$$L_{\text{gabungan}} = L_{\text{persegi panjang}} + \tfrac12\,\pi r^2, \qquad r = \tfrac{d}{2}$$`, ' cm²',
-      L`$$L_1 = ${p} \times ${l} = ${fmt(pp)}$$ $$L_2 = \tfrac12 \times \tfrac{22}{7} \times ${l / 2}^2 = ${fmt(sl)}$$ $$L = ${fmt(pp)} + ${fmt(sl)} = ${fmt(tot)}\ \text{cm}^2$$`); },
+      fmt(tot), [fmt(pp), fmt(pp + 2 * sl), fmt(pp + 4 * sl), fmt(pp - sl)], L`<p>Bangun gabungan dipecah menjadi bangun sederhana yang rumusnya sudah dikenal, lalu luasnya dijumlahkan.</p><p>Di sini: persegi panjang $L_1 = p \times \ell$ dan setengah lingkaran $L_2 = \tfrac12\,\pi r^2$.</p><p>Diameter setengah lingkaran sama dengan sisi yang ditempelinya, jadi $r = \tfrac{d}{2}$. Garis putus-putus hanya batas, bukan bagian yang dikurangi.</p>`, ' cm²',
+      L`<ol><li>Pecah bangun: persegi panjang ${p} × ${l} dan setengah lingkaran berdiameter ${l} cm.</li><li>Luas persegi panjang: $$L_1 = ${p} \times ${l} = ${fmt(pp)}\ \text{cm}^2$$</li><li>Jari-jari setengah lingkaran: $r = \tfrac{${l}}{2} = ${l / 2}$ cm. Luas lingkaran penuh $= \tfrac{22}{7} \times ${l / 2} \times ${l / 2} = ${fmt(2 * sl)}$, jadi setengahnya $$L_2 = \tfrac{${fmt(2 * sl)}}{2} = ${fmt(sl)}\ \text{cm}^2$$</li><li>Jumlahkan: $$L = ${fmt(pp)} + ${fmt(sl)} = ${fmt(tot)}\ \text{cm}^2$$</li><li>Cek: hasilnya harus lebih besar dari persegi panjangnya saja (${fmt(pp)}), karena ada tambahan setengah lingkaran.</li></ol>`); },
 ],
 bs: [
   () => { const p = R(6, 12), l = R(4, Math.min(8, p - 1)), A = p * l, K = 2 * (p + l), u = Math.floor(A / 1.5);
@@ -176,37 +176,37 @@ bs: [
       [`Keliling lantai lab adalah ${s2.v} m`, s2.t],
       [`Banyak keramik yang dibutuhkan adalah ${s3.v} buah`, s3.t],
       [`Jika setiap unit komputer beserta mejanya butuh 1,5 m², lab memuat paling banyak ${s4.v} unit`, s4.t]],
-    rumus: L`$$L = p \times \ell, \qquad K = 2\,(p+\ell)$$ Banyak keramik: $$n = \frac{L_{\text{lantai}}}{L_{\text{keramik}}}$$ Samakan satuan dahulu: $50\ \text{cm} = 0{,}5\ \text{m}$.`,
-    bahas: L`$$L = ${p} \times ${l} = ${A}\ \text{m}^2, \qquad K = 2\,(${p} + ${l}) = ${K}\ \text{m}$$ $$L_{\text{keramik}} = 0{,}5 \times 0{,}5 = 0{,}25\ \text{m}^2 \Rightarrow n = \frac{${A}}{0{,}25} = ${4 * A}$$ $$\frac{${A}}{1{,}5} = ${dsp(A / 1.5)} \Rightarrow \text{paling banyak } ${u} \text{ unit}$$` }; },
+    rumus: L`<p>Luas (daerah) $L = p \times \ell$ bersatuan m², keliling (tepi) $K = 2\,(p+\ell)$ bersatuan m.</p><p>Banyak keramik = luas lantai dibagi luas satu keramik: $$n = \frac{L_{\text{lantai}}}{L_{\text{keramik}}}$$ Satuan harus sama dahulu: $50\ \text{cm} = 0{,}5\ \text{m}$.</p><p>Untuk "paling banyak", hasil bagi dibulatkan ke bawah, karena unit tidak bisa dipotong dan ruang yang kurang tidak cukup untuk satu unit lagi.</p>`,
+    bahas: L`<ol><li>Pernyataan 1 (luas): $$L = ${p} \times ${l} = ${A}\ \text{m}^2$$ Jadi pernyataan bernilai benar hanya jika tertulis ${A}.</li><li>Pernyataan 2 (keliling): $$K = 2\,(${p} + ${l}) = 2 \times ${p + l} = ${K}\ \text{m}$$</li><li>Pernyataan 3 (keramik): ubah 50 cm ke 0,5 m. Luas satu keramik $= 0{,}5 \times 0{,}5 = 0{,}25\ \text{m}^2$. $$n = \frac{${A}}{0{,}25} = ${A} \times 4 = ${4 * A} \text{ buah}$$ Cara lain: 1 m² memuat $2 \times 2 = 4$ keramik.</li><li>Pernyataan 4 (komputer): $$\frac{${A}}{1{,}5} = ${dsp(A / 1.5).replace(',', '{,}')}$$ Bulatkan ke bawah: paling banyak ${u} unit. Cek: $${u} \times 1{,}5 = ${dsp(u * 1.5).replace(',', '{,}')} \le ${A}$, tetapi $${u + 1} \times 1{,}5 = ${dsp((u + 1) * 1.5).replace(',', '{,}')} > ${A}$.</li><li>Bandingkan setiap angka di pernyataan dengan hasil di atas: sama berarti Benar, berbeda berarti Salah.</li></ol>` }; },
 ]},
 
 bangunRuang: { nama: 'Bangun Ruang', rumus: L`Balok: $$V = p \times \ell \times t$$ Kubus: $$V = s^3$$ Tabung: $$V = \pi r^2 t$$`,
 pg: [
   () => { const p = R(4, 10), l = R(3, 8), t = R(3, 8), V = p * l * t;
     return pg(`Sebuah balok berukuran ${p} cm × ${l} cm × ${t} cm. Volume balok tersebut adalah ....`,
-      V, [p + l + t, 2 * (p * l + p * t + l * t), V * 2, p * l], L`$$V = p \times \ell \times t$$`, ' cm³',
-      L`$$V = ${p} \times ${l} \times ${t} = ${V}\ \text{cm}^3$$`); },
+      V, [p + l + t, 2 * (p * l + p * t + l * t), V * 2, p * l], L`<p>Volume adalah banyak kubus satuan (1 cm × 1 cm × 1 cm) yang muat di dalam bangun.</p><p>Lantai balok memuat $p \times \ell$ kubus satuan, dan lapisan itu ditumpuk setinggi $t$. Jadi $$V = p \times \ell \times t$$ Satuannya cm³.</p>`, ' cm³',
+      L`<ol><li>Diketahui $p = ${p}$, $\ell = ${l}$, $t = ${t}$ (cm).</li><li>Isi satu lapisan alas: $${p} \times ${l} = ${p * l}$ kubus satuan.</li><li>Ada ${t} lapisan: $$V = ${p * l} \times ${t} = ${V}\ \text{cm}^3$$</li><li>Cek dengan urutan lain: $${p} \times (${l} \times ${t}) = ${p} \times ${l * t} = ${V}$. Hasilnya sama.</li></ol>`); },
   () => { const r = pick([7, 14]), t = R(5, 10), V = 22 * r * r * t / 7;
     return pg(`Volume tabung dengan jari-jari alas ${r} cm dan tinggi ${t} cm (π = 22/7) adalah ....`,
-      fmt(V), [fmt(44 * r * t / 7), fmt(V / 2), fmt(V * 2), fmt(22 * r * t / 7), fmt(V + 22)], L`$$V = \pi r^2 t$$`, ' cm³',
-      L`$$V = \tfrac{22}{7} \times ${r}^2 \times ${t} = ${fmt(V)}\ \text{cm}^3$$`); },
+      fmt(V), [fmt(44 * r * t / 7), fmt(V / 2), fmt(V * 2), fmt(22 * r * t / 7), fmt(V + 22)], L`<p>Volume bangun yang alas dan tutupnya sama (prisma, tabung) = luas alas × tinggi.</p><p>Alas tabung berupa lingkaran dengan luas $\pi r^2$, jadi $$V = \pi r^2 t$$</p><p>Langkah: hitung luas alas dahulu, lalu kalikan tinggi.</p>`, ' cm³',
+      L`<ol><li>Diketahui $r = ${r}$ cm dan $t = ${t}$ cm. Karena ${r} kelipatan 7, pakai $\pi = \tfrac{22}{7}$.</li><li>Luas alas: $$\tfrac{22}{7} \times ${r} \times ${r} = 22 \times ${r / 7} \times ${r} = ${fmt(22 * r * r / 7)}\ \text{cm}^2$$</li><li>Kalikan tinggi: $$V = ${fmt(22 * r * r / 7)} \times ${t} = ${fmt(V)}\ \text{cm}^3$$</li><li>Cek kasar: $\pi \approx 3$, jadi $V \approx 3 \times ${r * r} \times ${t} = ${fmt(3 * r * r * t)}$. Hasil sedikit di atasnya, masuk akal.</li></ol>`); },
   () => { const s = R(3, 9), V = s ** 3;
     return pg(`Volume kubus dengan panjang rusuk ${s} cm adalah ....`,
-      V, [s * s, 6 * s * s, 3 * s, V + s], L`$$V = s^3$$`, ' cm³',
-      L`$$V = ${s}^3 = ${s} \times ${s} \times ${s} = ${V}\ \text{cm}^3$$`); },
+      V, [s * s, 6 * s * s, 3 * s, V + s], L`<p>Kubus adalah balok yang panjang, lebar, dan tingginya sama dengan rusuk $s$. Jadi $$V = s \times s \times s = s^3$$</p><p>Jangan tertukar: $s^2$ adalah luas satu sisi, $6s^2$ adalah luas permukaan.</p>`, ' cm³',
+      L`<ol><li>Rusuk $s = ${s}$ cm.</li><li>Luas satu sisi (alas): $${s} \times ${s} = ${s * s}$.</li><li>Kalikan tinggi yang juga ${s}: $$V = ${s * s} \times ${s} = ${V}\ \text{cm}^3$$</li><li>Cek: $${s}^3$ artinya ${s} dikalikan tiga kali, bukan $${s} \times 3 = ${3 * s}$.</li></ol>`); },
 ]},
 
 dimensiTiga: { nama: 'Dimensi Tiga (Kubus)', rumus: L`Kubus rusuk $s$: $$\text{diagonal sisi} = s\sqrt2, \qquad \text{diagonal ruang} = s\sqrt3$$ Jarak titik ke bidang = panjang garis tegak lurus dari titik ke bidang. Jarak titik sudut ke bidang diagonal yang memuat rusuk di depannya $= \tfrac12 s\sqrt2$.`,
 pg: [
   () => { const s = pick([4, 6, 8, 10, 12]), h = s / 2;
     const v = pick([
-      ['panjang diagonal ruang AG', sq(s, 3), L`$$AG = \sqrt{AB^2 + BC^2 + CG^2} = \sqrt{3 \times ${s}^2} = ${s}\sqrt3\ \text{cm}$$`],
-      ['panjang diagonal sisi AC', sq(s, 2), L`$$AC = \sqrt{AB^2 + BC^2} = \sqrt{2 \times ${s}^2} = ${s}\sqrt2\ \text{cm}$$`],
-      ['jarak titik E ke bidang ABCD', String(s), L`EA tegak lurus bidang ABCD, jadi jaraknya $= EA = ${s}$ cm.`],
-      ['jarak titik A ke bidang BDHF', sq(h, 2), L`Jarak A ke BDHF $= AO$, dengan O titik tengah diagonal AC: $$AO = \tfrac12\,AC = \tfrac12 \times ${s}\sqrt2 = ${h}\sqrt2\ \text{cm}$$`],
+      ['panjang diagonal ruang AG', sq(s, 3), L`<ol><li>Diagonal ruang AG menembus bagian dalam kubus. Cari dahulu diagonal alas AC, karena segitiga ACG siku-siku di C (rusuk CG tegak lurus alas).</li><li>Segitiga ABC siku-siku di B: $$AC^2 = AB^2 + BC^2 = ${s * s} + ${s * s} = ${2 * s * s}$$</li><li>Segitiga ACG siku-siku di C: $$AG^2 = AC^2 + CG^2 = ${2 * s * s} + ${s * s} = ${3 * s * s}$$</li><li>Akarkan: $$AG = \sqrt{${3 * s * s}} = \sqrt{${s * s} \times 3} = ${s}\sqrt3\ \text{cm}$$</li><li>Cek: diagonal ruang harus lebih panjang dari diagonal sisi $${s}\sqrt2$, dan $\sqrt3 > \sqrt2$. Cocok.</li></ol>`],
+      ['panjang diagonal sisi AC', sq(s, 2), L`<ol><li>AC adalah diagonal pada sisi alas ABCD. Segitiga ABC siku-siku di B.</li><li>Pythagoras: $$AC^2 = AB^2 + BC^2 = ${s}^2 + ${s}^2 = ${2 * s * s}$$</li><li>Akarkan: $$AC = \sqrt{${2 * s * s}} = \sqrt{${s * s} \times 2} = ${s}\sqrt2\ \text{cm}$$</li><li>Cek: $\sqrt2 \approx 1{,}41$, jadi $AC \approx ${dsp(s * 1.41).replace(',', '{,}')}$, lebih panjang dari rusuk ${s} tetapi lebih pendek dari $AB + BC = ${2 * s}$. Masuk akal.</li></ol>`],
+      ['jarak titik E ke bidang ABCD', String(s), L`<ol><li>Jarak titik ke bidang diukur sepanjang garis yang tegak lurus bidang.</li><li>Rusuk EA tegak (vertikal), sedangkan bidang ABCD datar (alas). Jadi EA tegak lurus bidang ABCD.</li><li>Jaraknya sama dengan panjang EA, yaitu satu rusuk: $${s}$ cm.</li><li>Cek: titik E berada tepat di atas A, setinggi kubus. Tinggi kubus = rusuk = ${s}.</li></ol>`],
+      ['jarak titik A ke bidang BDHF', sq(h, 2), L`<ol><li>Bidang BDHF adalah bidang diagonal yang memotong kubus melalui diagonal alas BD.</li><li>Pada alas persegi, diagonal AC dan BD saling tegak lurus dan berpotongan di titik tengah O. Jadi AO tegak lurus BD, dan juga tegak lurus rusuk tegak BF. Karena itu AO tegak lurus bidang BDHF.</li><li>Jaraknya $= AO = \tfrac12\,AC$. Diagonal sisi $AC = ${s}\sqrt2$.</li><li>$$AO = \tfrac12 \times ${s}\sqrt2 = ${h}\sqrt2\ \text{cm}$$</li><li>Cek: jarak ini harus lebih pendek dari rusuk AB (${s}), karena AB miring terhadap bidang. $${h}\sqrt2 \approx ${dsp(h * 1.41).replace(',', '{,}')} < ${s}$. Cocok.</li></ol>`],
     ]);
     return pg(`Perhatikan kubus ABCD.EFGH dengan panjang rusuk ${s} cm. Nilai ${v[0]} adalah ....${svgKubus()}`,
-      v[1], [sq(s, 3), sq(s, 2), String(s), sq(h, 2), sq(h, 3), String(2 * s)], L`$$\text{diagonal sisi} = s\sqrt2, \qquad \text{diagonal ruang} = s\sqrt3$$ Jarak titik ke bidang: tarik garis tegak lurus dari titik ke bidang.`, ' cm', v[2]); },
+      v[1], [sq(s, 3), sq(s, 2), String(s), sq(h, 2), sq(h, 3), String(2 * s)], L`<p>Semua jarak di kubus dicari dengan segitiga siku-siku dan Pythagoras.</p><p>Diagonal sisi: segitiga siku dengan dua sisi tegak $s$, jadi $\sqrt{s^2 + s^2} = s\sqrt2$. Diagonal ruang: segitiga siku dengan sisi $s\sqrt2$ dan $s$, jadi $\sqrt{2s^2 + s^2} = s\sqrt3$.</p><p>Jarak titik ke bidang: tarik garis dari titik yang tegak lurus bidang, lalu hitung panjang garis itu. Garis tegak lurus bidang jika tegak lurus dua garis berpotongan pada bidang tersebut.</p>`, ' cm', v[2]); },
 ],
 mcma: [
   () => { const s = pick([4, 6, 8, 10]), h = s / 2;
@@ -217,41 +217,41 @@ mcma: [
       [`Jarak titik E ke bidang ABCD adalah ${s3.v} cm`, s3.t],
       [`Jarak titik A ke bidang BDHF adalah ${s4.v} cm`, s4.t],
       [`Volume kubus adalah ${s5.v} cm³`, s5.t]],
-    rumus: L`$$\text{diagonal sisi} = s\sqrt2, \quad \text{diagonal ruang} = s\sqrt3, \quad V = s^3$$ Jarak titik ke bidang: garis tegak lurus dari titik ke bidang.`,
-    bahas: L`$$AC = ${s}\sqrt2, \quad AG = ${s}\sqrt3, \quad d(E, ABCD) = EA = ${s}$$ $$d(A, BDHF) = \tfrac12\,AC = ${h}\sqrt2, \qquad V = ${s}^3 = ${s ** 3}$$` }; },
+    rumus: L`<p>Semua jarak di kubus dicari dengan segitiga siku-siku dan Pythagoras.</p><p>Diagonal sisi $= \sqrt{s^2 + s^2} = s\sqrt2$. Diagonal ruang $= \sqrt{(s\sqrt2)^2 + s^2} = s\sqrt3$. Volume $V = s^3$ (bukan luas permukaan $6s^2$).</p><p>Jarak titik ke bidang: panjang garis dari titik yang tegak lurus bidang.</p>`,
+    bahas: L`<ol><li>A. Segitiga ABC siku di B: $AC = \sqrt{${s}^2 + ${s}^2} = \sqrt{${2 * s * s}} = ${s}\sqrt2$.</li><li>B. Segitiga ACG siku di C: $AG = \sqrt{${2 * s * s} + ${s * s}} = \sqrt{${3 * s * s}} = ${s}\sqrt3$.</li><li>C. Rusuk EA tegak lurus alas ABCD, jadi jaraknya $EA = ${s}$.</li><li>D. Diagonal AC tegak lurus BD dan tegak lurus BF, jadi jarak A ke BDHF $= AO = \tfrac12\,AC = ${h}\sqrt2$.</li><li>E. $V = ${s} \times ${s} \times ${s} = ${s ** 3}$. Angka $${6 * s * s}$ adalah luas permukaan $6s^2$, bukan volume.</li><li>Pilih pernyataan yang angkanya sama dengan hasil di atas.</li></ol>` }; },
 ]},
 
 konversi: { nama: 'Konversi Satuan & Skala', rumus: L`$$1\ \text{GB} = 1024\ \text{MB}, \qquad 1\ \text{km} = 100000\ \text{cm}$$ Skala: $$\text{jarak sebenarnya} = \text{jarak peta} \times \text{skala}$$`,
 pg: [
   () => { const n = R(2, 8);
     return pg(`Jika 1 GB = 1.024 MB, maka ${n} GB sama dengan ....`,
-      fmt(n * 1024), [fmt(n * 1000), fmt(n * 100), fmt(1024), fmt(n * 512), fmt(n * 2048)], L`$$1\ \text{GB} = 1024\ \text{MB}$$`, ' MB',
-      L`$$${n}\ \text{GB} = ${n} \times 1024 = ${fmt(n * 1024)}\ \text{MB}$$`); },
+      fmt(n * 1024), [fmt(n * 1000), fmt(n * 100), fmt(1024), fmt(n * 512), fmt(n * 2048)], L`<p>Komputer menghitung dengan bilangan biner (pangkat 2), jadi satuan data naik setiap kali dikali $2^{10} = 1024$, bukan 1000: $$1\ \text{GB} = 1024\ \text{MB}, \quad 1\ \text{MB} = 1024\ \text{KB}$$</p><p>Dari satuan besar ke kecil: kalikan. Dari kecil ke besar: bagi.</p>`, ' MB',
+      L`<ol><li>GB lebih besar dari MB, jadi ubah dengan mengalikan.</li><li>Setiap 1 GB berisi 1.024 MB, jadi ${n} GB berisi ${n} kali lipatnya: $$${n} \times 1024 = ${fmt(n * 1024)}\ \text{MB}$$</li><li>Cek: hasilnya harus sedikit lebih besar dari $${n} \times 1000 = ${fmt(n * 1000)}$. Cocok. Jawaban ${fmt(n * 1000)} adalah jebakan karena memakai 1000.</li></ol>`); },
   () => { const m = pick([[200000, 2], [500000, 5], [1000000, 10]]), d = R(2, 8), x = m[1] * d;
     return pg(`Sebuah peta berskala 1 : ${fmt(m[0])}. Jika jarak dua kota pada peta ${d} cm, jarak sebenarnya adalah ....`,
-      x, [x * 10, x * 100, d, x * 2], L`$$\text{jarak sebenarnya} = \text{jarak peta} \times \text{skala}$$ Ingat: $1\ \text{km} = 100000\ \text{cm}$`, ' km',
-      L`$$${d} \times ${fmt(m[0])} = ${fmt(d * m[0])}\ \text{cm} = \frac{${fmt(d * m[0])}}{100000}\ \text{km} = ${x}\ \text{km}$$`); },
+      x, [x * 10, x * 100, d, x * 2], L`<p>Skala $1 : n$ artinya 1 cm di peta mewakili $n$ cm di dunia nyata. Jadi $$\text{jarak sebenarnya} = \text{jarak peta} \times n$$</p><p>Hasilnya masih dalam cm. Ubah ke km: km ke m dikali 1000, m ke cm dikali 100, jadi $1\ \text{km} = 100.000\ \text{cm}$. Untuk mengubah cm ke km, bagi 100.000 (coret lima nol).</p>`, ' km',
+      L`<ol><li>Skala 1 : ${fmt(m[0])} berarti 1 cm di peta = ${fmt(m[0])} cm sebenarnya.</li><li>Jarak di peta ${d} cm, jadi $$${d} \times ${fmt(m[0])} = ${fmt(d * m[0])}\ \text{cm}$$</li><li>Ubah ke km dengan membagi 100.000 (coret lima nol): $$\frac{${fmt(d * m[0])}}{100000} = ${x}\ \text{km}$$</li><li>Cek: 1 cm di peta $= ${m[1]}$ km, jadi ${d} cm $= ${d} \times ${m[1]} = ${x}$ km. Hasilnya sama.</li></ol>`); },
 ]},
 
 trigonometri: { nama: 'Trigonometri', rumus: L`$$\sin = \frac{\text{depan}}{\text{miring}}, \quad \cos = \frac{\text{samping}}{\text{miring}}, \quad \tan = \frac{\text{depan}}{\text{samping}}$$ Sudut istimewa: $$\sin 30^\circ = \tfrac12,\ \sin 45^\circ = \tfrac{\sqrt2}{2},\ \sin 60^\circ = \tfrac{\sqrt3}{2},\ \tan 45^\circ = 1$$ Sudut elevasi: $$\text{tinggi} = \text{jarak} \times \tan\theta$$`,
 pg: [
   () => { const [ex, ans, b] = pick([
-      ['sin 30° + cos 60°', '1', L`$$\tfrac12 + \tfrac12 = 1$$`],
-      ['cos 30° + sin 60°', '√3', L`$$\tfrac{\sqrt3}{2} + \tfrac{\sqrt3}{2} = \sqrt3$$`],
-      ['tan 45° + sin 30°', '3/2', L`$$1 + \tfrac12 = \tfrac32$$`],
-      ['sin 45° × cos 45°', '1/2', L`$$\tfrac{\sqrt2}{2} \times \tfrac{\sqrt2}{2} = \tfrac{2}{4} = \tfrac12$$`],
-      ['tan 30° × tan 60°', '1', L`$$\tfrac{\sqrt3}{3} \times \sqrt3 = \tfrac{3}{3} = 1$$`]]);
+      ['sin 30° + cos 60°', '1', L`<ol><li>Ganti tiap nilai dengan tabel sudut istimewa: $\sin 30^\circ = \tfrac12$ dan $\cos 60^\circ = \tfrac12$.</li><li>Jumlahkan: $$\tfrac12 + \tfrac12 = \tfrac22 = 1$$</li><li>Cek: $\sin 30^\circ = \cos 60^\circ$ karena $30^\circ + 60^\circ = 90^\circ$ (sudut berpenyiku), jadi hasilnya dua kali $\tfrac12$.</li></ol>`],
+      ['cos 30° + sin 60°', '√3', L`<ol><li>Dari tabel: $\cos 30^\circ = \tfrac{\sqrt3}{2}$ dan $\sin 60^\circ = \tfrac{\sqrt3}{2}$.</li><li>Penyebut sama, jumlahkan pembilang: $$\tfrac{\sqrt3}{2} + \tfrac{\sqrt3}{2} = \tfrac{2\sqrt3}{2} = \sqrt3$$</li><li>Cek: $\sqrt3 \approx 1{,}73$, dan $0{,}87 + 0{,}87 \approx 1{,}73$. Cocok.</li></ol>`],
+      ['tan 45° + sin 30°', '3/2', L`<ol><li>Dari tabel: $\tan 45^\circ = 1$ dan $\sin 30^\circ = \tfrac12$.</li><li>Samakan penyebut: $1 = \tfrac22$, jadi $$\tfrac22 + \tfrac12 = \tfrac32$$</li><li>Cek desimal: $1 + 0{,}5 = 1{,}5 = \tfrac32$.</li></ol>`],
+      ['sin 45° × cos 45°', '1/2', L`<ol><li>Dari tabel: $\sin 45^\circ = \cos 45^\circ = \tfrac{\sqrt2}{2}$.</li><li>Kalikan pembilang dengan pembilang, penyebut dengan penyebut: $$\tfrac{\sqrt2 \times \sqrt2}{2 \times 2} = \tfrac{2}{4}$$ (ingat $\sqrt2 \times \sqrt2 = 2$).</li><li>Sederhanakan: $\tfrac24 = \tfrac12$.</li><li>Cek desimal: $0{,}707 \times 0{,}707 \approx 0{,}5$.</li></ol>`],
+      ['tan 30° × tan 60°', '1', L`<ol><li>Dari tabel: $\tan 30^\circ = \tfrac{\sqrt3}{3}$ dan $\tan 60^\circ = \sqrt3$.</li><li>Kalikan: $$\tfrac{\sqrt3}{3} \times \sqrt3 = \tfrac{\sqrt3 \times \sqrt3}{3} = \tfrac33 = 1$$</li><li>Cek: $\tan 30^\circ$ dan $\tan 60^\circ$ saling kebalikan ($\tfrac{1}{\sqrt3}$ dan $\sqrt3$), jadi hasil kalinya pasti 1.</li></ol>`]]);
     return pg(`Nilai dari ${ex} adalah ....`, ans, ['0', '1', '1/2', '√3', '3/2', '√2', '2'].filter(x => x !== ans),
-      L`$$\sin 30^\circ = \cos 60^\circ = \tfrac12, \quad \sin 60^\circ = \cos 30^\circ = \tfrac{\sqrt3}{2}$$ $$\sin 45^\circ = \cos 45^\circ = \tfrac{\sqrt2}{2}, \quad \tan 30^\circ = \tfrac{\sqrt3}{3}, \quad \tan 45^\circ = 1, \quad \tan 60^\circ = \sqrt3$$`, '', b); },
+      L`<p>Sudut istimewa berasal dari dua segitiga: segitiga siku sama kaki (sudut 45°, sisi $1, 1, \sqrt2$) dan setengah segitiga sama sisi (sudut 30° dan 60°, sisi $1, \sqrt3, 2$).</p><p>$$\sin 30^\circ = \cos 60^\circ = \tfrac12, \quad \sin 60^\circ = \cos 30^\circ = \tfrac{\sqrt3}{2}, \quad \sin 45^\circ = \cos 45^\circ = \tfrac{\sqrt2}{2}$$ $$\tan 30^\circ = \tfrac{\sqrt3}{3}, \quad \tan 45^\circ = 1, \quad \tan 60^\circ = \sqrt3$$</p><p>Langkah: ganti setiap fungsi dengan nilainya, lalu hitung seperti pecahan biasa. Ingat $\sqrt a \times \sqrt a = a$.</p>`, '', b); },
   () => { const tr = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25]]), k = pick([1, 2]);
     return pg(`Perhatikan segitiga ABC siku-siku di C berikut (ukuran dalam cm). Nilai sin A adalah ....${svgSiku(tr[0] * k, tr[1] * k, tr[2] * k)}`,
       frac(tr[0], tr[2]), [frac(tr[1], tr[2]), frac(tr[0], tr[1]), `${tr[1]}/${tr[0]}`, `${tr[2]}/${tr[0]}`],
-      L`$$\sin A = \frac{\text{sisi depan } A}{\text{sisi miring}}$$`, '',
-      L`Sisi depan sudut A adalah BC, sisi miring adalah AB: $$\sin A = \frac{BC}{AB} = \frac{${tr[0] * k}}{${tr[2] * k}} = \frac{${tr[0]}}{${tr[2]}}$$`); },
+      L`<p>Pada segitiga siku-siku, setiap sisi diberi nama dilihat dari sudut yang ditanya:</p><p>Sisi miring: berhadapan dengan sudut siku, selalu terpanjang. Sisi depan: berhadapan dengan sudut itu (tidak menyentuhnya). Sisi samping: menyentuh sudut itu, bukan sisi miring.</p><p>$$\sin = \frac{\text{depan}}{\text{miring}}, \quad \cos = \frac{\text{samping}}{\text{miring}}, \quad \tan = \frac{\text{depan}}{\text{samping}}$$ Jembatan keledai: "sin-de-mi, cos-sa-mi, tan-de-sa".</p>`, '',
+      L`<ol><li>Sudut siku di C, jadi sisi miring adalah AB $= ${tr[2] * k}$ (sisi terpanjang, berhadapan dengan C).</li><li>Berdiri di sudut A. Sisi yang tidak menyentuh A adalah BC $= ${tr[0] * k}$. Itu sisi depan.</li><li>Sisi AC $= ${tr[1] * k}$ menyentuh A, jadi itu sisi samping (tidak dipakai untuk sin).</li><li>$$\sin A = \frac{\text{depan}}{\text{miring}} = \frac{BC}{AB} = \frac{${tr[0] * k}}{${tr[2] * k}}${k > 1 ? ` = \\frac{${tr[0]}}{${tr[2]}}` : ''}$$</li><li>Cek: sin selalu kurang dari 1 karena sisi miring terpanjang. $\tfrac{${tr[0]}}{${tr[2]}} < 1$. Cocok. Cek Pythagoras: $${tr[0] * k}^2 + ${tr[1] * k}^2 = ${(tr[2] * k) ** 2} = ${tr[2] * k}^2$.</li></ol>`); },
   () => { const d = pick([8, 10, 12, 15]);
     return pg(`Seorang pengamat berdiri ${d} m dari sebuah menara. Sudut elevasi dari garis pandang matanya ke puncak menara 45°. Tinggi menara di atas garis pandang mata adalah ....`,
-      d, [d * 2, Math.round(d * 1.7), Math.round(d / 2), d + 5], L`$$\text{tinggi} = \text{jarak} \times \tan\theta$$`, ' m',
-      L`$$t = ${d} \times \tan 45^\circ = ${d} \times 1 = ${d}\ \text{m}$$`); },
+      d, [d * 2, Math.round(d * 1.7), Math.round(d / 2), d + 5], L`<p>Sudut elevasi adalah sudut antara garis mendatar (dari mata) dan garis pandang ke atas, ke puncak benda.</p><p>Garis mendatar, tinggi benda di atas mata, dan garis pandang membentuk segitiga siku-siku. Dari sudut pengamat, tinggi adalah sisi depan dan jarak adalah sisi samping, jadi $$\tan\theta = \frac{\text{tinggi}}{\text{jarak}} \;\Rightarrow\; \text{tinggi} = \text{jarak} \times \tan\theta$$</p>`, ' m',
+      L`<ol><li>Gambar segitiga siku-siku: sisi mendatar = jarak ${d} m, sisi tegak = tinggi $t$ yang dicari, sudut di mata = 45°.</li><li>Tinggi berada di depan sudut, jarak di samping sudut, jadi pakai tan: $$\tan 45^\circ = \frac{t}{${d}}$$</li><li>Kalikan kedua ruas dengan ${d}: $$t = ${d} \times \tan 45^\circ = ${d} \times 1 = ${d}\ \text{m}$$</li><li>Cek: pada sudut 45°, segitiganya siku sama kaki, jadi tinggi pasti sama dengan jarak.</li></ol>`); },
 ],
 mcma: [
   () => { const d = pick([10, 12, 15]), t30 = d % 3 ? `(${d}√3)/3` : sq(d / 3, 3);
@@ -262,8 +262,8 @@ mcma: [
       [`Jika sudut elevasi 30° dengan jarak sama, tinggi di atas garis pandang adalah ${s3.v}`, s3.t],
       [`Jarak mata siswa ke puncak tiang adalah ${d}√2 m`, true],
       [`Nilai sin 45° = ${s5.v}`, s5.t]],
-    rumus: L`$$\tan\theta = \frac{\text{tinggi di atas mata}}{\text{jarak}}$$ $$\tan 45^\circ = 1, \quad \tan 30^\circ = \frac{\sqrt3}{3}, \quad \sin 45^\circ = \frac{\sqrt2}{2}$$ Tinggi dari tanah = tinggi di atas mata + tinggi mata.`,
-    bahas: L`$$t = ${d} \tan 45^\circ = ${d}\ \text{m}, \qquad \text{dari tanah} = ${d} + 1{,}5 = ${dsp(d + 1.5)}\ \text{m}$$ $$t_{30^\circ} = ${d} \times \tfrac{\sqrt3}{3}, \qquad \text{jarak mata–puncak} = \sqrt{${d}^2 + ${d}^2} = ${d}\sqrt2$$ $$\sin 45^\circ = \tfrac{\sqrt2}{2}$$` }; },
+    rumus: L`<p>Garis mendatar dari mata, tinggi tiang di atas mata, dan garis pandang membentuk segitiga siku-siku. Tinggi adalah sisi depan sudut elevasi, jarak adalah sisi samping: $$\tan\theta = \frac{\text{tinggi di atas mata}}{\text{jarak}}$$</p><p>Segitiga dimulai dari mata, bukan dari tanah. Karena itu tinggi dari tanah = tinggi di atas mata + tinggi mata.</p><p>Garis pandang adalah sisi miring, dicari dengan Pythagoras. Nilai: $\tan 45^\circ = 1$, $\tan 30^\circ = \tfrac{\sqrt3}{3}$, $\sin 45^\circ = \tfrac{\sqrt2}{2}$.</p>`,
+    bahas: L`<ol><li>A. $t = ${d} \times \tan 45^\circ = ${d} \times 1 = ${d}$ m.</li><li>B. Tambahkan tinggi mata: $${d} + 1{,}5 = ${dsp(d + 1.5).replace(',', '{,}')}$ m. Benar.</li><li>C. Dengan 30°: $t = ${d} \times \tfrac{\sqrt3}{3} = \tfrac{${d}\sqrt3}{3}$${d % 3 ? '' : ` $= ${d / 3}\\sqrt3$`} m. Cek: harus lebih pendek dari ${d} m karena sudutnya lebih landai.</li><li>D. Garis pandang = sisi miring: $\sqrt{${d}^2 + ${d}^2} = \sqrt{2 \times ${d * d}} = ${d}\sqrt2$ m. Benar.</li><li>E. Dari tabel sudut istimewa, $\sin 45^\circ = \tfrac{\sqrt2}{2}$, bukan $\tfrac12$ (itu $\sin 30^\circ$).</li></ol>` }; },
 ]},
 
 garisSudut: { nama: 'Garis & Sudut', rumus: L`Dua garis sejajar dipotong garis lain: $$\text{sehadap, dalam/luar berseberangan: sama besar}$$ $$\text{dalam/luar sepihak: jumlahnya } 180^\circ$$ $$\text{bertolak belakang: sama besar}, \qquad \text{berpelurus: jumlahnya } 180^\circ$$`,
@@ -274,32 +274,32 @@ pg: [
     const l1 = i === 1 ? '' : i === 3 ? L`$\angle A_1 = \angle A_3 = ${a1}^\circ$ (bertolak belakang). ` : L`$\angle A_1 = 180^\circ - ${a}^\circ = ${a1}^\circ$ (berpelurus). `;
     const l3 = j === 1 ? '' : j === 3 ? L` $\angle B_3 = \angle B_1 = ${ans}^\circ$ (bertolak belakang).` : L` $\angle B_${j} = 180^\circ - ${a1}^\circ = ${ans}^\circ$ (berpelurus).`;
     return pg(`Perhatikan gambar. Garis g sejajar garis h. Jika besar ∠A${sub[i - 1]} = ${a}°, besar ∠B${sub[j - 1]} adalah ....${svgSejajar()}`,
-      ans, [180 - ans, 90, 360 - ans, ans + 10, ans - 10], L`Sehadap, berseberangan, dan bertolak belakang: sama besar. Sepihak dan berpelurus: jumlahnya $180^\circ$.`, '°',
-      (nama ? `∠A${sub[i - 1]} dan ∠B${sub[j - 1]} adalah sudut ${nama}. ` : '') + l1 + L`$\angle B_1 = \angle A_1 = ${a1}^\circ$ (sehadap).` + l3); },
+      ans, [180 - ans, 90, 360 - ans, ans + 10, ans - 10], L`<p>Di setiap titik potong ada 4 sudut. Sudut yang bersebelahan pada satu garis lurus berpelurus (jumlah $180^\circ$). Sudut yang berhadapan (bertolak belakang) sama besar.</p><p>Karena g sejajar h, keempat sudut di A punya "kembaran" di B pada posisi yang sama (sehadap) dan besarnya sama. Dari sini muncul aturan: dalam/luar berseberangan sama besar, dalam/luar sepihak jumlahnya $180^\circ$.</p><p>Cara paling aman: bawa sudut yang diketahui ke $\angle A_1$, pindahkan ke $\angle B_1$ (sehadap), lalu ke sudut yang ditanya.</p>`, '°',
+      '<ol>' + (nama ? `<li>∠A${sub[i - 1]} dan ∠B${sub[j - 1]} adalah sudut ${nama}${/sepihak/.test(nama) ? ', jadi jumlahnya 180°' : ', jadi besarnya sama'}. Mari buktikan langkah demi langkah.</li>` : '') + (l1 ? `<li>${l1}</li>` : '') + L`<li>$\angle B_1 = \angle A_1 = ${a1}^\circ$ (sehadap: posisinya sama, kanan atas, di dua garis sejajar).</li>` + (l3 ? `<li>${l3}</li>` : '') + L`<li>Jadi $\angle B_${j} = ${ans}^\circ$. Cek: sudut lancip (kurang dari $90^\circ$) dan tumpul di gambar harus cocok; dua sudut berpelurus selalu satu lancip satu tumpul, jumlahnya $180^\circ$.</li></ol>`); },
   () => { const p = pick([10, 15, 20, 25, 30]), q = pick([10, 15, 20, 25, 30]), x = p + q, ang = 2 * x + p;
     return pg(`Perhatikan gambar. Garis g sejajar garis h. Diketahui ∠A₁ = (2x + ${p})° dan ∠B₁ = (3x − ${q})°. Besar ∠A₁ adalah ....${svgSejajar()}`,
-      ang, [x, 180 - ang, 2 * x, ang + 10, 3 * x], L`Sudut sehadap sama besar. Samakan kedua bentuk aljabar, cari $x$, lalu substitusikan.`, '°',
-      L`∠A₁ dan ∠B₁ sehadap: $$2x + ${p} = 3x - ${q} \Rightarrow x = ${p} + ${q} = ${x}$$ $$\angle A_1 = 2(${x}) + ${p} = ${ang}^\circ$$`); },
+      ang, [x, 180 - ang, 2 * x, ang + 10, 3 * x], L`<p>Sudut sehadap pada dua garis sejajar besarnya sama. Jika besar sudut ditulis dalam bentuk aljabar, kedua bentuk itu dijadikan persamaan.</p><p>Langkah: tulis persamaan, kumpulkan $x$ di satu ruas dan angka di ruas lain, cari $x$, lalu substitusikan ke sudut yang ditanya. Yang ditanya besar sudut, bukan $x$.</p>`, '°',
+      L`<ol><li>∠A₁ dan ∠B₁ sama-sama di kanan atas titik potong, jadi sehadap dan sama besar: $$2x + ${p} = 3x - ${q}$$</li><li>Pindahkan $2x$ ke kanan dan $-${q}$ ke kiri (tanda berubah): $$${p} + ${q} = 3x - 2x$$</li><li>Hitung: $$x = ${x}$$</li><li>Substitusikan ke ∠A₁: $$\angle A_1 = 2(${x}) + ${p} = ${2 * x} + ${p} = ${ang}^\circ$$</li><li>Cek dengan ∠B₁: $3(${x}) - ${q} = ${3 * x} - ${q} = ${ang}^\circ$. Sama, jadi benar. Jawaban ${x} adalah jebakan karena itu nilai $x$.</li></ol>`); },
 ]},
 
 pythagoras: { nama: 'Pythagoras & Kesebangunan', rumus: L`Pythagoras (c sisi miring): $$c^2 = a^2 + b^2$$ Kesebangunan: sisi-sisi yang bersesuaian sebanding $$\frac{AB}{PQ} = \frac{BC}{QR} = \frac{AC}{PR}$$`,
 pg: [
   () => { const tr = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10]]), k = pick([1, 2, 3]), [a, b, c] = tr.map(x => x * k);
     return pg(`Sebuah segitiga siku-siku memiliki sisi tegak ${a} cm dan ${b} cm. Panjang sisi miringnya adalah ....`,
-      c, [a + b, c + 1, c - 1, a * b / 2], L`$$c = \sqrt{a^2 + b^2}$$`, ' cm',
-      L`$$c = \sqrt{${a}^2 + ${b}^2} = \sqrt{${a * a} + ${b * b}} = \sqrt{${c * c}} = ${c}\ \text{cm}$$`); },
+      c, [a + b, c + 1, c - 1, a * b / 2], L`<p>Pada segitiga siku-siku, luas persegi di sisi miring sama dengan jumlah luas persegi di dua sisi tegak: $$c^2 = a^2 + b^2$$</p><p>Mencari sisi miring: kuadratkan, jumlahkan, lalu akarkan. Mencari sisi tegak: kuadratkan, kurangkan (miring dikurangi yang diketahui), lalu akarkan.</p><p>Sisi miring selalu terpanjang, tetapi lebih pendek dari jumlah dua sisi lainnya.</p>`, ' cm',
+      L`<ol><li>Yang dicari sisi miring, jadi jumlahkan kuadrat kedua sisi tegak.</li><li>Kuadratkan: $${a}^2 = ${a * a}$, $${b}^2 = ${b * b}$.</li><li>Jumlahkan: $$c^2 = ${a * a} + ${b * b} = ${c * c}$$</li><li>Akarkan: $c = \sqrt{${c * c}} = ${c}$ cm, karena $${c} \times ${c} = ${c * c}$.</li><li>Cek: ${c} lebih besar dari ${Math.max(a, b)} tetapi lebih kecil dari $${a} + ${b} = ${a + b}$. Cocok.</li></ol>`); },
   () => { const [a, b, c] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15]]);
     return pg(`Sebuah tangga sepanjang ${c} m bersandar pada dinding. Jarak kaki tangga ke dinding ${a} m. Tinggi ujung atas tangga dari lantai adalah ....`,
-      b, [c + a, c - a, c, b + 1], L`$$b = \sqrt{c^2 - a^2}$$`, ' m',
-      L`$$t = \sqrt{${c}^2 - ${a}^2} = \sqrt{${c * c} - ${a * a}} = \sqrt{${b * b}} = ${b}\ \text{m}$$`); },
+      b, [c + a, c - a, c, b + 1], L`<p>Tangga, dinding, dan lantai membentuk segitiga siku-siku (dinding tegak lurus lantai). Tangga adalah sisi miring karena berhadapan dengan sudut siku.</p><p>Dari $c^2 = a^2 + b^2$, sisi tegak dicari dengan $$b = \sqrt{c^2 - a^2}$$ (kurangkan, bukan jumlahkan, karena yang diketahui sisi miring).</p>`, ' m',
+      L`<ol><li>Tangga ${c} m = sisi miring. Jarak kaki ke dinding ${a} m = sisi tegak bawah. Tinggi $t$ = sisi tegak yang dicari.</li><li>Pythagoras: $${a}^2 + t^2 = ${c}^2$, sehingga $$t^2 = ${c * c} - ${a * a} = ${b * b}$$</li><li>Akarkan: $t = \sqrt{${b * b}} = ${b}$ m.</li><li>Cek: $${a}^2 + ${b}^2 = ${a * a} + ${b * b} = ${c * c} = ${c}^2$. Tinggi juga harus lebih pendek dari tangga. Cocok.</li></ol>`); },
   () => { const a = R(3, 8), b = R(3, 9), k = pick([2, 3]);
     return pg(`Segitiga ABC sebangun dengan segitiga PQR. Sisi AB bersesuaian dengan PQ dan BC bersesuaian dengan QR. Jika AB = ${a} cm, BC = ${b} cm, dan PQ = ${k * a} cm, panjang QR adalah ....`,
-      k * b, [b + (k - 1) * a, k * a, a * b, k * b + 2], L`$$\frac{AB}{PQ} = \frac{BC}{QR}$$`, ' cm',
-      L`$$\frac{${a}}{${k * a}} = \frac{${b}}{QR} \Rightarrow QR = \frac{${b} \times ${k * a}}{${a}} = ${k * b}\ \text{cm}$$`); },
+      k * b, [b + (k - 1) * a, k * a, a * b, k * b + 2], L`<p>Dua bangun sebangun jika bentuknya sama tetapi ukurannya bisa berbeda, seperti foto yang diperbesar. Semua sisi diperbesar dengan faktor yang sama.</p><p>Karena itu perbandingan sisi yang bersesuaian sama: $$\frac{AB}{PQ} = \frac{BC}{QR}$$</p><p>Langkah: cari faktor perbesaran dari pasangan sisi yang lengkap, lalu kalikan ke sisi lain. Ingat: dikali, bukan ditambah.</p>`, ' cm',
+      L`<ol><li>Pasangan yang lengkap: AB = ${a} dan PQ = ${k * a}. Faktor perbesaran: $$\frac{${k * a}}{${a}} = ${k}$$</li><li>Semua sisi PQR adalah ${k} kali sisi ABC, termasuk QR: $$QR = ${k} \times BC = ${k} \times ${b} = ${k * b}\ \text{cm}$$</li><li>Cek dengan perbandingan: $\tfrac{${a}}{${k * a}} = \tfrac{${b}}{${k * b}}$, keduanya $= \tfrac1${k}$. Cocok.</li><li>Jebakan: menambah selisih (${k * a} − ${a} = ${(k - 1) * a}) ke ${b} memberi ${b + (k - 1) * a}, itu salah karena sebangun berarti dikali.</li></ol>`); },
   () => { const t = R(1, 3), s = R(2, 4), k = R(3, 8), S = s * k, Tg = t * k;
     return pg(`Sebuah tongkat setinggi ${t} m memiliki bayangan ${s} m. Pada saat yang sama, bayangan sebuah tiang ${S} m. Tinggi tiang tersebut adalah ....`,
-      Tg, [dsp(S * s / t), S, t * S, Tg + 2], L`Benda dan bayangannya sebangun: $$\frac{\text{tinggi}_1}{\text{bayangan}_1} = \frac{\text{tinggi}_2}{\text{bayangan}_2}$$`, ' m',
-      L`$$\frac{${t}}{${s}} = \frac{T}{${S}} \Rightarrow T = \frac{${t} \times ${S}}{${s}} = ${Tg}\ \text{m}$$`); },
+      Tg, [dsp(S * s / t), S, t * S, Tg + 2], L`<p>Pada saat yang sama, sinar matahari datang dengan sudut yang sama. Benda tegak, bayangannya, dan sinar matahari membentuk segitiga siku-siku yang sebangun.</p><p>Jadi perbandingan tinggi dan bayangan selalu sama: $$\frac{\text{tinggi}_1}{\text{bayangan}_1} = \frac{\text{tinggi}_2}{\text{bayangan}_2}$$</p><p>Langkah: tulis perbandingan, lalu kali silang untuk mencari yang belum diketahui.</p>`, ' m',
+      L`<ol><li>Tongkat: tinggi ${t}, bayangan ${s}. Tiang: tinggi $T$, bayangan ${S}.</li><li>Tulis perbandingan (tinggi di atas, bayangan di bawah): $$\frac{${t}}{${s}} = \frac{T}{${S}}$$</li><li>Kali silang: $${s} \times T = ${t} \times ${S} = ${t * S}$.</li><li>Bagi ${s}: $$T = \frac{${t * S}}{${s}} = ${Tg}\ \text{m}$$</li><li>Cek: bayangan tiang ${k} kali bayangan tongkat (${S} : ${s} = ${k}), jadi tinggi tiang juga ${k} kali: $${k} \times ${t} = ${Tg}$. Cocok.</li></ol>`); },
 ],
 bs: [
   () => { const k = pick([4, 5, 6]);
@@ -309,8 +309,8 @@ bs: [
       [`Luas layar adalah ${s2.v} inci²`, s2.t],
       [`Perbandingan panjang : lebar layar adalah ${s3.v}`, s3.t],
       [`Layar berukuran ${s4.v} inci sebangun dengan layar ini`, s4.t]],
-    rumus: L`$$d = \sqrt{p^2 + \ell^2}, \qquad L = p \times \ell$$ Dua persegi panjang sebangun jika $\dfrac{p_1}{p_2} = \dfrac{\ell_1}{\ell_2}$.`,
-    bahas: L`$$d = \sqrt{${4 * k}^2 + ${3 * k}^2} = \sqrt{${25 * k * k}} = ${5 * k}, \qquad L = ${4 * k} \times ${3 * k} = ${12 * k * k}$$ $$${4 * k} : ${3 * k} = 4 : 3, \qquad \frac{${8 * k}}{${4 * k}} = \frac{${6 * k}}{${3 * k}} = 2 \text{ (sebangun)}$$` }; },
+    rumus: L`<p>Diagonal membagi persegi panjang menjadi dua segitiga siku-siku dengan sisi tegak $p$ dan $\ell$. Jadi $$d = \sqrt{p^2 + \ell^2}$$ Luas $L = p \times \ell$.</p><p>Perbandingan disederhanakan dengan membagi keduanya oleh FPB. Dua persegi panjang sebangun jika panjang dan lebar diperbesar dengan faktor yang sama: $\dfrac{p_1}{p_2} = \dfrac{\ell_1}{\ell_2}$.</p>`,
+    bahas: L`<ol><li>Diagonal: $$d = \sqrt{${4 * k}^2 + ${3 * k}^2} = \sqrt{${16 * k * k} + ${9 * k * k}} = \sqrt{${25 * k * k}} = ${5 * k}\ \text{inci}$$</li><li>Luas: $${4 * k} \times ${3 * k} = ${12 * k * k}$ inci².</li><li>Perbandingan: bagi keduanya dengan ${k}: $${4 * k} : ${3 * k} = 4 : 3$.</li><li>Sebangun? Bandingkan faktor panjang dan lebar: $\tfrac{${8 * k}}{${4 * k}} = 2$. Untuk ${8 * k} × ${6 * k}: $\tfrac{${6 * k}}{${3 * k}} = 2$, sama, jadi sebangun. Untuk ${8 * k} × ${5 * k}: $\tfrac{${5 * k}}{${3 * k}} \ne 2$, tidak sebangun.</li><li>Bandingkan setiap pernyataan dengan hasil di atas.</li></ol>` }; },
 ]},
 
 transformasi: { nama: 'Transformasi Geometri', rumus: L`$$\begin{aligned}&\text{refleksi sumbu } x: (x, y) \to (x, -y)\\ &\text{refleksi sumbu } y: (x, y) \to (-x, y)\\ &\text{refleksi titik } O: (x, y) \to (-x, -y)\\ &\text{translasi } T(a, b): (x, y) \to (x+a,\ y+b)\\ &\text{dilatasi } [O, k]: (x, y) \to (kx,\ ky)\end{aligned}$$`,
@@ -318,18 +318,18 @@ pg: [
   () => { const m = shuffle([2, 3, 4, 5, 6]), a = m[0] * pick([1, -1]), b = m[1] * pick([1, -1]), sb = pick(['x', 'y']);
     const ans = sb === 'x' ? pt(a, -b) : pt(-a, b), lain = sb === 'x' ? pt(-a, b) : pt(a, -b);
     return pg(`Bayangan titik ${pt(a, b)} setelah dicerminkan terhadap sumbu ${sb} adalah ....`,
-      ans, [lain, pt(-a, -b), pt(b, a), pt(a, b)], L`$$\text{sumbu } x: (x, y) \to (x, -y), \qquad \text{sumbu } y: (x, y) \to (-x, y)$$`, '',
-      sb === 'x' ? L`Sumbu x: tanda $y$ dibalik. $$(${a}, ${b}) \to (${a}, ${-b})$$` : L`Sumbu y: tanda $x$ dibalik. $$(${a}, ${b}) \to (${-a}, ${b})$$`); },
+      ans, [lain, pt(-a, -b), pt(b, a), pt(a, b)], L`<p>Pencerminan membalik titik ke sisi seberang cermin dengan jarak yang sama ke cermin.</p><p>Cermin sumbu $x$ (mendatar): titik naik/turun ke seberang, jadi hanya $y$ yang berganti tanda. $$(x, y) \to (x, -y)$$</p><p>Cermin sumbu $y$ (tegak): titik pindah kiri/kanan, jadi hanya $x$ yang berganti tanda. $$(x, y) \to (-x, y)$$</p>`, '',
+      sb === 'x' ? L`<ol><li>Cermin sumbu x mendatar, jadi titik berpindah ke atas/bawah. Nilai $x$ tetap.</li><li>Jarak titik ke sumbu x adalah $|${b}| = ${Math.abs(b)}$. Bayangan berjarak sama di seberang, jadi $y$ berganti tanda: $${b} \to ${-b}$.</li><li>Bayangan: $(${a}, ${-b})$.</li><li>Cek: titik tengah antara asal dan bayangan $= (${a}, \tfrac{${b} + (${-b})}{2}) = (${a}, 0)$, tepat di sumbu x.</li></ol>` : L`<ol><li>Cermin sumbu y tegak, jadi titik berpindah ke kiri/kanan. Nilai $y$ tetap.</li><li>Jarak titik ke sumbu y adalah $|${a}| = ${Math.abs(a)}$. Bayangan berjarak sama di seberang, jadi $x$ berganti tanda: $${a} \to ${-a}$.</li><li>Bayangan: $(${-a}, ${b})$.</li><li>Cek: titik tengah antara asal dan bayangan $= (\tfrac{${a} + (${-a})}{2}, ${b}) = (0, ${b})$, tepat di sumbu y.</li></ol>`); },
   () => { const m = shuffle([2, 3, 4, 5, 6]), a = m[0] * pick([1, -1]), b = m[1] * pick([1, -1]), c = m[2] * pick([1, -1]), d = m[3] * pick([1, -1]);
     return pg(`Titik ${pt(a, b)} ditranslasikan oleh ${pt(c, d)}. Bayangannya adalah ....`,
       pt(a + c, b + d), [pt(a - c, b - d), pt(a + c, b - d), pt(a - c, b + d), pt(c - a, d - b)],
-      L`$$T(a, b): (x, y) \to (x + a,\ y + b)$$`, '',
-      L`$$(${a} + (${c}),\ ${b} + (${d})) = (${a + c}, ${b + d})$$`); },
+      L`<p>Translasi adalah pergeseran tanpa memutar atau mengubah ukuran. $T(a, b)$ artinya geser $a$ satuan mendatar (positif ke kanan, negatif ke kiri) dan $b$ satuan tegak (positif ke atas, negatif ke bawah).</p><p>Jadi cukup tambahkan: $$(x, y) \to (x + a,\ y + b)$$ Hati-hati dengan tanda negatif.</p>`, '',
+      L`<ol><li>Geser mendatar: $x$ baru $= ${a} + (${c}) = ${a + c}$ (${c > 0 ? 'ke kanan' : 'ke kiri'} ${Math.abs(c)} satuan).</li><li>Geser tegak: $y$ baru $= ${b} + (${d}) = ${b + d}$ (${d > 0 ? 'ke atas' : 'ke bawah'} ${Math.abs(d)} satuan).</li><li>Bayangan: $(${a + c}, ${b + d})$.</li><li>Cek: kurangkan kembali translasinya, $(${a + c} - (${c}),\ ${b + d} - (${d})) = (${a}, ${b})$, kembali ke titik asal.</li></ol>`); },
   () => { const m = shuffle([2, 3, 4, 5]), a = m[0] * pick([1, -1]), b = m[1] * pick([1, -1]), k = pick([2, 3, -2]);
     return pg(`Bayangan titik ${pt(a, b)} oleh dilatasi pusat O(0, 0) dengan faktor skala ${k} adalah ....`,
       pt(k * a, k * b), [pt(k * a, b), pt(a, k * b), pt(a + k, b + k), pt(-k * a, -k * b)],
-      L`$$[O, k]: (x, y) \to (kx,\ ky)$$`, '',
-      L`$$(${k} \times ${a},\ ${k} \times ${b}) = (${k * a}, ${k * b})$$`); },
+      L`<p>Dilatasi adalah perbesaran atau pengecilan dari titik pusat. Dengan pusat $O(0,0)$ dan faktor $k$, jarak titik ke $O$ menjadi $k$ kali, sehingga kedua koordinat dikali $k$: $$(x, y) \to (kx,\ ky)$$</p><p>$|k| > 1$ memperbesar, $|k| < 1$ memperkecil. $k$ negatif membuat bayangan berada di seberang pusat.</p>`, '',
+      L`<ol><li>Kalikan $x$ dengan faktor skala: $${k} \times (${a}) = ${k * a}$.</li><li>Kalikan $y$ dengan faktor skala: $${k} \times (${b}) = ${k * b}$.</li><li>Bayangan: $(${k * a}, ${k * b})$.</li><li>Cek: bagi kembali dengan ${k}: $(\tfrac{${k * a}}{${k}}, \tfrac{${k * b}}{${k}}) = (${a}, ${b})$. Kedua koordinat harus dikali, bukan hanya salah satu.</li></ol>`); },
 ],
 mcma: [
   () => { const luas = (p, q, r) => Math.abs(p[0] * (q[1] - r[1]) + q[0] * (r[1] - p[1]) + r[0] * (p[1] - q[1])) / 2;
@@ -344,8 +344,8 @@ mcma: [
       [`Dilatasi pusat O faktor 2 memetakan titik C ke ${s3.v}`, s3.t],
       [`Pencerminan terhadap sumbu x memetakan titik B ke ${s4.v}`, s4.t],
       [`Luas segitiga ABC adalah ${dsp(s5.v)} satuan luas`, s5.t]],
-    rumus: L`$$\begin{aligned}&\text{sumbu } x: (x, y) \to (x, -y), \quad \text{sumbu } y: (x, y) \to (-x, y), \quad O: (x, y) \to (-x, -y)\\ &T(a, b): (x, y) \to (x+a,\ y+b), \quad [O, k]: (x, y) \to (kx,\ ky)\end{aligned}$$ Luas segitiga dari koordinat: $$L = \tfrac12\,\bigl|x_A(y_B - y_C) + x_B(y_C - y_A) + x_C(y_A - y_B)\bigr|$$`,
-    bahas: L`A${pt(A[0], A[1])}, B${pt(B[0], B[1])}, C${pt(Cc[0], Cc[1])}, dan A′${pt(...map[k](A))} sehingga bayangan dibuat oleh pencerminan terhadap ${nama[k]}. $$A + (${c}, ${d}) = (${A[0] + c}, ${A[1] + d}), \quad 2C = (${2 * Cc[0]}, ${2 * Cc[1]}), \quad B \xrightarrow{\text{sumbu } x} (${B[0]}, ${-B[1]})$$ $$L = \tfrac12\,\bigl|${A[0]}(${B[1]} - ${Cc[1]}) + ${B[0]}(${Cc[1]} - ${A[1]}) + ${Cc[0]}(${A[1]} - ${B[1]})\bigr| = ${dsp(Ls).replace(',', '{,}')}$$` }; },
+    rumus: L`<p>Pencerminan: sumbu $x$ membalik tanda $y$, sumbu $y$ membalik tanda $x$, titik asal $O$ membalik keduanya. Cara mengenali dari gambar: bandingkan tanda koordinat titik asal dan bayangannya.</p><p>Translasi $T(a, b)$: tambahkan $a$ ke $x$ dan $b$ ke $y$. Dilatasi $[O, k]$: kalikan kedua koordinat dengan $k$.</p><p>Luas segitiga dari koordinat (rumus "tali sepatu"): $$L = \tfrac12\,\bigl|x_A(y_B - y_C) + x_B(y_C - y_A) + x_C(y_A - y_B)\bigr|$$ Tanda mutlak dipakai karena luas tidak boleh negatif.</p>`,
+    bahas: L`<ol><li>Baca koordinat dari gambar: A${pt(A[0], A[1])}, B${pt(B[0], B[1])}, C${pt(Cc[0], Cc[1])}, dan A′${pt(...map[k](A))}.</li><li>Pernyataan 1: dari A ke A′, ${k === 'x' ? 'hanya tanda $y$ yang berubah, jadi cermin sumbu x' : k === 'y' ? 'hanya tanda $x$ yang berubah, jadi cermin sumbu y' : 'tanda $x$ dan $y$ sama-sama berubah, jadi cermin titik asal O'}. Pernyataan benar hanya jika menyebut ${nama[k]}.</li><li>Pernyataan 2: $A + (${c}, ${d}) = (${A[0]} + (${c}),\ ${A[1]} + (${d})) = (${A[0] + c}, ${A[1] + d})$.</li><li>Pernyataan 3: $2 \times C = (2 \times ${Cc[0]},\ 2 \times ${Cc[1]}) = (${2 * Cc[0]}, ${2 * Cc[1]})$. Kedua koordinat dikali.</li><li>Pernyataan 4: cermin sumbu x membalik tanda $y$: $B \to (${B[0]}, ${-B[1]})$.</li><li>Pernyataan 5: $$L = \tfrac12\,\bigl|${A[0]}(${B[1]} - ${Cc[1]}) + ${B[0]}(${Cc[1]} - ${A[1]}) + ${Cc[0]}(${A[1]} - ${B[1]})\bigr|$$ $$= \tfrac12\,\bigl|${A[0] * (B[1] - Cc[1])} + (${B[0] * (Cc[1] - A[1])}) + (${Cc[0] * (A[1] - B[1])})\bigr| = \tfrac12 \times ${2 * Ls} = ${dsp(Ls).replace(',', '{,}')}$$</li></ol>` }; },
 ]},
 
 statistika: { nama: 'Statistika', rumus: L`$$\bar{x} = \frac{\sum x_i}{n}, \qquad \bar{x} = \frac{\sum f_i x_i}{\sum f_i}$$ Median: nilai tengah data terurut. Modus: nilai paling sering muncul. $$J = x_{\text{maks}} - x_{\text{min}}, \qquad SR = \frac{\sum |x_i - \bar{x}|}{n}$$ Diagram lingkaran: $$\text{sudut juring} = \frac{\text{persen}}{100} \times 360^\circ$$`,
@@ -353,33 +353,34 @@ pg: [
   () => { const d = []; while (d.length < 5) { const v = R(3, 15); if (!d.includes(v)) d.push(v); }
     const s = [...d].sort((x, y) => x - y);
     return pg(`Median dari data ${d.join(', ')} adalah ....`, s[2], [s[1], s[3], s[0], s[4]],
-      L`Urutkan data. Untuk $n$ ganjil: $$Me = x_{\frac{n+1}{2}}$$`, '',
-      L`Data terurut: ${s.join(', ')}. $$n = 5 \Rightarrow Me = x_3 = ${s[2]}$$`); },
+      L`<p>Median adalah nilai yang tepat di tengah setelah data diurutkan dari kecil ke besar. Setengah data di bawahnya, setengah di atasnya.</p><p>Wajib diurutkan dahulu; nilai tengah pada data yang belum urut bukan median.</p><p>Untuk $n$ ganjil, posisinya $$Me = x_{\frac{n+1}{2}}$$ Untuk $n$ genap, rata-rata dua data tengah.</p>`, '',
+      L`<ol><li>Urutkan dari kecil ke besar: ${s.join(', ')}.</li><li>Banyak data $n = 5$ (ganjil), jadi posisi tengah $= \tfrac{5 + 1}{2} = 3$.</li><li>Data ke-3 adalah $${s[2]}$. Jadi $Me = ${s[2]}$.</li><li>Cek: di bawah ${s[2]} ada 2 data (${s[0]}, ${s[1]}), di atasnya ada 2 data (${s[3]}, ${s[4]}). Seimbang.</li></ol>`); },
   () => { const v = shuffle([3, 4, 5, 6, 7, 8, 9]), m = v[0], d = shuffle([m, m, m, v[1], v[2], v[3]]);
     return pg(`Modus dari data ${d.join(', ')} adalah ....`, m, [v[1], v[2], v[3], v[4]],
-      'Modus = nilai yang paling sering muncul.', '', `Nilai ${m} muncul 3 kali, nilai lain hanya 1 kali. Jadi modusnya ${m}.`); },
+      '<p>Modus adalah nilai yang paling sering muncul (frekuensi terbesar).</p><p>Langkah: hitung berapa kali setiap nilai muncul, lalu pilih yang paling banyak. Modus adalah nilai datanya, bukan banyak kemunculannya.</p>', '',
+      `<ol><li>Hitung kemunculan setiap nilai: ${[...new Set(d)].map(x => `${x} muncul ${d.filter(y => y === x).length} kali`).join(', ')}.</li><li>Kemunculan terbanyak adalah 3 kali, milik nilai ${m}.</li><li>Jadi modusnya ${m} (bukan 3, karena 3 adalah frekuensinya).</li><li>Cek: urutkan data, ${[...d].sort((x, y) => x - y).join(', ')}. Nilai ${m} terlihat berderet paling panjang.</li></ol>`); },
   () => { const d = []; while (d.length < 5) { const v = R(4, 25); if (!d.includes(v)) d.push(v); }
     const mx = Math.max(...d), mn = Math.min(...d);
     return pg(`Jangkauan dari data ${d.join(', ')} adalah ....`, mx - mn, [mx, mn, mx + mn, [...d].sort((a, b) => a - b)[2]],
-      L`$$J = x_{\text{maks}} - x_{\text{min}}$$`, '', L`$$J = ${mx} - ${mn} = ${mx - mn}$$`); },
+      L`<p>Jangkauan mengukur seberapa lebar sebaran data, yaitu jarak dari nilai terkecil ke terbesar: $$J = x_{\text{maks}} - x_{\text{min}}$$</p><p>Langkah: cari nilai terbesar dan terkecil (urutkan jika perlu), lalu kurangkan.</p>`, '', L`<ol><li>Urutkan: ${[...d].sort((a, b) => a - b).join(', ')}.</li><li>Nilai terbesar $= ${mx}$, nilai terkecil $= ${mn}$.</li><li>$$J = ${mx} - ${mn} = ${mx - mn}$$</li><li>Cek: $${mn} + ${mx - mn} = ${mx}$, kembali ke nilai terbesar.</li></ol>`); },
   () => { let d, M, e; do { d = [R(4, 9), R(4, 9), R(4, 9), R(4, 9)]; M = R(6, 9); e = 5 * M - d.reduce((x, y) => x + y); } while (e < 1 || e > 20);
     d.push(e); d = shuffle(d);
     return pg(`Rata-rata dari data ${d.join(', ')} adalah ....`, M, [M + 1, M - 1, Math.max(...d), 5 * M],
-      L`$$\bar{x} = \frac{\sum x_i}{n}$$`, '', L`$$\bar{x} = \frac{${d.join(' + ')}}{5} = \frac{${5 * M}}{5} = ${M}$$`); },
+      L`<p>Rata-rata adalah nilai yang didapat jika total semua data dibagi rata ke setiap data: $$\bar{x} = \frac{\sum x_i}{n} = \frac{\text{jumlah semua data}}{\text{banyak data}}$$</p><p>Rata-rata selalu berada di antara nilai terkecil dan terbesar.</p>`, '', L`<ol><li>Jumlahkan semua data: $$${d.join(' + ')} = ${5 * M}$$</li><li>Banyak data $n = 5$.</li><li>Bagi: $$\bar{x} = \frac{${5 * M}}{5} = ${M}$$</li><li>Cek: selisih tiap data terhadap ${M} adalah ${d.map(x => x - M).join(', ')}; jumlahnya $0$. Rata-rata selalu membuat selisih positif dan negatif saling menghapus.</li></ol>`); },
   () => { let d, M, sum; do { M = R(5, 9); d = [R(2, 12), R(2, 12), R(2, 12), R(2, 12)]; const e = 5 * M - d.reduce((x, y) => x + y); d.push(e); sum = d.reduce((a, x) => a + Math.abs(x - M), 0); } while (d[4] < 1 || d[4] > 15 || !sum);
     d = shuffle(d);
     return pg(`Simpangan rata-rata dari data ${d.join(', ')} adalah ....`, dsp(sum / 5), [dsp(sum), dsp(sum / 4), dsp(sum / 5 + 1), String(M), dsp(sum / 10)],
-      L`$$SR = \frac{\sum |x_i - \bar{x}|}{n}$$ Hitung rata-rata dahulu.`, '',
-      L`$$\bar{x} = \frac{${5 * M}}{5} = ${M}$$ $$SR = \frac{${d.map(x => `|${x} - ${M}|`).join(' + ')}}{5} = \frac{${sum}}{5} = ${dsp(sum / 5).replace(',', '{,}')}$$`); },
+      L`<p>Simpangan rata-rata mengukur rata-rata jarak setiap data dari rata-ratanya. Semakin besar, semakin menyebar datanya.</p><p>Jarak memakai nilai mutlak $|\ |$ (selalu positif). Tanpa mutlak, selisih positif dan negatif saling menghapus dan hasilnya selalu 0. $$SR = \frac{\sum |x_i - \bar{x}|}{n}$$</p><p>Langkah: hitung rata-rata, hitung jarak tiap data ke rata-rata, jumlahkan, lalu bagi banyak data.</p>`, '',
+      L`<ol><li>Rata-rata: $$\bar{x} = \frac{${d.join(' + ')}}{5} = \frac{${5 * M}}{5} = ${M}$$</li><li>Jarak tiap data ke ${M} (selalu positif): ${d.map(x => `$|${x} - ${M}| = ${Math.abs(x - M)}$`).join(', ')}.</li><li>Jumlahkan: $${d.map(x => Math.abs(x - M)).join(' + ')} = ${sum}$.</li><li>Bagi banyak data: $$SR = \frac{${sum}}{5} = ${dsp(sum / 5).replace(',', '{,}')}$$</li><li>Cek: tanpa nilai mutlak, $${d.map(x => `(${x - M})`).join(' + ')} = 0$. Itu sebabnya mutlak wajib.</li></ol>`); },
   () => { const lab = ['HTML', 'CSS', 'JS', 'PHP', 'Python'], val = lab.map(() => R(3, 12)), tot = val.reduce((a, b) => a + b), mx = Math.max(...val), mn = Math.min(...val);
     const fig = svgBatang(lab, val, 'bahasa pemrograman favorit');
     return pick([
       () => pg(`Diagram batang berikut menunjukkan bahasa pemrograman favorit siswa kelas XII RPL. Jumlah seluruh siswa yang disurvei adalah ....${fig}`,
-        tot, [tot - 2, tot + 3, mx * 5, tot + mx], 'Jumlahkan tinggi semua batang (baca nilainya pada sumbu tegak).', ' siswa',
-        L`$$${val.join(' + ')} = ${tot}$$`),
+        tot, [tot - 2, tot + 3, mx * 5, tot + mx], '<p>Pada diagram batang, tinggi tiap batang menunjukkan banyak data kategori itu. Baca tingginya dengan menarik garis mendatar dari ujung batang ke sumbu tegak.</p><p>Jumlah seluruh data = jumlah tinggi semua batang.</p>', ' siswa',
+        L`<ol><li>Baca tiap batang: ${lab.map((l, i) => `${l} = ${val[i]}`).join(', ')}.</li><li>Jumlahkan: $$${val.join(' + ')} = ${tot}$$</li><li>Cek: jumlahkan dalam urutan lain, misalnya dari kanan, hasilnya tetap ${tot}.</li></ol>`),
       () => pg(`Diagram batang berikut menunjukkan bahasa pemrograman favorit siswa kelas XII RPL. Selisih banyak siswa pada bahasa terbanyak dan tersedikit adalah ....${fig}`,
-        mx - mn, [mx, mn, mx + mn, mx - mn + 2], 'Cari batang tertinggi dan terendah, lalu kurangkan.', ' siswa',
-        L`$$${mx} - ${mn} = ${mx - mn}$$`),
+        mx - mn, [mx, mn, mx + mn, mx - mn + 2], '<p>Pada diagram batang, tinggi tiap batang menunjukkan banyak data kategori itu.</p><p>Selisih berarti pengurangan: nilai batang tertinggi dikurangi nilai batang terendah.</p>', ' siswa',
+        L`<ol><li>Baca tiap batang: ${lab.map((l, i) => `${l} = ${val[i]}`).join(', ')}.</li><li>Batang tertinggi $= ${mx}$, terendah $= ${mn}$.</li><li>Selisih: $$${mx} - ${mn} = ${mx - mn}$$</li><li>Cek: $${mn} + ${mx - mn} = ${mx}$.</li></ol>`),
     ])(); },
 ],
 bs: [
@@ -396,8 +397,8 @@ bs: [
       [`Median data tersebut adalah ${dsp(s2.v)}`, s2.t],
       [`Modus data tersebut adalah ${s3.v}`, s3.t],
       [`Jangkauan data tersebut adalah ${s4.v}`, s4.t]],
-    rumus: L`$$\bar{x} = \frac{\sum f_i x_i}{\sum f_i}$$ Median = nilai tengah data terurut, modus = frekuensi terbesar, $$J = x_{\text{maks}} - x_{\text{min}}$$`,
-    bahas: L`$$\bar{x} = \frac{${nilai.map((v, i) => `${v} \cdot ${f[i]}`).join(' + ')}}{${n}} = \frac{${total}}{${n}} \approx ${dsp(mean).replace(',', '{,}')}$$ $n = ${n}$, jadi ${posMed} $= ${dsp(med).replace(',', '{,}')}$. Modus $= ${mod}$ (frekuensi ${f[im]}). $J = 95 - 60 = 35$.` }; },
+    rumus: L`<p>Frekuensi $f$ = banyak siswa yang mendapat nilai itu. Nilai 80 dengan frekuensi 3 artinya ada tiga angka 80 di data.</p><p>Rata-rata data berfrekuensi: kalikan nilai dengan frekuensinya (supaya terhitung sebanyak kemunculannya), jumlahkan, lalu bagi total frekuensi. $$\bar{x} = \frac{\sum f_i x_i}{\sum f_i}$$</p><p>Median: posisi tengah $\tfrac{n+1}{2}$; cari posisi itu dengan menjumlahkan frekuensi dari kiri. Modus: nilai dengan frekuensi terbesar. Jangkauan: nilai terbesar dikurangi terkecil.</p>`,
+    bahas: L`<ol><li>Banyak data: $n = ${f.join(' + ')} = ${n}$.</li><li>Rata-rata: $$\bar{x} = \frac{${nilai.map((v, i) => `${v} \cdot ${f[i]}`).join(' + ')}}{${n}} = \frac{${total}}{${n}} \approx ${dsp(mean).replace(',', '{,}')}$$ Bandingkan dengan ${X}: rata-rata ${off === -1 ? 'lebih' : 'tidak lebih'} dari ${X}.</li><li>Median: frekuensi kumulatif ${nilai.map((v, i) => `${v}→${f.slice(0, i + 1).reduce((a, b) => a + b)}`).join(', ')}. ${posMed} $= ${dsp(med).replace(',', '{,}')}$.</li><li>Modus: frekuensi terbesar adalah ${f[im]}, milik nilai ${mod}.</li><li>Jangkauan: $95 - 60 = 35$.</li></ol>` }; },
   () => { const N = pick([200, 400, 600]), a = pick([50, 55, 60]), b = pick([20, 25]), c = 100 - a - b;
     const s1 = tw(N * a / 100, N * a / 100 + 10), s2 = tw(3.6 * b, 3.6 * b + 18), s3 = tw(N * c / 100, N * c / 100 + 10), s4 = tw(N * (a - b) / 100, N * (a - b) / 100 + 20);
     return { type: 'bs', q: `Sebuah aplikasi kasir dipakai oleh ${N} pengguna. Diagram lingkaran berikut menunjukkan perangkat yang mereka gunakan.${svgLingkaran(['Android', 'iOS', 'Web'], [a, b, c])}`, st: [
@@ -405,8 +406,8 @@ bs: [
       [`Besar sudut juring pengguna iOS adalah ${s2.v}°`, s2.t],
       [`Pengguna Web berjumlah ${s3.v} orang`, s3.t],
       [`Selisih pengguna Android dan iOS adalah ${s4.v} orang`, s4.t]],
-    rumus: L`$$\text{jumlah} = \frac{\text{persen}}{100} \times N, \qquad \text{sudut juring} = \frac{\text{persen}}{100} \times 360^\circ$$`,
-    bahas: L`$$\text{Android} = \tfrac{${a}}{100} \times ${N} = ${N * a / 100}, \quad \text{iOS} = \tfrac{${b}}{100} \times ${N} = ${N * b / 100}, \quad \text{Web} = \tfrac{${c}}{100} \times ${N} = ${N * c / 100}$$ $$\text{sudut iOS} = \tfrac{${b}}{100} \times 360^\circ = ${3.6 * b}^\circ, \qquad \text{selisih} = ${N * a / 100} - ${N * b / 100} = ${N * (a - b) / 100}$$` }; },
+    rumus: L`<p>Diagram lingkaran menunjukkan bagian dari keseluruhan. Seluruh lingkaran = 100% = semua data = $360^\circ$.</p><p>Banyak data suatu bagian: $$\text{jumlah} = \frac{\text{persen}}{100} \times N$$ Besar sudut juringnya: $$\text{sudut} = \frac{\text{persen}}{100} \times 360^\circ$$ (setiap 1% sama dengan $3{,}6^\circ$).</p>`,
+    bahas: L`<ol><li>Persen semua bagian: Android ${a}%, iOS ${b}%, Web ${c}%. Cek: jumlahnya 100%.</li><li>Android: $\tfrac{${a}}{100} \times ${N} = ${N * a / 100}$ orang.</li><li>Sudut iOS: $\tfrac{${b}}{100} \times 360^\circ = ${b} \times 3{,}6^\circ = ${3.6 * b}^\circ$.</li><li>Web: $\tfrac{${c}}{100} \times ${N} = ${N * c / 100}$ orang.</li><li>Selisih Android dan iOS: iOS $= \tfrac{${b}}{100} \times ${N} = ${N * b / 100}$, jadi $${N * a / 100} - ${N * b / 100} = ${N * (a - b) / 100}$ orang. Cek: $(${a} - ${b})\% \times ${N} = ${N * (a - b) / 100}$.</li></ol>` }; },
 ],
 mcma: [
   () => { const hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
@@ -419,26 +420,26 @@ mcma: [
       [`Rata-rata pengunjung per hari adalah ${s3.v}`, s3.t],
       [`Median data jumlah pengunjung adalah ${s4.v}`, s4.t],
       [`Kenaikan terbesar dari satu hari ke hari berikutnya adalah ${s5.v} pengunjung`, s5.t]],
-    rumus: L`$$\bar{x} = \frac{\sum x_i}{n}$$ Median: urutkan dahulu, ambil nilai tengah. Kenaikan = nilai hari ini $-$ nilai hari sebelumnya.`,
-    bahas: L`Data: ${v.join(', ')}. Terbanyak ${Math.max(...v)} (hari ${hari[iMax]}). $$\sum = ${S}, \qquad \bar{x} = \frac{${S}}{5} = ${S / 5}$$ Terurut: ${[...v].sort((a, b) => a - b).join(', ')}, median $= ${med}$. Kenaikan: ${v.slice(1).map((x, i) => x - v[i]).join(', ')}, terbesar $${naik}$.` }; },
+    rumus: L`<p>Diagram garis menunjukkan perubahan dari waktu ke waktu. Baca nilai tiap titik; garis naik berarti bertambah, turun berarti berkurang.</p><p>Rata-rata $\bar{x} = \tfrac{\text{jumlah}}{n}$. Median: urutkan dahulu, ambil nilai tengah.</p><p>Kenaikan = nilai hari ini dikurangi hari sebelumnya. Hasil negatif berarti penurunan, bukan kenaikan.</p>`,
+    bahas: L`<ol><li>Baca data: ${hari.map((h, i) => `${h} ${v[i]}`).join(', ')}.</li><li>Terbanyak: titik tertinggi ${Math.max(...v)}, pada hari ${hari[iMax]}.</li><li>Total: $${v.join(' + ')} = ${S}$.</li><li>Rata-rata: $\tfrac{${S}}{5} = ${S / 5}$.</li><li>Median: urutkan ${[...v].sort((a, b) => a - b).join(', ')}; data ke-3 $= ${med}$.</li><li>Perubahan harian: ${v.slice(1).map((x, i) => `${hari[i].slice(0, 3)}→${hari[i + 1].slice(0, 3)}: ${x - v[i]}`).join(', ')}. Kenaikan terbesar $= ${naik}$.</li></ol>` }; },
 ]},
 
 peluang: { nama: 'Peluang & Pencacahan', rumus: L`$$P(A) = \frac{n(A)}{n(S)}, \qquad P(A^c) = 1 - P(A)$$ Permutasi (urutan diperhatikan): $$P(n,k) = \frac{n!}{(n-k)!}$$ Kombinasi (urutan tidak diperhatikan): $$C(n,k) = \frac{n!}{k!\,(n-k)!}$$`,
 pg: [
   () => { const n = R(5, 10), k = pick([2, 3]), a = C(n, k);
     return pg(`Dari ${n} siswa akan dipilih ${k} orang untuk menjadi pengurus tanpa memperhatikan urutan. Banyak cara memilih adalah ....`,
-      a, [a * fact(k), n * k, n + k, n], L`Urutan tidak diperhatikan: $$C(n,k) = \frac{n!}{k!\,(n-k)!}$$`, ' cara',
-      L`$$C(${n}, ${k}) = \frac{${n}!}{${k}!\,${n - k}!} = ${a}$$`); },
+      a, [a * fact(k), n * k, n + k, n], L`<p>Kombinasi dipakai jika urutan tidak penting: memilih Ani lalu Budi sama dengan memilih Budi lalu Ani (sama-sama tim yang sama).</p><p>Hitung dahulu susunan berurutan $n \times (n-1) \times \cdots$ sebanyak $k$ faktor, lalu bagi $k!$ karena setiap kelompok terhitung $k!$ kali dalam urutan berbeda. $$C(n,k) = \frac{n!}{k!\,(n-k)!}$$</p>`, ' cara',
+      L`<ol><li>Pengurus dipilih "tanpa memperhatikan urutan", jadi pakai kombinasi.</li><li>Jika urutan diperhatikan: $${Array.from({ length: k }, (_, i) => n - i).join(' \\times ')} = ${a * fact(k)}$.</li><li>Setiap kelompok ${k} orang terhitung $${k}! = ${fact(k)}$ kali (urutannya berbeda-beda), jadi bagi: $$C(${n}, ${k}) = \frac{${a * fact(k)}}{${fact(k)}} = ${a}$$</li><li>Cek dengan rumus: $\frac{${n}!}{${k}!\,${n - k}!} = ${a}$. Jawaban ${a * fact(k)} adalah jebakan (itu permutasi).</li></ol>`); },
   () => { const s = R(4, 10), w = 6 - Math.abs(7 - s), pas = [];
     for (let a = 1; a <= 6; a++) if (s - a >= 1 && s - a <= 6) pas.push(`(${a},${s - a})`);
     return pg(`Dua buah dadu dilempar satu kali. Peluang muncul mata dadu berjumlah ${s} adalah ....`,
       frac(w, 36), [frac(w + 1, 36), frac(w - 1, 36), '1/36', '1/4', '2/9'],
-      L`$$P(A) = \frac{n(A)}{n(S)}, \qquad n(S) = 6 \times 6 = 36$$`, '',
-      L`Pasangan berjumlah ${s}: ${pas.join(', ')}, jadi $n(A) = ${w}$. $$P = \frac{${w}}{36} = ${frac(w, 36).replace(/(\d+)\/(\d+)/, '\\frac{$1}{$2}')}$$`); },
+      L`<p>Peluang = banyak hasil yang diinginkan dibagi banyak semua hasil yang mungkin (asalkan setiap hasil sama mungkin): $$P(A) = \frac{n(A)}{n(S)}$$</p><p>Dua dadu: dadu pertama 6 kemungkinan, dadu kedua 6 kemungkinan, jadi $n(S) = 6 \times 6 = 36$ pasangan. (1,2) dan (2,1) dihitung berbeda karena dadunya berbeda.</p><p>Langkah: daftar semua pasangan yang memenuhi, hitung, bagi 36, sederhanakan.</p>`, '',
+      L`<ol><li>Ruang sampel: $n(S) = 6 \times 6 = 36$.</li><li>Daftar pasangan (dadu 1, dadu 2) berjumlah ${s}: ${pas.join(', ')}.</li><li>Banyaknya $n(A) = ${w}$.</li><li>$$P = \frac{${w}}{36}${frac(w, 36) === `${w}/36` ? '' : ` = ${frac(w, 36).replace(/(\d+)\/(\d+)/, '\\frac{$1}{$2}')}`}$$</li><li>Cek: setiap pasangan dalam daftar memang berjumlah ${s}, dan peluang ada di antara 0 dan 1.</li></ol>`); },
   () => { const n = R(4, 7), k = R(2, 3), P = fact(n) / fact(n - k);
     return pg(`Banyak susunan ${k} pengurus (ketua, sekretaris${k === 3 ? ', bendahara' : ''}) yang dipilih dari ${n} calon adalah ....`,
-      P, [C(n, k), n * k, fact(n), Math.pow(n, k)], L`Urutan diperhatikan: $$P(n,k) = \frac{n!}{(n-k)!}$$`, ' cara',
-      L`Jabatan berbeda berarti urutan diperhatikan. $$P(${n}, ${k}) = \frac{${n}!}{${n - k}!} = ${P}$$`); },
+      P, [C(n, k), n * k, fact(n), Math.pow(n, k)], L`<p>Permutasi dipakai jika urutan penting: Ani ketua dan Budi sekretaris berbeda dengan Budi ketua dan Ani sekretaris.</p><p>Isi posisi satu per satu (aturan perkalian): posisi pertama $n$ pilihan, kedua $n-1$ (satu orang sudah terpakai), dan seterusnya sebanyak $k$ posisi. $$P(n,k) = n \times (n-1) \times \cdots = \frac{n!}{(n-k)!}$$</p>`, ' cara',
+      L`<ol><li>Jabatan berbeda (ketua ≠ sekretaris), jadi urutan diperhatikan: permutasi.</li><li>Ketua: ${n} pilihan. Sekretaris: ${n - 1} pilihan (ketua tidak boleh merangkap).${k === 3 ? ` Bendahara: ${n - 2} pilihan.` : ''}</li><li>Kalikan: $$${Array.from({ length: k }, (_, i) => n - i).join(' \\times ')} = ${P}$$</li><li>Cek dengan rumus: $\frac{${n}!}{${n - k}!} = \frac{${fact(n)}}{${fact(n - k)}} = ${P}$. Jawaban ${C(n, k)} adalah jebakan (itu kombinasi, urutan diabaikan).</li></ol>`); },
 ],
 bs: [
   () => { const h = R(2, 6), c = R(2, 6), j = R(2, 6), t = h + c + j;
@@ -448,8 +449,8 @@ bs: [
       [`Peluang terambil kartu HTML adalah ${s2.v}`, s2.t],
       [`Peluang terambil kartu yang bukan CSS adalah ${s3.v}`, s3.t],
       [`Jika 2 kartu diambil sekaligus, banyak kemungkinan pengambilan adalah ${s4.v} cara`, s4.t]],
-    rumus: L`$$P(A) = \frac{n(A)}{n(S)}, \qquad P(A^c) = 1 - P(A)$$ Mengambil 2 sekaligus: $$C(n, 2) = \frac{n\,(n-1)}{2}$$`,
-    bahas: L`$$P(\text{JS}) = \frac{${j}}{${t}}, \quad P(\text{HTML}) = \frac{${h}}{${t}}, \quad P(\text{bukan CSS}) = 1 - \frac{${c}}{${t}} = \frac{${t - c}}{${t}}$$ $$C(${t}, 2) = \frac{${t} \times ${t - 1}}{2} = ${C(t, 2)}$$ (Pecahan disederhanakan bila bisa.)` }; },
+    rumus: L`<p>Peluang = banyak kartu yang diinginkan dibagi banyak semua kartu: $P(A) = \frac{n(A)}{n(S)}$.</p><p>Peluang "bukan A" (komplemen): semua peluang berjumlah 1, jadi $P(A^c) = 1 - P(A)$.</p><p>Mengambil 2 kartu sekaligus berarti urutan tidak penting (kombinasi): $$C(n, 2) = \frac{n\,(n-1)}{2}$$ dibagi 2 karena pasangan (A, B) dan (B, A) sama.</p>`,
+    bahas: L`<ol><li>Total kartu: $n(S) = ${h} + ${c} + ${j} = ${t}$.</li><li>JavaScript: $P = \frac{${j}}{${t}}$${frac(j, t) === `${j}/${t}` ? '' : ` = ${frac(j, t).replace(/(\d+)\/(\d+)/, '\\frac{$1}{$2}')}`}.</li><li>HTML: $P = \frac{${h}}{${t}}$${frac(h, t) === `${h}/${t}` ? '' : ` = ${frac(h, t).replace(/(\d+)\/(\d+)/, '\\frac{$1}{$2}')}`}.</li><li>Bukan CSS: $1 - \frac{${c}}{${t}} = \frac{${t - c}}{${t}}$. Cek: kartu bukan CSS = HTML + JS $= ${h} + ${j} = ${t - c}$. Cocok.</li><li>Ambil 2 sekaligus: $$C(${t}, 2) = \frac{${t} \times ${t - 1}}{2} = ${C(t, 2)}$$ Angka ${t * (t - 1)} adalah jebakan (belum dibagi 2).</li></ol>` }; },
 ],
 mcma: [
   () => { const n = R(4, 6), d = R(5, 8);
@@ -460,8 +461,8 @@ mcma: [
       [`Banyak cara memilih 2 ketua tim dari ${d} anggota adalah ${s3.v}`, s3.t],
       [`Banyak susunan 3 huruf berbeda dari A, B, C, D (urutan diperhatikan) adalah ${s4.v}`, s4.t],
       [`Banyak susunan huruf dari kata WEB adalah 6`, true]],
-    rumus: L`$$n! = n \times (n-1) \times \cdots \times 1$$ $$P(n,k) = \frac{n!}{(n-k)!}, \qquad C(n,k) = \frac{n!}{k!\,(n-k)!}$$ Susunan semua $n$ huruf berbeda $= n!$`,
-    bahas: L`$$${n}! = ${fact(n)}, \quad P(10, 3) = 10 \cdot 9 \cdot 8 = 720, \quad C(${d}, 2) = ${C(d, 2)}$$ $$P(4, 3) = 4 \cdot 3 \cdot 2 = 24, \qquad 3! = 6$$` }; },
+    rumus: L`<p>Faktorial $n! = n \times (n-1) \times \cdots \times 1$ adalah banyak cara menyusun $n$ benda berbeda.</p><p>Aturan perkalian: jika langkah pertama punya $a$ pilihan dan langkah kedua $b$ pilihan, totalnya $a \times b$.</p><p>Urutan penting (PIN, susunan huruf, jabatan berbeda): permutasi $P(n,k) = \frac{n!}{(n-k)!}$. Urutan tidak penting (memilih anggota): kombinasi $C(n,k) = \frac{n!}{k!\,(n-k)!}$.</p>`,
+    bahas: L`<ol><li>A. $${n}! = ${Array.from({ length: n }, (_, i) => n - i).join(' \\times ')} = ${fmt(fact(n))}$.</li><li>B. PIN: digit 1 ada 10 pilihan, digit 2 tinggal 9, digit 3 tinggal 8. $10 \times 9 \times 8 = 720$. Benar.</li><li>C. Dua ketua tim setara, urutan tidak penting: $C(${d}, 2) = \frac{${d} \times ${d - 1}}{2} = ${C(d, 2)}$.</li><li>D. Urutan diperhatikan: $4 \times 3 \times 2 = 24$.</li><li>E. Huruf W, E, B berbeda semua: $3! = 3 \times 2 \times 1 = 6$. Benar.</li></ol>` }; },
 ]},
 
 pecahan: { nama: 'Pecahan, Persen & Aritmetika Sosial', rumus: L`$$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$ Persen: $$p\% \times H = \frac{p}{100} \times H$$ Bunga tunggal: $$B = M \times \frac{p}{100} \times t$$`,
@@ -470,12 +471,12 @@ pg: [
     const ans = frac(a * d + c * b, b * d);
     return pg(`Hasil dari ${a}/${b} + ${c}/${d} adalah ....`, ans,
       [`${a + c}/${b + d}`, `${a * c}/${b * d}`, `${a + c}/${b * d}`, `${a * d + c * b}/${b + d}`, `${a}/${b + d}`],
-      L`Samakan penyebut: $$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$`, '',
-      L`$$\frac{${a}}{${b}} + \frac{${c}}{${d}} = \frac{${a} \cdot ${d} + ${c} \cdot ${b}}{${b} \cdot ${d}} = \frac{${a * d + c * b}}{${b * d}}$$ lalu sederhanakan: ${ans}.`); },
+      L`<p>Pecahan hanya bisa dijumlahkan jika potongannya sama besar, yaitu penyebutnya sama. $\tfrac12 + \tfrac13$ tidak sama dengan $\tfrac25$.</p><p>Samakan penyebut dengan mengalikan pembilang dan penyebut tiap pecahan dengan bilangan yang sama (nilainya tidak berubah): $$\frac{a}{b} + \frac{c}{d} = \frac{ad}{bd} + \frac{bc}{bd} = \frac{ad + bc}{bd}$$</p><p>Terakhir, sederhanakan dengan membagi FPB pembilang dan penyebut.</p>`, '',
+      L`<ol><li>Penyebut ${b} dan ${d} berbeda, jadi samakan. Penyebut bersama $= ${b} \times ${d} = ${b * d}$.</li><li>Ubah pecahan pertama: $\frac{${a}}{${b}} = \frac{${a} \times ${d}}{${b} \times ${d}} = \frac{${a * d}}{${b * d}}$.</li><li>Ubah pecahan kedua: $\frac{${c}}{${d}} = \frac{${c} \times ${b}}{${d} \times ${b}} = \frac{${c * b}}{${b * d}}$.</li><li>Jumlahkan pembilang, penyebut tetap: $$\frac{${a * d} + ${c * b}}{${b * d}} = \frac{${a * d + c * b}}{${b * d}}$$</li><li>Sederhanakan: hasil akhir ${ans}.</li><li>Cek desimal: $${dsp(a / b).replace(',', '{,}')} + ${dsp(c / d).replace(',', '{,}')} \approx ${dsp(a / b + c / d).replace(',', '{,}')}$. Jebakan: menjumlahkan pembilang dan penyebut langsung (${a + c}/${b + d}) salah.</li></ol>`); },
   () => { const H = R(40, 90) * 1000, p = pick([10, 20, 25, 50]), B = H * p / 100;
     return pg(`Harga sebuah barang Rp${fmt(H)}. Jika mendapat diskon ${p}%, besar potongan harganya adalah ....`,
-      `Rp${fmt(B)}`, [`Rp${fmt(H - B)}`, `Rp${fmt(H + B)}`, `Rp${fmt(B / 2)}`, `Rp${fmt(B * 2)}`], L`$$\text{diskon} = \frac{p}{100} \times H$$`, '',
-      L`$$\frac{${p}}{100} \times ${fmt(H)} = ${fmt(B)}$$ Potongan Rp${fmt(B)}; harga bayar Rp${fmt(H - B)} (bukan yang ditanya).`); },
+      `Rp${fmt(B)}`, [`Rp${fmt(H - B)}`, `Rp${fmt(H + B)}`, `Rp${fmt(B / 2)}`, `Rp${fmt(B * 2)}`], L`<p>Persen artinya "per seratus". $p\%$ dari harga artinya $\tfrac{p}{100}$ bagian dari harga: $$\text{diskon} = \frac{p}{100} \times H$$</p><p>Bedakan potongan (besar diskon) dan harga bayar (harga dikurangi diskon). Baca baik-baik yang ditanya.</p>`, '',
+      L`<ol><li>Yang ditanya besar potongan, bukan harga bayar.</li><li>${p}% dari harga: $$\frac{${p}}{100} \times ${fmt(H)}$$</li><li>Bagi 100 dahulu: $${fmt(H)} : 100 = ${fmt(H / 100)}$, lalu kali ${p}: $${fmt(H / 100)} \times ${p} = ${fmt(B)}$.</li><li>Potongan Rp${fmt(B)}.</li><li>Cek: harga bayar $= ${fmt(H)} - ${fmt(B)} = ${fmt(H - B)}$, dan $${fmt(B)} + ${fmt(H - B)} = ${fmt(H)}$. Rp${fmt(H - B)} adalah jebakan.</li></ol>`); },
 ],
 mcma: [
   () => { const Tt = pick([2400000, 3200000, 4000000]), hvs = Tt / 4, tinta = Tt * 35 / 100, map = Tt * 20 / 100, sisa = Tt - hvs - tinta - map;
@@ -486,8 +487,8 @@ mcma: [
       [`Anggaran map arsip adalah Rp${fmt(s3.v)}`, s3.t],
       [`Sisa anggaran alat tulis adalah Rp${fmt(s4.v)}`, s4.t],
       [`Total belanja HVS, tinta, dan map melebihi Rp${fmt(Tt * 3 / 4)}`, true]],
-    rumus: L`Samakan bentuknya dahulu: $$\tfrac14 = 0{,}25 = 25\%$$ lalu kalikan tiap bagian dengan total anggaran. Sisa $= 1 -$ jumlah semua bagian.`,
-    bahas: L`$$\text{HVS} = 25\% = ${fmt(hvs)}, \quad \text{tinta} = 35\% = ${fmt(tinta)}, \quad \text{map} = 20\% = ${fmt(map)}$$ $$\text{sisa} = 20\% = ${fmt(sisa)}, \qquad \text{HVS + tinta + map} = 80\% = ${fmt(Tt - sisa)}$$` }; },
+    rumus: L`<p>Pecahan, desimal, dan persen adalah cara berbeda menulis bagian dari keseluruhan. Samakan bentuknya dahulu supaya mudah dibandingkan dan dijumlahkan: $$\tfrac14 = 0{,}25 = 25\%, \qquad 0{,}35 = 35\%$$</p><p>Besar tiap bagian $=$ persen $\times$ total. Sisa $=$ 100% dikurangi jumlah semua bagian.</p>`,
+    bahas: L`<ol><li>Ubah ke persen: HVS $\tfrac14 = 25\%$, tinta $0{,}35 = 35\%$, map $20\%$.</li><li>HVS: $25\% \times ${fmt(Tt)} = ${fmt(hvs)}$.</li><li>Tinta: $35\% \times ${fmt(Tt)} = ${fmt(tinta)}$.</li><li>Map: $20\% \times ${fmt(Tt)} = ${fmt(map)}$.</li><li>Sisa: $100\% - (25 + 35 + 20)\% = 20\%$, jadi $${fmt(sisa)}$.</li><li>Total tiga barang $= 80\% = ${fmt(Tt - sisa)}$, lebih dari $75\% = ${fmt(Tt * 3 / 4)}$. Benar.</li><li>Cek: $${fmt(hvs)} + ${fmt(tinta)} + ${fmt(map)} + ${fmt(sisa)} = ${fmt(Tt)}$.</li></ol>` }; },
 ]},
 
 eksponen: { nama: 'Eksponen & Bentuk Akar', rumus: L`$$a^m \times a^n = a^{m+n}, \quad a^m : a^n = a^{m-n}, \quad (a^m)^n = a^{mn}, \quad a^0 = 1$$ $$\sqrt{a}\,\sqrt{b} = \sqrt{ab}, \qquad \sqrt{a^2 b} = a\sqrt{b}$$`,
@@ -495,13 +496,13 @@ pg: [
   () => { const a = R(2, 5), b = R(2, 5), c = R(2, 6), e = a + b - c;
     return pg(`Bentuk sederhana dari 2${sup(a)} × 2${sup(b)} : 2${sup(c)} adalah ....`,
       '2' + sup(e), ['2' + sup(a + b + c), '2' + sup(a * b - c), '2' + sup(e + 1), '2' + sup(e - 1), '2' + sup(c - a - b)],
-      L`$$a^m \times a^n = a^{m+n}, \qquad a^m : a^n = a^{m-n}$$`, '',
-      L`$$2^{${a} + ${b} - ${c}} = 2^{${e}}$$`); },
+      L`<p>$a^m$ artinya $a$ dikalikan sebanyak $m$ kali. Jadi $a^m \times a^n$ adalah $m + n$ faktor $a$: $$a^m \times a^n = a^{m+n}$$</p><p>Pembagian mencoret faktor yang sama di atas dan bawah, jadi pangkatnya dikurangi: $$a^m : a^n = a^{m-n}$$</p><p>Aturan ini hanya berlaku jika bilangan pokoknya sama.</p>`, '',
+      L`<ol><li>Semua bilangan pokok sama-sama 2, jadi aturan pangkat bisa dipakai.</li><li>Perkalian: pangkat dijumlah. $$2^{${a}} \times 2^{${b}} = 2^{${a} + ${b}} = 2^{${a + b}}$$</li><li>Pembagian: pangkat dikurang. $$2^{${a + b}} : 2^{${c}} = 2^{${a + b} - ${c}} = 2^{${e}}$$</li><li>Cek dengan angka: $${2 ** a} \times ${2 ** b} : ${2 ** c} = ${2 ** (a + b - c)}$, dan $2^{${e}} = ${2 ** e}$. Sama.</li></ol>`); },
   () => { let k1, k2, k3, m2; do { const ks = shuffle([2, 3, 4, 5]); k1 = ks[0]; k2 = ks[1]; k3 = ks[2]; m2 = k1 + k2 - k3; } while (m2 <= 0);
     return pg(`Bentuk sederhana dari √${3 * k1 * k1} + √${3 * k2 * k2} − √${3 * k3 * k3} adalah ....`,
       sq(m2, 3), [sq(k1 + k2 + k3, 3), sq(m2 + 2, 3), sq(k1 + k2, 3), sq(k3, 3), `${3 * m2}`],
-      L`Sederhanakan tiap akar dahulu: $$\sqrt{a^2 b} = a\sqrt{b}$$ lalu jumlahkan koefisien akar sejenis.`, '',
-      L`$$${k1}\sqrt3 + ${k2}\sqrt3 - ${k3}\sqrt3 = ${m2}\sqrt3$$`); },
+      L`<p>Bentuk akar hanya bisa dijumlah/dikurang jika isi akarnya sama (akar sejenis), seperti $2\sqrt3 + 5\sqrt3 = 7\sqrt3$, sama seperti $2x + 5x = 7x$.</p><p>Untuk menyederhanakan, pecah isi akar menjadi (bilangan kuadrat) × (sisa), lalu keluarkan akar dari bilangan kuadratnya: $$\sqrt{a^2 b} = \sqrt{a^2}\,\sqrt{b} = a\sqrt{b}$$</p><p>Bilangan kuadrat: 4, 9, 16, 25, 36, ...</p>`, '',
+      L`<ol><li>$\sqrt{${3 * k1 * k1}} = \sqrt{${k1 * k1} \times 3} = ${k1}\sqrt3$</li><li>$\sqrt{${3 * k2 * k2}} = \sqrt{${k2 * k2} \times 3} = ${k2}\sqrt3$</li><li>$\sqrt{${3 * k3 * k3}} = \sqrt{${k3 * k3} \times 3} = ${k3}\sqrt3$</li><li>Semua sejenis ($\sqrt3$), jadi operasikan koefisiennya: $$(${k1} + ${k2} - ${k3})\sqrt3 = ${m2 === 1 ? '' : m2}\sqrt3$$</li><li>Cek desimal ($\sqrt3 \approx 1{,}73$): $${m2} \times 1{,}73 \approx ${dsp(m2 * 1.732).replace(',', '{,}')}$.</li></ol>`); },
 ],
 mcma: [
   () => { const s1 = tw('4√3', '6√3'), s2 = tw('2⁷', '2¹²'), s3 = tw('2⁶', '2⁹'), s4 = tw('4', '16'), s5 = tw('1', '0');
@@ -511,29 +512,29 @@ mcma: [
       [`(2³)² = ${s3.v}`, s3.t],
       [`√2 × √8 = ${s4.v}`, s4.t],
       [`5⁰ = ${s5.v}`, s5.t]],
-    rumus: L`$$a^m a^n = a^{m+n}, \quad (a^m)^n = a^{mn}, \quad a^0 = 1, \quad \sqrt{a}\,\sqrt{b} = \sqrt{ab}, \quad \sqrt{a^2 b} = a\sqrt{b}$$`,
-    bahas: L`$$\sqrt{48} = \sqrt{16 \cdot 3} = 4\sqrt3, \quad 2^3 \cdot 2^4 = 2^7, \quad (2^3)^2 = 2^6, \quad \sqrt2 \cdot \sqrt8 = \sqrt{16} = 4, \quad 5^0 = 1$$` }; },
+    rumus: L`<p>$a^m$ = $a$ dikali $m$ kali. Karena itu: perkalian bilangan pokok sama, pangkat dijumlah ($a^m a^n = a^{m+n}$); dipangkatkan lagi, pangkat dikali ($(a^m)^n = a^{mn}$, karena ada $n$ kelompok berisi $m$ faktor).</p><p>$a^0 = 1$ karena $a^m : a^m = a^0$ dan bilangan dibagi dirinya sendiri sama dengan 1.</p><p>Akar: $\sqrt a\,\sqrt b = \sqrt{ab}$, dan $\sqrt{a^2 b} = a\sqrt b$ (keluarkan bilangan kuadrat).</p>`,
+    bahas: L`<ol><li>A. $48 = 16 \times 3$ dan 16 bilangan kuadrat: $\sqrt{48} = 4\sqrt3$.</li><li>B. Perkalian, pangkat dijumlah: $2^{3+4} = 2^7$ (bukan $2^{12}$, itu jika pangkatnya dikali).</li><li>C. Pangkat dipangkatkan, dikali: $2^{3 \times 2} = 2^6$. Cek: $8^2 = 64 = 2^6$.</li><li>D. $\sqrt2 \times \sqrt8 = \sqrt{16} = 4$.</li><li>E. Bilangan bukan nol berpangkat 0 sama dengan 1, jadi $5^0 = 1$.</li></ol>` }; },
 ]},
 
 barisan: { nama: 'Barisan, Deret & Bunga', rumus: L`Aritmetika: $$U_n = a + (n-1)\,b, \qquad S_n = \tfrac{n}{2}\,\bigl(2a + (n-1)\,b\bigr)$$ Geometri: $$U_n = a\,r^{\,n-1}, \qquad S_n = \frac{a\,(r^n - 1)}{r - 1}$$ Bunga tunggal: $$B = M \cdot \frac{p}{100} \cdot t$$ Bunga majemuk: $$M_t = M_0\,(1 + i)^t$$`,
 pg: [
   () => { const a = R(2, 6), b = R(3, 6), n = R(8, 15), u = a + (n - 1) * b;
     return pg(`Suku ke-${n} dari barisan aritmetika ${a}, ${a + b}, ${a + 2 * b}, ... adalah ....`,
-      u, [a + n * b, a * n, u + b, u - b], L`$$U_n = a + (n-1)\,b$$`, '',
-      L`$a = ${a}$, $b = ${b}$: $$U_{${n}} = ${a} + ${n - 1} \times ${b} = ${u}$$`); },
+      u, [a + n * b, a * n, u + b, u - b], L`<p>Barisan aritmetika bertambah dengan beda $b$ yang tetap. $a$ = suku pertama, $b$ = suku berikutnya dikurangi suku sebelumnya.</p><p>Dari suku ke-1 ke suku ke-$n$ ada $n - 1$ langkah, setiap langkah menambah $b$: $$U_n = a + (n-1)\,b$$ (bukan $n \times b$, karena suku pertama belum ditambah apa-apa).</p>`, '',
+      L`<ol><li>Suku pertama $a = ${a}$.</li><li>Beda: $b = ${a + b} - ${a} = ${b}$. Cek juga $${a + 2 * b} - ${a + b} = ${b}$, tetap.</li><li>Dari suku ke-1 ke suku ke-${n} ada $${n} - 1 = ${n - 1}$ langkah.</li><li>$$U_{${n}} = ${a} + ${n - 1} \times ${b} = ${a} + ${(n - 1) * b} = ${u}$$</li><li>Cek dengan suku ke-3: $U_3 = ${a} + 2 \times ${b} = ${a + 2 * b}$, sama dengan soal. Rumusnya benar.</li></ol>`); },
   () => { const a = R(2, 6), b = R(3, 6), S = 5 * (2 * a + 9 * b);
     return pg(`Jumlah 10 suku pertama dari barisan aritmetika ${a}, ${a + b}, ${a + 2 * b}, ... adalah ....`,
-      S, [a + 9 * b, 10 * (a + 9 * b), S / 5, 2 * a + 9 * b], L`$$S_n = \tfrac{n}{2}\,\bigl(2a + (n-1)\,b\bigr)$$`, '',
-      L`$$S_{10} = \tfrac{10}{2}\,(2 \cdot ${a} + 9 \cdot ${b}) = 5 \times ${2 * a + 9 * b} = ${S}$$`); },
+      S, [a + 9 * b, 10 * (a + 9 * b), S / 5, 2 * a + 9 * b], L`<p>Deret adalah jumlah suku-suku barisan. Trik Gauss: pasangkan suku pertama dengan terakhir, kedua dengan kedua dari akhir, dan seterusnya. Setiap pasangan jumlahnya sama, $a + U_n$, dan ada $\tfrac{n}{2}$ pasangan.</p><p>$$S_n = \tfrac{n}{2}\,(a + U_n) = \tfrac{n}{2}\,\bigl(2a + (n-1)\,b\bigr)$$</p>`, '',
+      L`<ol><li>$a = ${a}$, beda $b = ${b}$, $n = 10$.</li><li>Suku terakhir: $U_{10} = ${a} + 9 \times ${b} = ${a + 9 * b}$.</li><li>Setiap pasangan (pertama + terakhir) $= ${a} + ${a + 9 * b} = ${2 * a + 9 * b}$. Ada $\tfrac{10}{2} = 5$ pasangan.</li><li>$$S_{10} = 5 \times ${2 * a + 9 * b} = ${S}$$</li><li>Cek pasangan kedua: $U_2 + U_9 = ${a + b} + ${a + 8 * b} = ${2 * a + 9 * b}$. Sama, jadi trik pasangan benar.</li></ol>`); },
   () => { const a = pick([2, 3, 5]), r = pick([2, 3]), n = R(4, 6), u = a * Math.pow(r, n - 1);
     return pg(`Suku ke-${n} dari barisan geometri ${a}, ${a * r}, ${a * r * r}, ... adalah ....`,
-      u, [u * r, u / r, a * n * r, u + a], L`$$U_n = a\,r^{\,n-1}$$`, '',
-      L`$a = ${a}$, $r = ${r}$: $$U_{${n}} = ${a} \times ${r}^{${n - 1}} = ${u}$$`); },
+      u, [u * r, u / r, a * n * r, u + a], L`<p>Barisan geometri dikalikan rasio $r$ yang tetap. $r$ = suku berikutnya dibagi suku sebelumnya.</p><p>Dari suku ke-1 ke suku ke-$n$ ada $n - 1$ langkah, setiap langkah dikali $r$: $$U_n = a\,r^{\,n-1}$$</p><p>Bedakan dengan aritmetika: aritmetika ditambah, geometri dikali.</p>`, '',
+      L`<ol><li>Suku pertama $a = ${a}$.</li><li>Rasio: $r = \tfrac{${a * r}}{${a}} = ${r}$. Cek: $\tfrac{${a * r * r}}{${a * r}} = ${r}$, tetap.</li><li>Ada $${n} - 1 = ${n - 1}$ langkah perkalian: $${r}^{${n - 1}} = ${r ** (n - 1)}$.</li><li>$$U_{${n}} = ${a} \times ${r ** (n - 1)} = ${u}$$</li><li>Cek dengan menulis berurutan: ${Array.from({ length: n }, (_, i) => a * r ** i).join(', ')}. Suku ke-${n} $= ${u}$.</li></ol>`); },
   () => { const M = R(1, 5) * 1000000, p = pick([6, 8, 10, 12]), t = R(2, 4), B = M * p * t / 100;
     return pg(`Rina meminjam uang Rp${fmt(M)} dengan bunga tunggal ${p}% per tahun. Besar bunga selama ${t} tahun adalah ....`,
       `Rp${fmt(B)}`, [`Rp${fmt(M * p / 100)}`, `Rp${fmt(M + B)}`, `Rp${fmt(B / 2)}`, `Rp${fmt(B * 2)}`, `Rp${fmt(M - B)}`],
-      L`$$B = M \times \frac{p}{100} \times t$$`, '',
-      L`$$B = ${fmt(M)} \times \frac{${p}}{100} \times ${t} = ${fmt(B)}$$`); },
+      L`<p>Bunga tunggal dihitung dari modal awal saja, jadi bunganya sama setiap tahun.</p><p>Bunga satu tahun $= M \times \tfrac{p}{100}$. Selama $t$ tahun, kalikan $t$: $$B = M \times \frac{p}{100} \times t$$</p><p>Bedakan bunga (tambahannya saja) dan total pengembalian (modal + bunga).</p>`, '',
+      L`<ol><li>Modal $M = ${fmt(M)}$, bunga ${p}% per tahun, selama ${t} tahun.</li><li>Bunga satu tahun: $${fmt(M)} \times \tfrac{${p}}{100} = ${fmt(M * p / 100)}$.</li><li>Bunga tunggal sama setiap tahun, jadi kalikan ${t}: $$B = ${fmt(M * p / 100)} \times ${t} = ${fmt(B)}$$</li><li>Cek: yang ditanya bunga, bukan total. Total pengembalian $= ${fmt(M)} + ${fmt(B)} = ${fmt(M + B)}$ (jebakan).</li></ol>`); },
 ],
 bs: [
   () => { const a = pick([400, 500, 600]), d = pick([100, 150, 200]), S6 = 3 * (2 * a + 5 * d);
@@ -543,8 +544,8 @@ bs: [
       [`Pada bulan ke-10, jumlah pengguna mencapai ${fmt(s2.v)} orang`, s2.t],
       [`Jumlah seluruh pengguna dari bulan ke-1 sampai ke-6 adalah ${fmt(s3.v)}`, s3.t],
       [`Barisan ini merupakan barisan geometri dengan rasio ${d}`, false]],
-    rumus: L`$$U_n = a + (n-1)\,d, \qquad S_n = \tfrac{n}{2}\,(2a + (n-1)\,d)$$ Beda tetap = aritmetika, rasio tetap = geometri.`,
-    bahas: L`$$U_n = ${a} + (n-1)\,${d} = ${d}n + ${a - d}$$ $$U_{10} = ${a} + 9 \cdot ${d} = ${fmt(a + 9 * d)}, \qquad S_6 = 3\,(2 \cdot ${a} + 5 \cdot ${d}) = ${fmt(S6)}$$ Bertambah tetap berarti barisan aritmetika, bukan geometri.` }; },
+    rumus: L`<p>Bertambah dengan jumlah tetap $d$ berarti barisan aritmetika: $U_n = a + (n-1)\,d$. Bertambah dengan kelipatan tetap (dikali) berarti geometri.</p><p>Rumus $U_n$ bisa diuraikan menjadi bentuk $dn + (a - d)$ dengan mengalikan kurung.</p><p>Jumlah $n$ suku: $S_n = \tfrac{n}{2}\,(2a + (n-1)\,d)$.</p>`,
+    bahas: L`<ol><li>Pernyataan 1: uraikan $U_n = ${a} + (n-1) \times ${d} = ${a} + ${d}n - ${d} = ${d}n + ${a - d}$. Cek $n = 1$: $${d} + ${a - d} = ${a}$. Cocok.</li><li>Pernyataan 2: $U_{10} = ${a} + 9 \times ${d} = ${fmt(a + 9 * d)}$.</li><li>Pernyataan 3: $S_6 = \tfrac62\,(2 \times ${a} + 5 \times ${d}) = 3 \times ${2 * a + 5 * d} = ${fmt(S6)}$. Cek dengan menjumlahkan: ${Array.from({ length: 6 }, (_, i) => a + i * d).join(' + ')} $= ${fmt(S6)}$.</li><li>Pernyataan 4: ditambah tetap berarti aritmetika, bukan geometri. Salah.</li></ol>` }; },
   () => { const M = pick([4, 5, 6]) * 1000000, M1 = M * 11 / 10, M2 = M * 121 / 100, sel = M / 100;
     const s1 = tw(M1, M1 + 100000), s2 = tw(M2, M * 12 / 10), s4 = tw(sel, sel * 2);
     return { type: 'bs', q: `Dimas menabung Rp${fmt(M)} di bank dengan bunga majemuk 10% per tahun.`, st: [
@@ -552,8 +553,8 @@ bs: [
       [`Setelah 2 tahun, tabungan menjadi Rp${fmt(s2.v)}`, s2.t],
       [`Bunga majemuk 2 tahun lebih besar daripada bunga tunggal 2 tahun dengan persentase sama`, true],
       [`Selisih bunga majemuk dan bunga tunggal selama 2 tahun adalah Rp${fmt(s4.v)}`, s4.t]],
-    rumus: L`Bunga majemuk: $$M_t = M_0\,(1+i)^t$$ Bunga tunggal: $$B = M_0 \cdot i \cdot t$$ Bandingkan hasil keduanya pada $t$ yang sama.`,
-    bahas: L`$$M_1 = ${fmt(M)} \times 1{,}1 = ${fmt(M1)}, \qquad M_2 = ${fmt(M)} \times 1{,}1^2 = ${fmt(M2)}$$ $$\text{bunga majemuk} = ${fmt(M2 - M)}, \quad \text{bunga tunggal} = ${fmt(M)} \times 0{,}1 \times 2 = ${fmt(M / 5)}, \quad \text{selisih} = ${fmt(sel)}$$` }; },
+    rumus: L`<p>Bunga majemuk: bunga tahun ini ikut ditabung, sehingga tahun depan bunga dihitung dari saldo yang sudah bertambah ("bunga berbunga"). Setiap tahun saldo dikali $(1 + i)$: $$M_t = M_0\,(1+i)^t$$</p><p>Bunga tunggal: bunga selalu dari modal awal, $B = M_0 \times i \times t$.</p><p>Karena bunga majemuk menghitung bunga dari bunga, hasilnya lebih besar mulai tahun ke-2.</p>`,
+    bahas: L`<ol><li>Tahun 1: bunga $10\% \times ${fmt(M)} = ${fmt(M / 10)}$, saldo $${fmt(M1)}$.</li><li>Tahun 2: bunga dihitung dari saldo baru, $10\% \times ${fmt(M1)} = ${fmt(M1 / 10)}$, saldo $${fmt(M2)}$. (Sama dengan $${fmt(M)} \times 1{,}1^2$.)</li><li>Bunga majemuk 2 tahun $= ${fmt(M2)} - ${fmt(M)} = ${fmt(M2 - M)}$.</li><li>Bunga tunggal 2 tahun $= ${fmt(M)} \times 10\% \times 2 = ${fmt(M / 5)}$. Majemuk lebih besar.</li><li>Selisih $= ${fmt(M2 - M)} - ${fmt(M / 5)} = ${fmt(sel)}$, yaitu bunga dari bunga tahun pertama ($10\% \times ${fmt(M / 10)}$).</li></ol>` }; },
 ],
 mcma: [
   () => { const a = pick([100, 200, 300]);
@@ -564,35 +565,35 @@ mcma: [
       [`Rumus request hari ke-n: Uₙ = ${a} · 2ⁿ⁻¹`, true],
       [`Total request hari ke-1 sampai ke-3 adalah ${fmt(s4.v)}`, s4.t],
       [`Barisan jumlah request tersebut adalah barisan aritmetika`, false]],
-    rumus: L`$$U_n = a\,r^{\,n-1}, \qquad S_n = \frac{a\,(r^n - 1)}{r - 1}$$`,
-    bahas: L`$a = ${a}$, $r = 2$: $$U_4 = ${a} \cdot 2^3 = ${fmt(8 * a)}, \quad U_5 = ${a} \cdot 2^4 = ${fmt(16 * a)}, \quad S_3 = \frac{${a}\,(2^3 - 1)}{2 - 1} = ${fmt(7 * a)}$$ Rasio tetap berarti barisan geometri.` }; },
+    rumus: L`<p>"Menjadi 2 kali lipat" berarti setiap suku dikali rasio tetap $r = 2$: barisan geometri.</p><p>Dari suku pertama ke suku ke-$n$ ada $n - 1$ perkalian: $U_n = a\,r^{\,n-1}$.</p><p>Jumlah $n$ suku: $S_n = \frac{a\,(r^n - 1)}{r - 1}$, atau jumlahkan langsung jika sukunya sedikit.</p>`,
+    bahas: L`<ol><li>$a = ${a}$, $r = 2$. Tulis berurutan: ${[1, 2, 4, 8, 16].map(x => fmt(a * x)).join(', ')}.</li><li>Hari ke-4: $${a} \times 2^3 = ${fmt(8 * a)}$. Hari ke-5: $${a} \times 2^4 = ${fmt(16 * a)}$.</li><li>Rumus $U_n = ${a} \cdot 2^{n-1}$ benar; cek $n = 1$: $${a} \cdot 2^0 = ${a}$.</li><li>Total 3 hari: $${a} + ${2 * a} + ${4 * a} = ${fmt(7 * a)}$. Cek rumus: $\frac{${a}\,(2^3 - 1)}{2 - 1} = ${fmt(7 * a)}$.</li><li>Dikali tetap berarti geometri, bukan aritmetika. Salah.</li></ol>` }; },
 ]},
 
 persamaan: { nama: 'Persamaan & Pertidaksamaan', rumus: L`Linear: pindahkan suku, bagi koefisien. Pertidaksamaan: tanda berbalik jika dikali/dibagi bilangan negatif. SPLDV/SPLTV: eliminasi atau substitusi. Kuadrat: $$x^2 - (p+q)\,x + pq = (x - p)(x - q)$$ $$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$`,
 pg: [
   () => { const x0 = R(2, 9), a = R(2, 4), b = R(1, 6), c = a * (x0 + b);
     return pg(`Penyelesaian dari persamaan ${a}(x + ${b}) = ${c} adalah x = ....`,
-      x0, [c - b, x0 + b, b, c], L`$$a\,(x + b) = c \;\Rightarrow\; x = \frac{c}{a} - b$$`, '',
-      L`$$x + ${b} = \frac{${c}}{${a}} = ${x0 + b} \Rightarrow x = ${x0}$$`); },
+      x0, [c - b, x0 + b, b, c], L`<p>Persamaan seperti timbangan seimbang: apa pun yang dilakukan ke satu ruas harus dilakukan juga ke ruas lain.</p><p>Tujuannya membuat $x$ sendirian. Buka lapisan dari luar ke dalam: bentuk $a\,(x + b) = c$ dibagi $a$ dahulu, lalu dikurangi $b$: $$x = \frac{c}{a} - b$$</p>`, '',
+      L`<ol><li>$x + ${b}$ sedang dikali ${a}. Bagi kedua ruas dengan ${a}: $$x + ${b} = \frac{${c}}{${a}} = ${x0 + b}$$</li><li>Kurangi kedua ruas dengan ${b}: $$x = ${x0 + b} - ${b} = ${x0}$$</li><li>Cek: masukkan $x = ${x0}$ ke soal, $${a}(${x0} + ${b}) = ${a} \times ${x0 + b} = ${c}$. Cocok.</li></ol>`); },
   () => { const a = R(2, 4), x0 = R(2, 8), b = R(2, 9), c = a * x0 - b;
     return pg(`Penyelesaian dari pertidaksamaan ${a}x − ${b} > ${c} adalah ....`,
       `x > ${x0}`, [`x < ${x0}`, `x > ${x0 + a}`, `x < ${x0 + b}`, `x > ${b + c}`],
-      L`$$ax - b > c \;\Rightarrow\; x > \frac{b + c}{a}$$`, '',
-      L`$$${a}x > ${c} + ${b} = ${b + c} \Rightarrow x > \frac{${b + c}}{${a}} = ${x0}$$`); },
+      L`<p>Pertidaksamaan diselesaikan seperti persamaan: pindahkan suku, lalu bagi koefisien $x$.</p><p>Satu perbedaan penting: jika kedua ruas dikali atau dibagi bilangan negatif, tanda berbalik ($>$ menjadi $<$). Contoh: $2 > 1$, tetapi $-2 < -1$.</p><p>$$ax - b > c \;\Rightarrow\; x > \frac{b + c}{a} \quad (a > 0)$$</p>`, '',
+      L`<ol><li>Pindahkan $-${b}$ ke kanan (tanda berubah menjadi $+$): $$${a}x > ${c} + ${b} = ${b + c}$$</li><li>Bagi kedua ruas dengan ${a}. Karena ${a} positif, tanda $>$ tetap: $$x > \frac{${b + c}}{${a}} = ${x0}$$</li><li>Cek dengan mencoba angka:<br>$x = ${x0 + 1}$: $${a}(${x0 + 1}) - ${b} = ${a * (x0 + 1) - b} > ${c}$, benar.<br>$x = ${x0}$: $${a}(${x0}) - ${b} = ${c}$, tidak lebih dari ${c}, jadi ${x0} tidak termasuk (pakai $>$, bukan $\ge$).<br>$x = ${x0 - 1}$: hasilnya $${a * (x0 - 1) - b} < ${c}$, jadi bukan $x <$.</li></ol>`); },
   () => { const x0 = R(3, 7) * 1000, y0 = R(1, x0 / 1000 - 1) * 1000, t1 = 3 * x0 + 2 * y0, t2 = 2 * x0 + 5 * y0, j = x0 + y0;
     return pg(`Budi membeli 3 buku dan 2 pensil seharga Rp${fmt(t1)}. Di toko yang sama, Ani membeli 2 buku dan 5 pensil seharga Rp${fmt(t2)}. Total harga 1 buku dan 1 pensil adalah ....`,
       `Rp${fmt(j)}`, [`Rp${fmt(x0)}`, `Rp${fmt(y0)}`, `Rp${fmt(x0 - y0)}`, `Rp${fmt(2 * j)}`, `Rp${fmt(Math.abs(t1 - t2))}`],
-      L`Bentuk SPLDV lalu eliminasi: $$\begin{cases}3x + 2y = t_1\\ 2x + 5y = t_2\end{cases}$$`, '',
-      L`$$\begin{cases}3x + 2y = ${t1}\ \ (\times 2)\\ 2x + 5y = ${t2}\ \ (\times 3)\end{cases} \Rightarrow 11y = ${3 * t2 - 2 * t1} \Rightarrow y = ${y0}$$ $$3x = ${t1} - 2 \cdot ${y0} \Rightarrow x = ${x0}, \qquad x + y = ${j}$$`); },
+      L`<p>Soal cerita dengan dua barang yang harganya belum diketahui diubah menjadi dua persamaan (SPLDV). Misalkan $x$ = harga barang pertama, $y$ = harga barang kedua.</p><p>Eliminasi: kalikan persamaan agar koefisien salah satu variabel sama, lalu kurangkan sehingga variabel itu hilang. Sisa satu variabel, selesaikan. Lalu substitusikan kembali untuk variabel kedua.</p><p>Terakhir, jawab yang ditanya (di sini $x + y$, bukan hanya $x$ atau $y$).</p>`, '',
+      L`<ol><li>Model: $x$ = harga buku, $y$ = harga pensil. $$3x + 2y = ${t1} \quad (1)$$ $$2x + 5y = ${t2} \quad (2)$$</li><li>Samakan koefisien $x$ menjadi 6: (1) × 2 dan (2) × 3. $$6x + 4y = ${2 * t1}$$ $$6x + 15y = ${3 * t2}$$</li><li>Kurangkan (bawah − atas), $x$ hilang: $$11y = ${3 * t2 - 2 * t1} \Rightarrow y = ${y0}$$</li><li>Substitusikan ke (1): $$3x + 2(${y0}) = ${t1} \Rightarrow 3x = ${t1 - 2 * y0} \Rightarrow x = ${x0}$$</li><li>Yang ditanya: $x + y = ${x0} + ${y0} = ${j}$.</li><li>Cek ke (2): $2(${x0}) + 5(${y0}) = ${t2}$. Cocok.</li></ol>`); },
   () => { const p = R(1, 4), q = R(p + 1, 6);
     return pg(`Akar-akar persamaan kuadrat x² − ${p + q}x + ${p * q} = 0 adalah ....`,
       `${p} dan ${q}`, [`−${p} dan −${q}`, `${p} dan −${q}`, `−${p} dan ${q}`, `${p + q} dan ${p * q}`],
-      L`Pemfaktoran: $$x^2 - (p+q)\,x + pq = (x - p)(x - q)$$ atau rumus abc: $$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$`, '',
-      L`Cari dua bilangan yang jumlahnya $${p + q}$ dan hasil kalinya $${p * q}$: $$(x - ${p})(x - ${q}) = 0 \Rightarrow x = ${p} \text{ atau } x = ${q}$$`); },
+      L`<p>Akar persamaan kuadrat adalah nilai $x$ yang membuat persamaan bernilai 0.</p><p>Pemfaktoran: jika $(x - p)(x - q)$ dikalikan, hasilnya $x^2 - (p+q)\,x + pq$. Jadi cari dua bilangan yang jumlahnya = lawan koefisien $x$ dan hasil kalinya = konstanta.</p><p>Jika hasil kali dua faktor nol, salah satu faktor pasti nol. Karena itu $x = p$ atau $x = q$.</p><p>Jika sulit difaktorkan, pakai rumus abc: $$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</p>`, '',
+      L`<ol><li>Cari dua bilangan: jumlah $${p + q}$, hasil kali $${p * q}$.</li><li>Coba pasangan faktor ${p * q}: ${Array.from({ length: p * q }, (_, i) => i + 1).filter(i => (p * q) % i === 0 && i <= (p * q) / i).map(i => `${i} dan ${p * q / i} (jumlah ${i + p * q / i})`).join(', ')}. Yang jumlahnya ${p + q} adalah ${p} dan ${q}.</li><li>Faktorkan: $$(x - ${p})(x - ${q}) = 0$$</li><li>Salah satu faktor nol: $x - ${p} = 0 \Rightarrow x = ${p}$, atau $x - ${q} = 0 \Rightarrow x = ${q}$.</li><li>Cek $x = ${p}$: $${p * p} - ${(p + q) * p} + ${p * q} = 0$. Cek $x = ${q}$: $${q * q} - ${(p + q) * q} + ${p * q} = 0$. Keduanya benar.</li></ol>`); },
   () => { const [x, y, z] = shuffle([1, 2, 3, 4, 5, 6]).slice(0, 3), s1 = x + y + z, s2 = 2 * x - y + z, s3 = x + 2 * y - z;
     return pg(`Diketahui sistem persamaan x + y + z = ${s1}, 2x − y + z = ${s2}, dan x + 2y − z = ${s3}. Nilai x adalah ....`,
-      x, [y, z, s1, x + 1], L`SPLTV: eliminasi satu variabel dari dua pasang persamaan, sehingga menjadi SPLDV, lalu selesaikan.`, '',
-      L`$$\text{(1)+(3)}: 2x + 3y = ${s1 + s3}, \qquad \text{(2)+(3)}: 3x + y = ${s2 + s3}$$ $$3\,(3x + y) - (2x + 3y) = 7x = ${3 * (s2 + s3) - (s1 + s3)} \Rightarrow x = ${x}$$`); },
+      x, [y, z, s1, x + 1], L`<p>SPLTV punya tiga variabel. Ubah menjadi SPLDV dengan menghilangkan satu variabel yang sama dari dua pasang persamaan.</p><p>Pilih variabel yang paling mudah dihilangkan, misalnya yang koefisiennya $+1$ dan $-1$ (cukup dijumlahkan).</p><p>Setelah tinggal dua variabel, eliminasi lagi sampai satu variabel tersisa.</p>`, '',
+      L`<ol><li>Beri nomor: (1) $x + y + z = ${s1}$, (2) $2x - y + z = ${s2}$, (3) $x + 2y - z = ${s3}$.</li><li>$z$ bernilai $+z$ di (1) dan (2), $-z$ di (3). Jumlahkan agar $z$ hilang: $$\text{(1)+(3)}: 2x + 3y = ${s1 + s3} \quad (4)$$ $$\text{(2)+(3)}: 3x + y = ${s2 + s3} \quad (5)$$</li><li>Hilangkan $y$: kalikan (5) dengan 3, menjadi $9x + 3y = ${3 * (s2 + s3)}$. Kurangi (4): $$7x = ${3 * (s2 + s3)} - ${s1 + s3} = ${3 * (s2 + s3) - (s1 + s3)}$$</li><li>$x = \frac{${7 * x}}{7} = ${x}$.</li><li>Cek: dari (5), $y = ${s2 + s3} - 3(${x}) = ${y}$; dari (1), $z = ${s1} - ${x} - ${y} = ${z}$. Ke (2): $2(${x}) - ${y} + ${z} = ${s2}$. Cocok.</li></ol>`); },
 ],
 bs: [
   () => { const x0 = R(4, 8) * 10000, y0 = R(2, x0 / 10000 - 1) * 10000, A = 2 * x0 + 3 * y0, B = x0 + 2 * y0;
@@ -602,24 +603,24 @@ bs: [
       [`Harga 1 mouse adalah Rp${fmt(s2.v)}`, s2.t],
       [`Harga 1 flashdisk lebih mahal daripada harga 1 mouse`, true],
       [`Membeli 3 flashdisk dan 2 mouse membutuhkan biaya Rp${fmt(s4.v)}`, s4.t]],
-    rumus: L`Eliminasi SPLDV: samakan koefisien salah satu variabel, kurangkan kedua persamaan, lalu substitusikan kembali.`,
-    bahas: L`$$(x + 2y = ${fmt(B)}) \times 2: \ 2x + 4y = ${fmt(2 * B)}$$ $$\text{dikurangi } 2x + 3y = ${fmt(A)} \Rightarrow y = ${fmt(y0)}, \quad x = ${fmt(B)} - 2 \cdot ${fmt(y0)} = ${fmt(x0)}$$ $$3x + 2y = ${fmt(3 * x0 + 2 * y0)}$$` }; },
+    rumus: L`<p>Ubah setiap kalimat harga menjadi satu persamaan: (banyak barang 1)$\,x$ + (banyak barang 2)$\,y$ = total harga.</p><p>Eliminasi: kalikan persamaan agar koefisien salah satu variabel sama, kurangkan sehingga variabel itu hilang, selesaikan, lalu substitusikan kembali.</p><p>Setelah $x$ dan $y$ diketahui, pertanyaan lain cukup dihitung dengan memasukkan nilainya.</p>`,
+    bahas: L`<ol><li>Model: "2 flashdisk dan 3 mouse" menjadi $2x + 3y = ${fmt(A)}$ (1), dan "1 flashdisk dan 2 mouse" menjadi $x + 2y = ${fmt(B)}$ (2). Pernyataan 1 benar.</li><li>Samakan koefisien $x$: (2) × 2 menjadi $2x + 4y = ${fmt(2 * B)}$.</li><li>Kurangi (1): $(2x + 4y) - (2x + 3y) = ${fmt(2 * B)} - ${fmt(A)}$, jadi $y = ${fmt(y0)}$.</li><li>Substitusikan ke (2): $x = ${fmt(B)} - 2 \times ${fmt(y0)} = ${fmt(x0)}$. Flashdisk lebih mahal dari mouse.</li><li>$3x + 2y = 3 \times ${fmt(x0)} + 2 \times ${fmt(y0)} = ${fmt(3 * x0 + 2 * y0)}$.</li><li>Cek ke (1): $2 \times ${fmt(x0)} + 3 \times ${fmt(y0)} = ${fmt(A)}$. Cocok.</li></ol>` }; },
 ]},
 
 fungsi: { nama: 'Fungsi & Fungsi Kuadrat', rumus: L`Invers: $$f(x) = ax + b \;\Rightarrow\; f^{-1}(x) = \frac{x - b}{a}$$ Komposisi: $$(f \circ g)(x) = f\bigl(g(x)\bigr)$$ Domain: $\sqrt{u}$ syaratnya $u \ge 0$; $\dfrac{p}{q}$ syaratnya $q \ne 0$. Fungsi kuadrat $y = ax^2 + bx + c$: $$x_p = -\frac{b}{2a}, \qquad y_p = f(x_p)$$ $a > 0$ terbuka ke atas, $a < 0$ terbuka ke bawah.`,
 pg: [
   () => { const a = pick([2, 3]), b = R(1, 5), x0 = R(1, 6), y0 = a * x0 + b;
     return pg(`Diketahui f(x) = ${a}x + ${b}. Nilai f⁻¹(${y0}) adalah ....`,
-      x0, [a * y0 + b, y0 - b, -x0, y0], L`$$f^{-1}(x) = \frac{x - b}{a}$$`, '',
-      L`$$f^{-1}(${y0}) = \frac{${y0} - ${b}}{${a}} = ${x0}$$`); },
+      x0, [a * y0 + b, y0 - b, -x0, y0], L`<p>Fungsi invers $f^{-1}$ membalik kerja $f$: jika $f$ mengubah $x$ menjadi $y$, maka $f^{-1}$ mengubah $y$ kembali menjadi $x$.</p><p>$f(x) = ax + b$ bekerja "kali $a$, lalu tambah $b$". Inversnya membatalkan dengan urutan terbalik: "kurangi $b$, lalu bagi $a$". $$f^{-1}(x) = \frac{x - b}{a}$$</p><p>Jadi $f^{-1}(k)$ menanyakan: $x$ berapa yang membuat $f(x) = k$?</p>`, '',
+      L`<ol><li>$f^{-1}(${y0})$ artinya mencari $x$ dengan $f(x) = ${y0}$: $$${a}x + ${b} = ${y0}$$</li><li>Batalkan "tambah ${b}": kurangi ${b}, $${a}x = ${y0 - b}$.</li><li>Batalkan "kali ${a}": bagi ${a}, $x = ${x0}$.</li><li>Cek: $f(${x0}) = ${a}(${x0}) + ${b} = ${y0}$. Cocok. Jawaban ${a * y0 + b} adalah jebakan, itu $f(${y0})$, bukan inversnya.</li></ol>`); },
   () => { const p = R(1, 6), c = R(1, 9);
     return pg(`Sumbu simetri grafik fungsi y = x² − ${2 * p}x + ${c} adalah garis x = ....`,
-      p, [-p, 2 * p, c, -2 * p], L`$$x = -\frac{b}{2a}$$`, '',
-      L`$$x = -\frac{-${2 * p}}{2 \cdot 1} = ${p}$$`); },
+      p, [-p, 2 * p, c, -2 * p], L`<p>Grafik fungsi kuadrat (parabola) simetris seperti cermin. Garis cerminnya disebut sumbu simetri dan melewati titik puncak.</p><p>Untuk $y = ax^2 + bx + c$, sumbu simetrinya $$x = -\frac{b}{2a}$$ Tanda minus di depan sering membuat salah: jika $b$ negatif, hasilnya positif.</p>`, '',
+      L`<ol><li>Baca koefisien: $a = 1$, $b = -${2 * p}$, $c = ${c}$.</li><li>Masukkan: $$x = -\frac{b}{2a} = -\frac{-${2 * p}}{2 \times 1}$$</li><li>Minus kali minus menjadi plus: $x = \frac{${2 * p}}{2} = ${p}$.</li><li>Cek simetri: $y(${p - 1})$ dan $y(${p + 1})$ harus sama. $y(${p - 1}) = ${(p - 1) ** 2 - 2 * p * (p - 1) + c}$, $y(${p + 1}) = ${(p + 1) ** 2 - 2 * p * (p + 1) + c}$. Sama.</li></ol>`); },
   () => { const b = R(1, 5), c = R(2, 4), h = 2 * c * c + b;
     return pg(`Diketahui f(x) = 2x + ${b} dan g(x) = x². Nilai (f ∘ g)(${c}) adalah ....`,
-      h, [(2 * c + b) * (2 * c + b), 2 * c + b, c * c + b, 4 * c * c + b], L`$$(f \circ g)(x) = f\bigl(g(x)\bigr)$$ Hitung $g$ dahulu, hasilnya masukkan ke $f$.`, '',
-      L`$$g(${c}) = ${c * c}, \qquad f(${c * c}) = 2 \cdot ${c * c} + ${b} = ${h}$$`); },
+      h, [(2 * c + b) * (2 * c + b), 2 * c + b, c * c + b, 4 * c * c + b], L`<p>Komposisi seperti dua mesin berurutan. $(f \circ g)(x) = f\bigl(g(x)\bigr)$: masukkan $x$ ke mesin $g$ dahulu, hasilnya masukkan ke mesin $f$.</p><p>Urutan dibaca dari kanan: $f \circ g$ berarti $g$ dikerjakan dulu. Umumnya $f \circ g \ne g \circ f$.</p>`, '',
+      L`<ol><li>$g$ dikerjakan dahulu (paling kanan): $$g(${c}) = ${c}^2 = ${c * c}$$</li><li>Hasil ${c * c} dimasukkan ke $f$: $$f(${c * c}) = 2 \times ${c * c} + ${b} = ${h}$$</li><li>Cek urutan: jika terbalik, $g(f(${c})) = (2 \cdot ${c} + ${b})^2 = ${(2 * c + b) ** 2}$, hasilnya berbeda. Jadi urutan penting, dan jawabannya ${h}.</li></ol>`); },
   () => { const a = pick([2, 3, 4]), k = R(1, 5), p = pick([1, 2, 3, 4, 5, 6].filter(x => x !== k));
     return pick([
       () => pg(`Domain fungsi f(x) = √(${a}x − ${a * k}) adalah ....`,
@@ -640,8 +641,8 @@ bs: [
       [`Ketinggian maksimum karakter adalah ${s2.v} piksel`, s2.t],
       [`Ketinggian maksimum dicapai saat t = ${s3.v} detik`, s3.t],
       [`Grafik h(t) terbuka ke atas`, false]],
-    rumus: L`Akar: selesaikan $h(t) = 0$. Puncak: $$t_p = -\frac{b}{2a}, \qquad h_{\text{maks}} = h(t_p)$$ Koefisien $t^2$ negatif berarti terbuka ke bawah.`,
-    bahas: L`$$-t^2 + ${b}t = 0 \Rightarrow t\,(${b} - t) = 0 \Rightarrow t = 0 \text{ atau } t = ${b}$$ $$t_p = -\frac{${b}}{2 \cdot (-1)} = ${b / 2}, \qquad h(${b / 2}) = -${b / 2}^2 + ${b} \cdot ${b / 2} = ${b * b / 4}$$ $a = -1 < 0$, jadi terbuka ke bawah.` }; },
+    rumus: L`<p>Lintasan lompatan berbentuk parabola. Menyentuh tanah berarti tinggi nol: selesaikan $h(t) = 0$.</p><p>Puncak berada di tengah-tengah dua titik saat di tanah (karena parabola simetris): $$t_p = -\frac{b}{2a}$$ Tinggi maksimum didapat dengan memasukkan $t_p$ ke $h(t)$.</p><p>Koefisien $t^2$ negatif berarti parabola terbuka ke bawah (seperti bukit), sehingga punya titik tertinggi.</p>`,
+    bahas: L`<ol><li>Menyentuh tanah: $-t^2 + ${b}t = 0$. Keluarkan $t$: $t\,(${b} - t) = 0$, jadi $t = 0$ (saat mulai) atau $t = ${b}$ (saat mendarat).</li><li>Puncak: $a = -1$, $b = ${b}$. $$t_p = -\frac{${b}}{2 \times (-1)} = ${b / 2}$$ Cek: tepat di tengah 0 dan ${b}.</li><li>Tinggi maksimum: $$h(${b / 2}) = -(${b / 2})^2 + ${b} \times ${b / 2} = -${b * b / 4} + ${b * b / 2} = ${b * b / 4}$$</li><li>Bentuk grafik: $a = -1 < 0$, jadi terbuka ke bawah. Pernyataan "terbuka ke atas" salah.</li><li>Cek: $h(${b / 2 - 1}) = ${-((b / 2 - 1) ** 2) + b * (b / 2 - 1)}$, lebih rendah dari ${b * b / 4}. Puncak benar.</li></ol>` }; },
 ],
 mcma: [
   () => { const p = pick([1, 2]), q = p + 2 * R(1, 2), xp = (p + q) / 2, yp = p * q - xp * xp;
@@ -652,16 +653,16 @@ mcma: [
       [`Grafik terbuka ke bawah`, false],
       [`Grafik memotong sumbu y di titik ${s4.v}`, s4.t],
       [`Nilai minimum fungsi adalah ${s5.v}`, s5.t]],
-    rumus: L`Faktorkan untuk titik potong sumbu x. Puncak: $$x_p = -\frac{b}{2a}, \quad y_p = f(x_p)$$ Titik potong sumbu y: $(0, c)$. $a > 0$ berarti terbuka ke atas dan $y_p$ adalah nilai minimum.`,
-    bahas: L`$$(x - ${p})(x - ${q}) = 0 \Rightarrow x = ${p},\ ${q}$$ $$x_p = \frac{${p + q}}{2} = ${xp}, \quad y_p = ${xp}^2 - ${p + q} \cdot ${xp} + ${p * q} = ${yp}$$ Potong sumbu y di $(0, ${p * q})$. $a = 1 > 0$: terbuka ke atas, minimum $${yp}$.` }; },
+    rumus: L`<p>Titik potong sumbu x: di sumbu x nilai $y = 0$, jadi selesaikan $f(x) = 0$ (faktorkan).</p><p>Titik potong sumbu y: di sumbu y nilai $x = 0$, jadi $y = f(0) = c$, titiknya $(0, c)$.</p><p>Puncak: $x_p = -\frac{b}{2a}$ (tengah-tengah kedua akar), lalu $y_p = f(x_p)$. Jika $a > 0$ parabola terbuka ke atas (seperti lembah) dan $y_p$ adalah nilai minimum.</p>`,
+    bahas: L`<ol><li>Potong sumbu x: cari dua bilangan berjumlah ${p + q} dan berhasil kali ${p * q}, yaitu ${p} dan ${q}. $(x - ${p})(x - ${q}) = 0$, jadi $(${p}, 0)$ dan $(${q}, 0)$. Benar.</li><li>Puncak: $x_p = -\frac{-${p + q}}{2} = ${xp}$ (tengah ${p} dan ${q}). $$y_p = ${xp}^2 - ${p + q} \times ${xp} + ${p * q} = ${xp * xp} - ${(p + q) * xp} + ${p * q} = ${yp}$$</li><li>Bentuk: $a = 1 > 0$, terbuka ke atas. "Terbuka ke bawah" salah.</li><li>Potong sumbu y: $x = 0$ memberi $y = ${p * q}$, titik $(0, ${p * q})$.</li><li>Nilai minimum = $y_p = ${yp}$. Cek: $f(${xp + 1}) = ${(xp + 1) ** 2 - (p + q) * (xp + 1) + p * q}$, lebih besar dari ${yp}.</li></ol>` }; },
 ]},
 
 matriks: { nama: 'Matriks', rumus: L`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$ Penjumlahan dan pengurangan dilakukan per elemen seletak.`,
 pg: [
   () => { const a = R(-5, 5) || 1, b = R(-5, 5), c = R(-5, 5), d = R(-5, 5) || 2, det = a * d - b * c;
     return pg(`Determinan matriks $\\begin{pmatrix}${a} & ${b}\\\\ ${c} & ${d}\\end{pmatrix}$ adalah ....`,
-      det, [a * d + b * c, a + d - b - c, a * b - c * d, b * c - a * d], L`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$`, '',
-      L`$$(${a})(${d}) - (${b})(${c}) = ${a * d} - (${b * c}) = ${det}$$`); },
+      det, [a * d + b * c, a + d - b - c, a * b - c * d, b * c - a * d], L`<p>Determinan adalah satu angka yang dihitung dari matriks persegi. Untuk ordo 2×2: kalikan diagonal utama (kiri atas ke kanan bawah), lalu kurangi hasil kali diagonal samping (kanan atas ke kiri bawah). $$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$</p><p>Hati-hati tanda negatif: tulis setiap bilangan negatif dalam kurung.</p>`, '',
+      L`<ol><li>Diagonal utama: $(${a}) \times (${d}) = ${a * d}$.</li><li>Diagonal samping: $(${b}) \times (${c}) = ${b * c}$.</li><li>Kurangkan (utama − samping): $$${a * d} - (${b * c}) = ${det}$$</li><li>Cek: urutan pengurangan penting. Samping − utama memberi ${-det}, itu jebakan.</li></ol>`); },
 ],
 mcma: [
   () => { const a = R(1, 4), b = R(1, 4), c = R(1, 4), d = R(1, 4), e = R(1, 3), f = R(1, 3), g = R(1, 3), h = R(1, 3);
@@ -673,8 +674,8 @@ mcma: [
       [`det A = ${s2.v}`, s2.t],
       [`$A - B = ${s3.v}$`, s3.t],
       [`det B = ${s4.v}`, s4.t]],
-    rumus: L`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$ Penjumlahan/pengurangan matriks: operasikan elemen yang seletak.`,
-    bahas: L`$$A + B = ${mx(a + e, b + f, c + g, d + h)}, \qquad A - B = ${mx(a - e, b - f, c - g, d - h)}$$ $$\det A = ${a} \cdot ${d} - ${b} \cdot ${c} = ${a * d - b * c}, \qquad \det B = ${e} \cdot ${h} - ${f} \cdot ${g} = ${e * h - f * g}$$` }; },
+    rumus: L`<p>Penjumlahan dan pengurangan matriks: operasikan elemen yang posisinya sama (baris dan kolom sama). Kedua matriks harus berordo sama.</p><p>Determinan 2×2: diagonal utama dikali, dikurangi hasil kali diagonal samping. $$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$</p>`,
+    bahas: L`<ol><li>$A + B$: jumlahkan per posisi. $$\begin{pmatrix}${a}+${e} & ${b}+${f}\\ ${c}+${g} & ${d}+${h}\end{pmatrix} = ${mx(a + e, b + f, c + g, d + h)}$$</li><li>$\det A = ${a} \times ${d} - ${b} \times ${c} = ${a * d} - ${b * c} = ${a * d - b * c}$.</li><li>$A - B$: kurangkan per posisi. $$\begin{pmatrix}${a}-${e} & ${b}-${f}\\ ${c}-${g} & ${d}-${h}\end{pmatrix} = ${mx(a - e, b - f, c - g, d - h)}$$</li><li>$\det B = ${e} \times ${h} - ${f} \times ${g} = ${e * h} - ${f * g} = ${e * h - f * g}$.</li><li>Bandingkan setiap elemen pernyataan dengan hasil di atas; satu elemen berbeda saja sudah membuatnya salah.</li></ol>` }; },
 ]},
 
 programLinear: { nama: 'Program Linear', rumus: L`Langkah: susun model matematika (pertidaksamaan kendala), gambar daerah penyelesaian, tentukan titik pojok, lalu uji tiap titik ke fungsi tujuan $$f(x, y) = px + qy$$ Nilai optimum ada di salah satu titik pojok.`,
@@ -682,15 +683,15 @@ pg: [
   () => { const p = R(2, 5), q = R(2, 5), x1 = R(4, 8), y3 = R(4, 8), x2 = R(2, x1 - 1), y2 = R(2, y3 - 1);
     const v = [p * x1, q * y3, p * x2 + q * y2], mx = Math.max(...v);
     return pg(`Nilai maksimum f(x, y) = ${p}x + ${q}y pada daerah dengan titik pojok (0, 0), (${x1}, 0), (${x2}, ${y2}), dan (0, ${y3}) adalah ....`,
-      mx, v.filter(x => x !== mx).concat([p * x1 + q * y3, Math.min(...v) - 1]), L`Substitusikan setiap titik pojok ke $$f(x, y) = px + qy$$ lalu ambil hasil terbesar.`, '',
-      L`$$f(0,0) = 0, \quad f(${x1},0) = ${v[0]}, \quad f(${x2},${y2}) = ${v[2]}, \quad f(0,${y3}) = ${v[1]}$$ Terbesar: $${mx}$.`); },
+      mx, v.filter(x => x !== mx).concat([p * x1 + q * y3, Math.min(...v) - 1]), L`<p>Daerah penyelesaian program linear berbentuk segi banyak. Fungsi tujuan $f(x, y) = px + qy$ berbentuk garis lurus, sehingga nilainya paling besar atau paling kecil selalu di salah satu titik pojok, bukan di tengah daerah.</p><p>Metode uji titik pojok: masukkan setiap titik pojok ke $f$, lalu pilih hasil terbesar (maksimum) atau terkecil (minimum).</p>`, '',
+      L`<ol><li>$f(0, 0) = ${p}(0) + ${q}(0) = 0$</li><li>$f(${x1}, 0) = ${p}(${x1}) + ${q}(0) = ${v[0]}$</li><li>$f(${x2}, ${y2}) = ${p}(${x2}) + ${q}(${y2}) = ${p * x2} + ${q * y2} = ${v[2]}$</li><li>$f(0, ${y3}) = ${p}(0) + ${q}(${y3}) = ${v[1]}$</li><li>Bandingkan: ${[0, v[0], v[2], v[1]].join(', ')}. Terbesar $= ${mx}$.</li><li>Jebakan: $${p}(${x1}) + ${q}(${y3}) = ${p * x1 + q * y3}$ bukan jawaban, karena $(${x1}, ${y3})$ bukan titik pojok.</li></ol>`); },
   () => { let a1, b1, a2, b2; do { [a1, b1] = shuffle([1, 2, 3]); a2 = R(1, 4); b2 = R(1, 4); } while (a2 === b2 || b1 === a2 || a1 === b2);
     const K = R(10, 20), P = R(12, 24), m = (u, v, w, s, z, y) => `${u}x + ${v}y ${z} ${w}; ${s}`;
     const ans = `${a1}x + ${b1}y ≤ ${K}; ${a2}x + ${b2}y ≤ ${P}; x ≥ 0; y ≥ 0`;
     return pg(`Seragam jenis A memerlukan ${a1} m kain katun dan ${a2} m kain polos. Seragam jenis B memerlukan ${b1} m kain katun dan ${b2} m kain polos. Persediaan kain katun ${K} m dan kain polos ${P} m. Jika banyak seragam A = x dan seragam B = y, model matematikanya adalah ....`,
       ans, [`${b1}x + ${a1}y ≤ ${K}; ${b2}x + ${a2}y ≤ ${P}; x ≥ 0; y ≥ 0`, `${a1}x + ${b1}y ≥ ${K}; ${a2}x + ${b2}y ≥ ${P}; x ≥ 0; y ≥ 0`, `${a1}x + ${a2}y ≤ ${K}; ${b1}x + ${b2}y ≤ ${P}; x ≥ 0; y ≥ 0`, `${a1}x + ${b1}y ≤ ${P}; ${a2}x + ${b2}y ≤ ${K}; x ≥ 0; y ≥ 0`],
-      L`Tiap bahan menjadi satu kendala: $$(\text{kebutuhan A})\,x + (\text{kebutuhan B})\,y \le \text{persediaan}$$ ditambah $x \ge 0$, $y \ge 0$.`, '',
-      L`Katun: $${a1}x + ${b1}y \le ${K}$. Polos: $${a2}x + ${b2}y \le ${P}$. Banyak seragam tidak negatif: $x \ge 0,\ y \ge 0$.`); },
+      L`<p>Model matematika menerjemahkan cerita menjadi pertidaksamaan. Setiap bahan menjadi satu kendala: kain yang dipakai tidak boleh melebihi persediaan. $$(\text{kebutuhan A})\,x + (\text{kebutuhan B})\,y \le \text{persediaan}$$</p><p>Pakai $\le$ karena boleh memakai kurang dari atau sama dengan persediaan. Tambahkan $x \ge 0$, $y \ge 0$ karena banyak barang tidak mungkin negatif.</p><p>Tips: buat tabel dengan baris jenis seragam dan kolom bahan supaya angka tidak tertukar.</p>`, '',
+      L`<ol><li>Tabel: seragam A ($x$) butuh katun ${a1}, polos ${a2}; seragam B ($y$) butuh katun ${b1}, polos ${b2}.</li><li>Kain katun: $x$ seragam A memakai $${a1}x$ m, $y$ seragam B memakai $${b1}y$ m, totalnya maksimal ${K}: $$${a1}x + ${b1}y \le ${K}$$</li><li>Kain polos dengan cara sama: $$${a2}x + ${b2}y \le ${P}$$</li><li>Banyak seragam tidak negatif: $x \ge 0$, $y \ge 0$.</li><li>Cek: setiap pertidaksamaan hanya berisi satu jenis bahan, dan ruas kanannya persediaan bahan itu. Pilihan dengan $\ge$ salah karena berarti wajib memakai lebih dari persediaan.</li></ol>`); },
 ]},
 
 };
