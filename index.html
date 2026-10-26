@@ -24,16 +24,22 @@
   .kartu { display:flex; flex-direction:column; gap:.25rem; justify-content:center; min-height:44px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; text-decoration:none; color:var(--fg); }
   .kartu:hover { border-color:var(--acc); }
   .kartu b { color:var(--acc); }
-  .soal { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; margin:.75rem 0; }
+  .soal { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; margin:.75rem 0; min-width:0; }
   .soal p { margin:0 0 .5rem; }
   label { display:flex; gap:.5rem; align-items:flex-start; min-height:44px; padding:.4rem 0; cursor:pointer; }
   input { width:1.2rem; height:1.2rem; margin-top:.2rem; accent-color:var(--acc); flex:none; }
   table { width:100%; border-collapse:collapse; }
   td, th { border-top:1px solid var(--line); padding:.3rem; text-align:left; }
   td.c { width:4.5rem; } td.c label { justify-content:center; }
+  .data { width:auto; margin:.5rem 0; overflow-x:auto; display:block; }
+  .data th, .data td { border:1px solid var(--line); text-align:center; padding:.3rem .6rem; }
+  .fig { margin:.5rem 0; }
+  .fig svg { width:100%; max-width:360px; height:auto; display:block; }
+  .fig text { font-size:13px; fill:var(--fg); }
   details { margin-top:.5rem; border-top:1px dashed var(--line); padding-top:.5rem; }
   summary { cursor:pointer; color:var(--acc); min-height:44px; display:flex; align-items:center; }
-  .rumus { overflow-x:auto; }
+  .rumus, .bahas { overflow-x:auto; }
+  .bahas { margin-top:.5rem; padding:.75rem; background:#eef4f1; border-radius:6px; }
   .hasil { font-weight:600; margin-top:.5rem; }
   .ok { color:var(--ok); } .bad { color:var(--bad); }
   #skor { font-weight:700; align-self:center; }
@@ -45,186 +51,393 @@
   <div id="app"></div>
 </main>
 <script>
+const L = String.raw;
 const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const pick = a => a[R(0, a.length - 1)];
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 const fmt = n => n.toLocaleString('id-ID');
-const dsp = n => String(n).replace('.', ',');
+const r2 = x => Math.round(x * 100) / 100;
+const dsp = n => String(r2(n)).replace('.', ',');
 const C = (n, k) => { let r = 1; for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1); return r; };
 const fact = n => n <= 1 ? 1 : n * fact(n - 1);
 const gcd = (a, b) => b ? gcd(b, a % b) : a;
 const frac = (p, q) => { const g = gcd(p, q); return q / g === 1 ? String(p / g) : `${p / g}/${q / g}`; };
 const sup = n => String(n).split('').map(c => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]).join('');
 const pt = (x, y) => `(${x}, ${y})`;
+const sq = (k, n) => k === 1 ? `√${n}` : `${k}√${n}`;
 // Half the time the statement shows the correct value (Benar), half the time the wrong one (Salah).
 const tw = (benar, salah) => { const t = Math.random() < .5; return { v: t ? benar : salah, t }; };
 
-function pg(q, ans, salah, rumus, unit = '') {
+function pg(q, ans, salah, rumus, unit, bahas) {
   const s = [...new Set(salah.map(String))].filter(x => x !== String(ans));
-  for (let i = 2; s.length < 4; i++) { const c = isNaN(+ans) ? `${i - 1}/${i}` : String(+ans + i); if (c !== String(ans) && !s.includes(c)) s.push(c); }
+  for (let i = 2; s.length < 4; i++) { const c = isNaN(+ans) ? `${ans} (${i})` : String(+ans + i); if (c !== String(ans) && !s.includes(c)) s.push(c); }
   const opts = shuffle([String(ans), ...s.slice(0, 4)]).map(o => o + unit);
-  return { type: 'pg', q, opts, ans: opts.indexOf(String(ans) + unit), rumus };
+  return { type: 'pg', q, opts, ans: opts.indexOf(String(ans) + unit), rumus, bahas };
 }
 
-// ponytail: soal diagram/denah dari PDF diganti bentuk teks (persentase, tabel angka) supaya tanpa gambar; tambahkan SVG kalau mau visual.
+// ===== gambar (SVG) =====
+const svg = (w, h, label, inner) => `<figure class="fig"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${inner}</svg></figure>`;
+const grid = (x1, x2, y, kuat) => `<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" stroke="${kuat ? '#555a57' : '#e2e4e0'}"/>`;
+
+function svgBatang(lab, val, judul) {
+  const W = 340, y0 = 200, top = 20, x0 = 34, mx = Math.ceil(Math.max(...val) / 2) * 2, sy = (y0 - top) / mx, bw = (W - x0 - 8) / lab.length;
+  let g = '';
+  for (let v = 0; v <= mx; v++) g += grid(x0, W - 8, y0 - v * sy, !v) + (v % 2 ? '' : `<text x="${x0 - 6}" y="${y0 - v * sy + 4}" text-anchor="end">${v}</text>`);
+  lab.forEach((l, i) => { const x = x0 + i * bw + bw * .2, h = val[i] * sy; g += `<rect x="${x}" y="${y0 - h}" width="${bw * .6}" height="${h}" fill="#0f6b4f"/><text x="${x + bw * .3}" y="${y0 + 17}" text-anchor="middle">${l}</text>`; });
+  return svg(W, 225, `Diagram batang ${judul}: ` + lab.map((l, i) => `${l} ${val[i]}`).join(', '), g);
+}
+
+function svgGaris(lab, val) {
+  const W = 340, y0 = 200, top = 24, x0 = 34, mx = Math.ceil(Math.max(...val) / 10) * 10, sy = (y0 - top) / mx, dx = (W - x0 - 40) / (lab.length - 1);
+  let g = '';
+  for (let v = 0; v <= mx; v += 10) g += grid(x0, W - 8, y0 - v * sy, !v) + `<text x="${x0 - 6}" y="${y0 - v * sy + 4}" text-anchor="end">${v}</text>`;
+  const P = val.map((v, i) => [x0 + 20 + i * dx, y0 - v * sy]);
+  g += `<polyline points="${P.map(p => p.join(',')).join(' ')}" fill="none" stroke="#0f6b4f" stroke-width="2"/>`;
+  P.forEach((p, i) => g += `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#0f6b4f"/><text x="${p[0]}" y="${p[1] - 9}" text-anchor="middle">${val[i]}</text><text x="${p[0]}" y="${y0 + 17}" text-anchor="middle">${lab[i]}</text>`);
+  return svg(W, 225, 'Diagram garis pengunjung: ' + lab.map((l, i) => `${l} ${val[i]}`).join(', '), g);
+}
+
+function svgLingkaran(lab, pct) {
+  const cx = 110, cy = 110, r = 100, fill = ['#b9dccd', '#e8e2c8', '#d6dbe9', '#f0d4cc'];
+  let a = -Math.PI / 2, g = '';
+  pct.forEach((p, i) => {
+    const b = a + p / 100 * 2 * Math.PI, m = (a + b) / 2, tx = cx + r * .58 * Math.cos(m), ty = cy + r * .58 * Math.sin(m);
+    g += `<path d="M${cx},${cy} L${cx + r * Math.cos(a)},${cy + r * Math.sin(a)} A${r},${r} 0 ${p > 50 ? 1 : 0} 1 ${cx + r * Math.cos(b)},${cy + r * Math.sin(b)} Z" fill="${fill[i]}" stroke="#fff" stroke-width="2"/><text x="${tx}" y="${ty}" text-anchor="middle" font-weight="600">${lab[i]}</text><text x="${tx}" y="${ty + 15}" text-anchor="middle">${p}%</text>`;
+    a = b;
+  });
+  return svg(220, 220, 'Diagram lingkaran: ' + lab.map((l, i) => `${l} ${pct[i]} persen`).join(', '), g);
+}
+
+function svgKoordinat(polys) {
+  const u = 20, c = 135, X = x => c + x * u, Y = y => c - y * u;
+  let g = '';
+  for (let i = -6; i <= 6; i++) g += `<line x1="${X(i)}" x2="${X(i)}" y1="${Y(6)}" y2="${Y(-6)}" stroke="#e2e4e0"/><line y1="${Y(i)}" y2="${Y(i)}" x1="${X(-6)}" x2="${X(6)}" stroke="#e2e4e0"/>`
+    + (i && i % 2 === 0 ? `<text x="${X(i)}" y="${Y(0) + 14}" text-anchor="middle">${i}</text><text x="${X(0) - 4}" y="${Y(i) + 4}" text-anchor="end">${i}</text>` : '');
+  g += `<line x1="${X(-6.5)}" x2="${X(6.5)}" y1="${Y(0)}" y2="${Y(0)}" stroke="#555a57"/><line y1="${Y(-6.5)}" y2="${Y(6.5)}" x1="${X(0)}" x2="${X(0)}" stroke="#555a57"/><text x="${X(6.5)}" y="${Y(0) - 6}">x</text><text x="${X(0) + 6}" y="${Y(6.4)}">y</text>`;
+  polys.forEach(p => {
+    g += `<polygon points="${p.pts.map(q => X(q[0]) + ',' + Y(q[1])).join(' ')}" fill="none" stroke="${p.putus ? '#a1281e' : '#0f6b4f'}" stroke-width="2"${p.putus ? ' stroke-dasharray="5 3"' : ''}/>`;
+    p.pts.forEach((q, i) => g += `<circle cx="${X(q[0])}" cy="${Y(q[1])}" r="3" fill="#1d1f1e"/><text x="${X(q[0]) + 5}" y="${Y(q[1]) - 5}" font-weight="600">${p.lab[i]}</text>`);
+  });
+  return svg(275, 275, 'Bidang koordinat: ' + polys.map(p => p.pts.map((q, i) => p.lab[i] + pt(q[0], q[1])).join(' ')).join('; '), g);
+}
+
+const svgDenah = (p, l) => svg(300, 180, `Denah lantai ${p} m kali ${l} m`,
+  `<rect x="30" y="20" width="220" height="130" fill="#eef4f1" stroke="#0f6b4f" stroke-width="2"/><text x="140" y="90" text-anchor="middle">Lab Komputer</text><text x="140" y="172" text-anchor="middle">${p} m</text><text x="258" y="90">${l} m</text>`);
+
+const svgSiku = (bc, ac, ab) => svg(300, 200, `Segitiga siku-siku di C, BC ${bc}, AC ${ac}, AB ${ab}`,
+  `<polygon points="40,170 40,30 260,170" fill="#eef4f1" stroke="#0f6b4f" stroke-width="2"/><polyline points="40,156 54,156 54,170" fill="none" stroke="#0f6b4f"/><text x="26" y="186">C</text><text x="26" y="30">B</text><text x="264" y="186">A</text><text x="34" y="105" text-anchor="end">${bc}</text><text x="150" y="190" text-anchor="middle">${ac}</text><text x="160" y="90">${ab}</text>`);
+
+const svgGabungan = (p, l) => svg(300, 175, `Persegi panjang ${p} cm kali ${l} cm dengan setengah lingkaran di sisi kanan`,
+  `<path d="M20,40 H220 A50,50 0 0 1 220,140 H20 Z" fill="#eef4f1" stroke="#0f6b4f" stroke-width="2"/><line x1="220" y1="40" x2="220" y2="140" stroke="#0f6b4f" stroke-dasharray="4 3"/><text x="120" y="162" text-anchor="middle">${p} cm</text><text x="28" y="94">${l} cm</text>`);
+
+function svgSejajar() {
+  const pos = [[138, 70, 'A'], [188, 150, 'B']], off = [[24, -8], [-24, -8], [-24, 18], [24, 18]], sub = '₁₂₃₄';
+  let g = `<line x1="20" x2="320" y1="70" y2="70" stroke="#0f6b4f" stroke-width="2"/><line x1="20" x2="320" y1="150" y2="150" stroke="#0f6b4f" stroke-width="2"/><line x1="100" y1="10" x2="220" y2="200" stroke="#1d1f1e" stroke-width="2"/><text x="324" y="74">g</text><text x="324" y="154">h</text>`;
+  pos.forEach(([x, y, n]) => off.forEach((o, i) => g += `<text x="${x + o[0]}" y="${y + o[1]}" text-anchor="middle">${n}${sub[i]}</text>`));
+  return svg(340, 210, 'Garis g sejajar garis h dipotong satu garis. Sudut di titik A dan B diberi nomor 1 kanan atas, 2 kiri atas, 3 kiri bawah, 4 kanan bawah', g);
+}
+
+const svgKubus = () => svg(260, 215, 'Kubus ABCD.EFGH',
+  `<g fill="none" stroke="#0f6b4f" stroke-width="2"><polygon points="30,195 160,195 160,65 30,65"/><polyline points="160,195 220,155 220,25 160,65"/><polyline points="30,65 90,25 220,25"/></g><g stroke="#0f6b4f" stroke-dasharray="4 3"><line x1="30" y1="195" x2="90" y2="155"/><line x1="90" y1="155" x2="220" y2="155"/><line x1="90" y1="155" x2="90" y2="25"/></g>`
+  + [['A', 18, 210], ['B', 160, 210], ['C', 226, 162], ['D', 94, 150], ['E', 16, 62], ['F', 166, 80], ['G', 226, 22], ['H', 80, 18]].map(([t, x, y]) => `<text x="${x}" y="${y}" font-weight="600">${t}</text>`).join(''));
+
+// ===== bank soal =====
 const T = {
 
-bangunDatar: { nama: 'Bangun Datar', rumus: String.raw`Persegi panjang: $$K = 2\,(p+\ell), \qquad L = p \times \ell$$ Segitiga: $$L = \tfrac12\,a\,t$$ Lingkaran: $$K = 2\pi r, \qquad L = \pi r^2$$`,
+bangunDatar: { nama: 'Bangun Datar', rumus: L`Persegi panjang: $$K = 2\,(p+\ell), \qquad L = p \times \ell$$ Segitiga: $$L = \tfrac12\,a\,t$$ Lingkaran: $$K = 2\pi r, \qquad L = \pi r^2$$ Bangun gabungan: jumlahkan luas bagian-bagiannya.`,
 pg: [
   () => { const p = R(8, 20), l = R(3, p - 1), k = 2 * (p + l);
     return pg(`Sebuah persegi panjang berukuran panjang ${p} cm dan lebar ${l} cm. Keliling persegi panjang tersebut adalah ....`,
-      k, [p + l, p * l, 2 * p * l, k + 2], String.raw`$$K = 2\,(p + \ell)$$`, ' cm'); },
-  () => { const a = 2 * R(3, 8), t = R(4, 12), L = a * t / 2;
+      k, [p + l, p * l, 2 * p * l, k + 2], L`$$K = 2\,(p + \ell)$$`, ' cm',
+      L`$$K = 2\,(${p} + ${l}) = 2 \times ${p + l} = ${k}\ \text{cm}$$`); },
+  () => { const a = 2 * R(3, 8), t = R(4, 12), Ls = a * t / 2;
     return pg(`Luas segitiga dengan alas ${a} cm dan tinggi ${t} cm adalah ....`,
-      L, [a * t, a + t, 2 * (a + t), 2 * a * t], String.raw`$$L = \tfrac12\,a\,t$$`, ' cm²'); },
-  () => { const r = pick([7, 14, 21]), L = 22 / 7 * r * r;
+      Ls, [a * t, a + t, 2 * (a + t), 2 * a * t], L`$$L = \tfrac12\,a\,t$$`, ' cm²',
+      L`$$L = \tfrac12 \times ${a} \times ${t} = ${Ls}\ \text{cm}^2$$`); },
+  () => { const r = pick([7, 14, 21]), Ls = 22 * r * r / 7;
     return pg(`Luas lingkaran dengan jari-jari ${r} cm (π = 22/7) adalah ....`,
-      fmt(L), [fmt(2 * 22 / 7 * r), fmt(L / 2), fmt(L * 2), fmt(22 / 7 * r), fmt(L + 22)], String.raw`$$L = \pi r^2, \quad \pi = \tfrac{22}{7}$$`, ' cm²'); },
-  () => { const r = pick([7, 14, 21]), K = 2 * 22 / 7 * r;
+      fmt(Ls), [fmt(44 * r / 7), fmt(Ls / 2), fmt(Ls * 2), fmt(22 * r / 7), fmt(Ls + 22)], L`$$L = \pi r^2, \quad \pi = \tfrac{22}{7}$$`, ' cm²',
+      L`$$L = \tfrac{22}{7} \times ${r} \times ${r} = ${fmt(Ls)}\ \text{cm}^2$$`); },
+  () => { const r = pick([7, 14, 21]), K = 44 * r / 7;
     return pg(`Keliling lingkaran dengan jari-jari ${r} cm (π = 22/7) adalah ....`,
-      fmt(K), [fmt(22 / 7 * r * r), fmt(K / 2), fmt(K * 2), fmt(22 / 7 * r)], String.raw`$$K = 2\pi r$$`, ' cm'); },
+      fmt(K), [fmt(22 * r * r / 7), fmt(K / 2), fmt(K * 2), fmt(22 * r / 7)], L`$$K = 2\pi r$$`, ' cm',
+      L`$$K = 2 \times \tfrac{22}{7} \times ${r} = ${fmt(K)}\ \text{cm}$$`); },
+  () => { const l = pick([14, 28]), p = R(15, 30), pp = p * l, sl = 11 * l * l / 28, tot = pp + sl;
+    return pg(`Perhatikan bangun berikut. Bangun terdiri dari persegi panjang ${p} cm × ${l} cm dan setengah lingkaran berdiameter ${l} cm. Luas bangun tersebut adalah .... (π = 22/7)${svgGabungan(p, l)}`,
+      fmt(tot), [fmt(pp), fmt(pp + 2 * sl), fmt(pp + 4 * sl), fmt(pp - sl)], L`$$L_{\text{gabungan}} = L_{\text{persegi panjang}} + \tfrac12\,\pi r^2, \qquad r = \tfrac{d}{2}$$`, ' cm²',
+      L`$$L_1 = ${p} \times ${l} = ${fmt(pp)}$$ $$L_2 = \tfrac12 \times \tfrac{22}{7} \times ${l / 2}^2 = ${fmt(sl)}$$ $$L = ${fmt(pp)} + ${fmt(sl)} = ${fmt(tot)}\ \text{cm}^2$$`); },
 ],
 bs: [
-  () => { const p = R(6, 12), l = R(4, Math.min(8, p - 1)), A = p * l, K = 2 * (p + l);
-    const s1 = tw(A, A + R(2, 6)), s2 = tw(K, K + R(2, 6)), s3 = tw(4 * A, 4 * A + 20), s4 = tw(Math.floor(A / 1.5), Math.floor(A / 1.5) + R(2, 5));
-    return { type: 'bs', q: `Lantai lab komputer berbentuk persegi panjang berukuran ${p} m × ${l} m akan dipasang keramik 50 cm × 50 cm tanpa sisa.`, st: [
+  () => { const p = R(6, 12), l = R(4, Math.min(8, p - 1)), A = p * l, K = 2 * (p + l), u = Math.floor(A / 1.5);
+    const s1 = tw(A, A + R(2, 6)), s2 = tw(K, K + R(2, 6)), s3 = tw(4 * A, 4 * A + 20), s4 = tw(u, u + R(2, 5));
+    return { type: 'bs', q: `Lantai lab komputer berbentuk persegi panjang dengan ukuran seperti pada denah. Lantai akan dipasang keramik 50 cm × 50 cm tanpa sisa.${svgDenah(p, l)}`, st: [
       [`Luas lantai lab adalah ${s1.v} m²`, s1.t],
       [`Keliling lantai lab adalah ${s2.v} m`, s2.t],
       [`Banyak keramik yang dibutuhkan adalah ${s3.v} buah`, s3.t],
       [`Jika setiap unit komputer beserta mejanya butuh 1,5 m², lab memuat paling banyak ${s4.v} unit`, s4.t]],
-    rumus: String.raw`$$L = p \times \ell, \qquad K = 2\,(p+\ell)$$ Banyak keramik: $$n = \frac{L_{\text{lantai}}}{L_{\text{keramik}}}$$` }; },
+    rumus: L`$$L = p \times \ell, \qquad K = 2\,(p+\ell)$$ Banyak keramik: $$n = \frac{L_{\text{lantai}}}{L_{\text{keramik}}}$$ Samakan satuan dahulu: $50\ \text{cm} = 0{,}5\ \text{m}$.`,
+    bahas: L`$$L = ${p} \times ${l} = ${A}\ \text{m}^2, \qquad K = 2\,(${p} + ${l}) = ${K}\ \text{m}$$ $$L_{\text{keramik}} = 0{,}5 \times 0{,}5 = 0{,}25\ \text{m}^2 \Rightarrow n = \frac{${A}}{0{,}25} = ${4 * A}$$ $$\frac{${A}}{1{,}5} = ${dsp(A / 1.5)} \Rightarrow \text{paling banyak } ${u} \text{ unit}$$` }; },
 ]},
 
-bangunRuang: { nama: 'Bangun Ruang', rumus: String.raw`Balok: $$V = p \times \ell \times t$$ Kubus: $$V = s^3$$ Tabung: $$V = \pi r^2 t$$`,
+bangunRuang: { nama: 'Bangun Ruang', rumus: L`Balok: $$V = p \times \ell \times t$$ Kubus: $$V = s^3$$ Tabung: $$V = \pi r^2 t$$`,
 pg: [
   () => { const p = R(4, 10), l = R(3, 8), t = R(3, 8), V = p * l * t;
     return pg(`Sebuah balok berukuran ${p} cm × ${l} cm × ${t} cm. Volume balok tersebut adalah ....`,
-      V, [p + l + t, 2 * (p * l + p * t + l * t), V * 2, p * l], String.raw`$$V = p \times \ell \times t$$`, ' cm³'); },
-  () => { const r = pick([7, 14]), t = R(5, 10), V = 22 / 7 * r * r * t;
+      V, [p + l + t, 2 * (p * l + p * t + l * t), V * 2, p * l], L`$$V = p \times \ell \times t$$`, ' cm³',
+      L`$$V = ${p} \times ${l} \times ${t} = ${V}\ \text{cm}^3$$`); },
+  () => { const r = pick([7, 14]), t = R(5, 10), V = 22 * r * r * t / 7;
     return pg(`Volume tabung dengan jari-jari alas ${r} cm dan tinggi ${t} cm (π = 22/7) adalah ....`,
-      fmt(V), [fmt(2 * 22 / 7 * r * t), fmt(V / 2), fmt(V * 2), fmt(22 / 7 * r * t), fmt(V + 22)], String.raw`$$V = \pi r^2 t$$`, ' cm³'); },
+      fmt(V), [fmt(44 * r * t / 7), fmt(V / 2), fmt(V * 2), fmt(22 * r * t / 7), fmt(V + 22)], L`$$V = \pi r^2 t$$`, ' cm³',
+      L`$$V = \tfrac{22}{7} \times ${r}^2 \times ${t} = ${fmt(V)}\ \text{cm}^3$$`); },
   () => { const s = R(3, 9), V = s ** 3;
     return pg(`Volume kubus dengan panjang rusuk ${s} cm adalah ....`,
-      V, [s * s, 6 * s * s, 3 * s, V + s], String.raw`$$V = s^3$$`, ' cm³'); },
+      V, [s * s, 6 * s * s, 3 * s, V + s], L`$$V = s^3$$`, ' cm³',
+      L`$$V = ${s}^3 = ${s} \times ${s} \times ${s} = ${V}\ \text{cm}^3$$`); },
 ]},
 
-konversi: { nama: 'Konversi Satuan & Skala', rumus: String.raw`$$1\ \text{GB} = 1024\ \text{MB}, \qquad 1\ \text{km} = 100000\ \text{cm}$$ Skala: $$\text{jarak sebenarnya} = \text{jarak peta} \times \text{skala}$$`,
+dimensiTiga: { nama: 'Dimensi Tiga (Kubus)', rumus: L`Kubus rusuk $s$: $$\text{diagonal sisi} = s\sqrt2, \qquad \text{diagonal ruang} = s\sqrt3$$ Jarak titik ke bidang = panjang garis tegak lurus dari titik ke bidang. Jarak titik sudut ke bidang diagonal yang memuat rusuk di depannya $= \tfrac12 s\sqrt2$.`,
+pg: [
+  () => { const s = pick([4, 6, 8, 10, 12]), h = s / 2;
+    const v = pick([
+      ['panjang diagonal ruang AG', sq(s, 3), L`$$AG = \sqrt{AB^2 + BC^2 + CG^2} = \sqrt{3 \times ${s}^2} = ${s}\sqrt3\ \text{cm}$$`],
+      ['panjang diagonal sisi AC', sq(s, 2), L`$$AC = \sqrt{AB^2 + BC^2} = \sqrt{2 \times ${s}^2} = ${s}\sqrt2\ \text{cm}$$`],
+      ['jarak titik E ke bidang ABCD', String(s), L`EA tegak lurus bidang ABCD, jadi jaraknya $= EA = ${s}$ cm.`],
+      ['jarak titik A ke bidang BDHF', sq(h, 2), L`Jarak A ke BDHF $= AO$, dengan O titik tengah diagonal AC: $$AO = \tfrac12\,AC = \tfrac12 \times ${s}\sqrt2 = ${h}\sqrt2\ \text{cm}$$`],
+    ]);
+    return pg(`Perhatikan kubus ABCD.EFGH dengan panjang rusuk ${s} cm. Nilai ${v[0]} adalah ....${svgKubus()}`,
+      v[1], [sq(s, 3), sq(s, 2), String(s), sq(h, 2), sq(h, 3), String(2 * s)], L`$$\text{diagonal sisi} = s\sqrt2, \qquad \text{diagonal ruang} = s\sqrt3$$ Jarak titik ke bidang: tarik garis tegak lurus dari titik ke bidang.`, ' cm', v[2]); },
+],
+mcma: [
+  () => { const s = pick([4, 6, 8, 10]), h = s / 2;
+    const s1 = tw(sq(s, 2), sq(s, 3)), s2 = tw(sq(s, 3), sq(s, 2)), s3 = tw(String(s), sq(s, 2)), s4 = tw(sq(h, 2), sq(s, 2)), s5 = tw(s ** 3, 6 * s * s);
+    return { type: 'mcma', q: `Diketahui kubus ABCD.EFGH dengan panjang rusuk ${s} cm. Pilih semua pernyataan yang benar.${svgKubus()}`, st: [
+      [`Panjang diagonal sisi AC adalah ${s1.v} cm`, s1.t],
+      [`Panjang diagonal ruang AG adalah ${s2.v} cm`, s2.t],
+      [`Jarak titik E ke bidang ABCD adalah ${s3.v} cm`, s3.t],
+      [`Jarak titik A ke bidang BDHF adalah ${s4.v} cm`, s4.t],
+      [`Volume kubus adalah ${s5.v} cm³`, s5.t]],
+    rumus: L`$$\text{diagonal sisi} = s\sqrt2, \quad \text{diagonal ruang} = s\sqrt3, \quad V = s^3$$ Jarak titik ke bidang: garis tegak lurus dari titik ke bidang.`,
+    bahas: L`$$AC = ${s}\sqrt2, \quad AG = ${s}\sqrt3, \quad d(E, ABCD) = EA = ${s}$$ $$d(A, BDHF) = \tfrac12\,AC = ${h}\sqrt2, \qquad V = ${s}^3 = ${s ** 3}$$` }; },
+]},
+
+konversi: { nama: 'Konversi Satuan & Skala', rumus: L`$$1\ \text{GB} = 1024\ \text{MB}, \qquad 1\ \text{km} = 100000\ \text{cm}$$ Skala: $$\text{jarak sebenarnya} = \text{jarak peta} \times \text{skala}$$`,
 pg: [
   () => { const n = R(2, 8);
     return pg(`Jika 1 GB = 1.024 MB, maka ${n} GB sama dengan ....`,
-      fmt(n * 1024), [fmt(n * 1000), fmt(n * 100), fmt(1024), fmt(n * 512), fmt(n * 2048)], String.raw`$$1\ \text{GB} = 1024\ \text{MB}$$`, ' MB'); },
+      fmt(n * 1024), [fmt(n * 1000), fmt(n * 100), fmt(1024), fmt(n * 512), fmt(n * 2048)], L`$$1\ \text{GB} = 1024\ \text{MB}$$`, ' MB',
+      L`$$${n}\ \text{GB} = ${n} \times 1024 = ${fmt(n * 1024)}\ \text{MB}$$`); },
   () => { const m = pick([[200000, 2], [500000, 5], [1000000, 10]]), d = R(2, 8), x = m[1] * d;
     return pg(`Sebuah peta berskala 1 : ${fmt(m[0])}. Jika jarak dua kota pada peta ${d} cm, jarak sebenarnya adalah ....`,
-      x, [x * 10, x * 100, d, x * 2], String.raw`$$\text{jarak sebenarnya} = \text{jarak peta} \times \text{skala}$$ Ingat: $1\ \text{km} = 100000\ \text{cm}$`, ' km'); },
+      x, [x * 10, x * 100, d, x * 2], L`$$\text{jarak sebenarnya} = \text{jarak peta} \times \text{skala}$$ Ingat: $1\ \text{km} = 100000\ \text{cm}$`, ' km',
+      L`$$${d} \times ${fmt(m[0])} = ${fmt(d * m[0])}\ \text{cm} = \frac{${fmt(d * m[0])}}{100000}\ \text{km} = ${x}\ \text{km}$$`); },
 ]},
 
-trigonometri: { nama: 'Trigonometri', rumus: String.raw`$$\sin = \frac{\text{depan}}{\text{miring}}, \quad \cos = \frac{\text{samping}}{\text{miring}}, \quad \tan = \frac{\text{depan}}{\text{samping}}$$ Sudut istimewa: $$\sin 30^\circ = \tfrac12,\ \sin 45^\circ = \tfrac{\sqrt2}{2},\ \sin 60^\circ = \tfrac{\sqrt3}{2},\ \tan 45^\circ = 1$$ Sudut elevasi: $$\text{tinggi} = \text{jarak} \times \tan\theta$$`,
+trigonometri: { nama: 'Trigonometri', rumus: L`$$\sin = \frac{\text{depan}}{\text{miring}}, \quad \cos = \frac{\text{samping}}{\text{miring}}, \quad \tan = \frac{\text{depan}}{\text{samping}}$$ Sudut istimewa: $$\sin 30^\circ = \tfrac12,\ \sin 45^\circ = \tfrac{\sqrt2}{2},\ \sin 60^\circ = \tfrac{\sqrt3}{2},\ \tan 45^\circ = 1$$ Sudut elevasi: $$\text{tinggi} = \text{jarak} \times \tan\theta$$`,
 pg: [
-  () => { const bank = [['sin 30° + cos 60°', '1'], ['cos 30° + sin 60°', '√3'], ['tan 45° + sin 30°', '3/2'], ['sin 45° × cos 45°', '1/2'], ['tan 30° × tan 60°', '1']];
-    const [ex, ans] = pick(bank);
+  () => { const [ex, ans, b] = pick([
+      ['sin 30° + cos 60°', '1', L`$$\tfrac12 + \tfrac12 = 1$$`],
+      ['cos 30° + sin 60°', '√3', L`$$\tfrac{\sqrt3}{2} + \tfrac{\sqrt3}{2} = \sqrt3$$`],
+      ['tan 45° + sin 30°', '3/2', L`$$1 + \tfrac12 = \tfrac32$$`],
+      ['sin 45° × cos 45°', '1/2', L`$$\tfrac{\sqrt2}{2} \times \tfrac{\sqrt2}{2} = \tfrac{2}{4} = \tfrac12$$`],
+      ['tan 30° × tan 60°', '1', L`$$\tfrac{\sqrt3}{3} \times \sqrt3 = \tfrac{3}{3} = 1$$`]]);
     return pg(`Nilai dari ${ex} adalah ....`, ans, ['0', '1', '1/2', '√3', '3/2', '√2', '2'].filter(x => x !== ans),
-      String.raw`$$\sin 30^\circ = \cos 60^\circ = \tfrac12, \quad \sin 60^\circ = \cos 30^\circ = \tfrac{\sqrt3}{2}, \quad \tan 45^\circ = 1, \quad \tan 30^\circ \cdot \tan 60^\circ = \tfrac{\sqrt3}{3} \cdot \sqrt3$$`); },
+      L`$$\sin 30^\circ = \cos 60^\circ = \tfrac12, \quad \sin 60^\circ = \cos 30^\circ = \tfrac{\sqrt3}{2}$$ $$\sin 45^\circ = \cos 45^\circ = \tfrac{\sqrt2}{2}, \quad \tan 30^\circ = \tfrac{\sqrt3}{3}, \quad \tan 45^\circ = 1, \quad \tan 60^\circ = \sqrt3$$`, '', b); },
   () => { const tr = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25]]), k = pick([1, 2]);
-    return pg(`Segitiga ABC siku-siku di C dengan BC = ${tr[0] * k} cm, AC = ${tr[1] * k} cm, dan AB = ${tr[2] * k} cm. Nilai sin A adalah ....`,
+    return pg(`Perhatikan segitiga ABC siku-siku di C berikut (ukuran dalam cm). Nilai sin A adalah ....${svgSiku(tr[0] * k, tr[1] * k, tr[2] * k)}`,
       frac(tr[0], tr[2]), [frac(tr[1], tr[2]), frac(tr[0], tr[1]), `${tr[1]}/${tr[0]}`, `${tr[2]}/${tr[0]}`],
-      String.raw`Sisi depan sudut A adalah BC, sisi miring adalah AB: $$\sin A = \frac{\text{depan}}{\text{miring}}$$`); },
+      L`$$\sin A = \frac{\text{sisi depan } A}{\text{sisi miring}}$$`, '',
+      L`Sisi depan sudut A adalah BC, sisi miring adalah AB: $$\sin A = \frac{BC}{AB} = \frac{${tr[0] * k}}{${tr[2] * k}} = \frac{${tr[0]}}{${tr[2]}}$$`); },
   () => { const d = pick([8, 10, 12, 15]);
     return pg(`Seorang pengamat berdiri ${d} m dari sebuah menara. Sudut elevasi dari garis pandang matanya ke puncak menara 45°. Tinggi menara di atas garis pandang mata adalah ....`,
-      d, [d * 2, Math.round(d * 1.7), Math.round(d / 2), d + 5], String.raw`$$\text{tinggi} = \text{jarak} \times \tan\theta, \qquad \tan 45^\circ = 1$$`, ' m'); },
+      d, [d * 2, Math.round(d * 1.7), Math.round(d / 2), d + 5], L`$$\text{tinggi} = \text{jarak} \times \tan\theta$$`, ' m',
+      L`$$t = ${d} \times \tan 45^\circ = ${d} \times 1 = ${d}\ \text{m}$$`); },
 ],
 mcma: [
-  () => { const d = pick([10, 12, 15]);
-    const s1 = tw(`${d} m`, `${d}√2 m`), s3 = tw(`(${d}√3)/3 m`, `${d}√3 m`), s5 = tw('√2/2', '1/2');
-    return { type: 'mcma', q: `Seorang siswa berdiri ${d} m dari sebuah tiang. Tinggi matanya 1,5 m dan sudut elevasi ke puncak tiang 45°. Pilih semua pernyataan yang benar.`, st: [
+  () => { const d = pick([10, 12, 15]), t30 = d % 3 ? `(${d}√3)/3` : sq(d / 3, 3);
+    const s1 = tw(`${d} m`, `${d}√2 m`), s3 = tw(`${t30} m`, `${d}√3 m`), s5 = tw('√2/2', '1/2');
+    return { type: 'mcma', q: `Seorang siswa berdiri ${d} m dari sebuah tiang antena. Tinggi matanya 1,5 m dan sudut elevasi ke puncak tiang 45°. Pilih semua pernyataan yang benar.`, st: [
       [`Tinggi tiang di atas garis pandang mata adalah ${s1.v}`, s1.t],
       [`Tinggi tiang dari tanah adalah ${dsp(d + 1.5)} m`, true],
       [`Jika sudut elevasi 30° dengan jarak sama, tinggi di atas garis pandang adalah ${s3.v}`, s3.t],
       [`Jarak mata siswa ke puncak tiang adalah ${d}√2 m`, true],
       [`Nilai sin 45° = ${s5.v}`, s5.t]],
-    rumus: String.raw`$$\tan\theta = \frac{\text{tinggi di atas mata}}{\text{jarak}}$$ $$\tan 45^\circ = 1, \quad \tan 30^\circ = \frac{\sqrt3}{3}, \quad \sin 45^\circ = \frac{\sqrt2}{2}$$` }; },
+    rumus: L`$$\tan\theta = \frac{\text{tinggi di atas mata}}{\text{jarak}}$$ $$\tan 45^\circ = 1, \quad \tan 30^\circ = \frac{\sqrt3}{3}, \quad \sin 45^\circ = \frac{\sqrt2}{2}$$ Tinggi dari tanah = tinggi di atas mata + tinggi mata.`,
+    bahas: L`$$t = ${d} \tan 45^\circ = ${d}\ \text{m}, \qquad \text{dari tanah} = ${d} + 1{,}5 = ${dsp(d + 1.5)}\ \text{m}$$ $$t_{30^\circ} = ${d} \times \tfrac{\sqrt3}{3}, \qquad \text{jarak mata–puncak} = \sqrt{${d}^2 + ${d}^2} = ${d}\sqrt2$$ $$\sin 45^\circ = \tfrac{\sqrt2}{2}$$` }; },
 ]},
 
-transformasi: { nama: 'Transformasi Geometri', rumus: String.raw`$$\begin{aligned}&\text{refleksi sumbu } x: (x, y) \to (x, -y)\\ &\text{refleksi sumbu } y: (x, y) \to (-x, y)\\ &\text{refleksi titik } O: (x, y) \to (-x, -y)\\ &\text{translasi } T(a, b): (x, y) \to (x+a,\ y+b)\\ &\text{dilatasi } [O, k]: (x, y) \to (kx,\ ky)\end{aligned}$$`,
+garisSudut: { nama: 'Garis & Sudut', rumus: L`Dua garis sejajar dipotong garis lain: $$\text{sehadap, dalam/luar berseberangan: sama besar}$$ $$\text{dalam/luar sepihak: jumlahnya } 180^\circ$$ $$\text{bertolak belakang: sama besar}, \qquad \text{berpelurus: jumlahnya } 180^\circ$$`,
+pg: [
+  () => { const a = pick([40, 45, 50, 55, 60, 65, 70, 75, 110, 115, 120, 125, 130, 135]), i = R(1, 4), j = R(1, 4), sub = '₁₂₃₄';
+    const a1 = i % 2 ? a : 180 - a, ans = j % 2 ? a1 : 180 - a1;
+    const nama = { 11: 'sehadap', 22: 'sehadap', 33: 'sehadap', 44: 'sehadap', 31: 'dalam berseberangan', 42: 'dalam berseberangan', 13: 'luar berseberangan', 24: 'luar berseberangan', 32: 'dalam sepihak', 41: 'dalam sepihak', 14: 'luar sepihak', 23: 'luar sepihak' }[`${i}${j}`];
+    const l1 = i === 1 ? '' : i === 3 ? L`$\angle A_1 = \angle A_3 = ${a1}^\circ$ (bertolak belakang). ` : L`$\angle A_1 = 180^\circ - ${a}^\circ = ${a1}^\circ$ (berpelurus). `;
+    const l3 = j === 1 ? '' : j === 3 ? L` $\angle B_3 = \angle B_1 = ${ans}^\circ$ (bertolak belakang).` : L` $\angle B_${j} = 180^\circ - ${a1}^\circ = ${ans}^\circ$ (berpelurus).`;
+    return pg(`Perhatikan gambar. Garis g sejajar garis h. Jika besar ∠A${sub[i - 1]} = ${a}°, besar ∠B${sub[j - 1]} adalah ....${svgSejajar()}`,
+      ans, [180 - ans, 90, 360 - ans, ans + 10, ans - 10], L`Sehadap, berseberangan, dan bertolak belakang: sama besar. Sepihak dan berpelurus: jumlahnya $180^\circ$.`, '°',
+      (nama ? `∠A${sub[i - 1]} dan ∠B${sub[j - 1]} adalah sudut ${nama}. ` : '') + l1 + L`$\angle B_1 = \angle A_1 = ${a1}^\circ$ (sehadap).` + l3); },
+  () => { const p = pick([10, 15, 20, 25, 30]), q = pick([10, 15, 20, 25, 30]), x = p + q, ang = 2 * x + p;
+    return pg(`Perhatikan gambar. Garis g sejajar garis h. Diketahui ∠A₁ = (2x + ${p})° dan ∠B₁ = (3x − ${q})°. Besar ∠A₁ adalah ....${svgSejajar()}`,
+      ang, [x, 180 - ang, 2 * x, ang + 10, 3 * x], L`Sudut sehadap sama besar. Samakan kedua bentuk aljabar, cari $x$, lalu substitusikan.`, '°',
+      L`∠A₁ dan ∠B₁ sehadap: $$2x + ${p} = 3x - ${q} \Rightarrow x = ${p} + ${q} = ${x}$$ $$\angle A_1 = 2(${x}) + ${p} = ${ang}^\circ$$`); },
+]},
+
+pythagoras: { nama: 'Pythagoras & Kesebangunan', rumus: L`Pythagoras (c sisi miring): $$c^2 = a^2 + b^2$$ Kesebangunan: sisi-sisi yang bersesuaian sebanding $$\frac{AB}{PQ} = \frac{BC}{QR} = \frac{AC}{PR}$$`,
+pg: [
+  () => { const tr = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10]]), k = pick([1, 2, 3]), [a, b, c] = tr.map(x => x * k);
+    return pg(`Sebuah segitiga siku-siku memiliki sisi tegak ${a} cm dan ${b} cm. Panjang sisi miringnya adalah ....`,
+      c, [a + b, c + 1, c - 1, a * b / 2], L`$$c = \sqrt{a^2 + b^2}$$`, ' cm',
+      L`$$c = \sqrt{${a}^2 + ${b}^2} = \sqrt{${a * a} + ${b * b}} = \sqrt{${c * c}} = ${c}\ \text{cm}$$`); },
+  () => { const [a, b, c] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15]]);
+    return pg(`Sebuah tangga sepanjang ${c} m bersandar pada dinding. Jarak kaki tangga ke dinding ${a} m. Tinggi ujung atas tangga dari lantai adalah ....`,
+      b, [c + a, c - a, c, b + 1], L`$$b = \sqrt{c^2 - a^2}$$`, ' m',
+      L`$$t = \sqrt{${c}^2 - ${a}^2} = \sqrt{${c * c} - ${a * a}} = \sqrt{${b * b}} = ${b}\ \text{m}$$`); },
+  () => { const a = R(3, 8), b = R(3, 9), k = pick([2, 3]);
+    return pg(`Segitiga ABC sebangun dengan segitiga PQR. Sisi AB bersesuaian dengan PQ dan BC bersesuaian dengan QR. Jika AB = ${a} cm, BC = ${b} cm, dan PQ = ${k * a} cm, panjang QR adalah ....`,
+      k * b, [b + (k - 1) * a, k * a, a * b, k * b + 2], L`$$\frac{AB}{PQ} = \frac{BC}{QR}$$`, ' cm',
+      L`$$\frac{${a}}{${k * a}} = \frac{${b}}{QR} \Rightarrow QR = \frac{${b} \times ${k * a}}{${a}} = ${k * b}\ \text{cm}$$`); },
+  () => { const t = R(1, 3), s = R(2, 4), k = R(3, 8), S = s * k, Tg = t * k;
+    return pg(`Sebuah tongkat setinggi ${t} m memiliki bayangan ${s} m. Pada saat yang sama, bayangan sebuah tiang ${S} m. Tinggi tiang tersebut adalah ....`,
+      Tg, [dsp(S * s / t), S, t * S, Tg + 2], L`Benda dan bayangannya sebangun: $$\frac{\text{tinggi}_1}{\text{bayangan}_1} = \frac{\text{tinggi}_2}{\text{bayangan}_2}$$`, ' m',
+      L`$$\frac{${t}}{${s}} = \frac{T}{${S}} \Rightarrow T = \frac{${t} \times ${S}}{${s}} = ${Tg}\ \text{m}$$`); },
+],
+bs: [
+  () => { const k = pick([4, 5, 6]);
+    const s1 = tw(5 * k, 7 * k), s2 = tw(12 * k * k, 12 * k * k + k), s3 = tw('4 : 3', '16 : 9'), s4 = tw(`${8 * k} × ${6 * k}`, `${8 * k} × ${5 * k}`);
+    return { type: 'bs', q: `Layar sebuah monitor berbentuk persegi panjang dengan panjang ${4 * k} inci dan lebar ${3 * k} inci.`, st: [
+      [`Panjang diagonal layar adalah ${s1.v} inci`, s1.t],
+      [`Luas layar adalah ${s2.v} inci²`, s2.t],
+      [`Perbandingan panjang : lebar layar adalah ${s3.v}`, s3.t],
+      [`Layar berukuran ${s4.v} inci sebangun dengan layar ini`, s4.t]],
+    rumus: L`$$d = \sqrt{p^2 + \ell^2}, \qquad L = p \times \ell$$ Dua persegi panjang sebangun jika $\dfrac{p_1}{p_2} = \dfrac{\ell_1}{\ell_2}$.`,
+    bahas: L`$$d = \sqrt{${4 * k}^2 + ${3 * k}^2} = \sqrt{${25 * k * k}} = ${5 * k}, \qquad L = ${4 * k} \times ${3 * k} = ${12 * k * k}$$ $$${4 * k} : ${3 * k} = 4 : 3, \qquad \frac{${8 * k}}{${4 * k}} = \frac{${6 * k}}{${3 * k}} = 2 \text{ (sebangun)}$$` }; },
+]},
+
+transformasi: { nama: 'Transformasi Geometri', rumus: L`$$\begin{aligned}&\text{refleksi sumbu } x: (x, y) \to (x, -y)\\ &\text{refleksi sumbu } y: (x, y) \to (-x, y)\\ &\text{refleksi titik } O: (x, y) \to (-x, -y)\\ &\text{translasi } T(a, b): (x, y) \to (x+a,\ y+b)\\ &\text{dilatasi } [O, k]: (x, y) \to (kx,\ ky)\end{aligned}$$`,
 pg: [
   () => { const m = shuffle([2, 3, 4, 5, 6]), a = m[0] * pick([1, -1]), b = m[1] * pick([1, -1]), sb = pick(['x', 'y']);
     const ans = sb === 'x' ? pt(a, -b) : pt(-a, b), lain = sb === 'x' ? pt(-a, b) : pt(a, -b);
     return pg(`Bayangan titik ${pt(a, b)} setelah dicerminkan terhadap sumbu ${sb} adalah ....`,
-      ans, [lain, pt(-a, -b), pt(b, a), pt(a, b)], String.raw`$$\text{sumbu } x: (x, y) \to (x, -y), \qquad \text{sumbu } y: (x, y) \to (-x, y)$$`); },
+      ans, [lain, pt(-a, -b), pt(b, a), pt(a, b)], L`$$\text{sumbu } x: (x, y) \to (x, -y), \qquad \text{sumbu } y: (x, y) \to (-x, y)$$`, '',
+      sb === 'x' ? L`Sumbu x: tanda $y$ dibalik. $$(${a}, ${b}) \to (${a}, ${-b})$$` : L`Sumbu y: tanda $x$ dibalik. $$(${a}, ${b}) \to (${-a}, ${b})$$`); },
   () => { const m = shuffle([2, 3, 4, 5, 6]), a = m[0] * pick([1, -1]), b = m[1] * pick([1, -1]), c = m[2] * pick([1, -1]), d = m[3] * pick([1, -1]);
     return pg(`Titik ${pt(a, b)} ditranslasikan oleh ${pt(c, d)}. Bayangannya adalah ....`,
       pt(a + c, b + d), [pt(a - c, b - d), pt(a + c, b - d), pt(a - c, b + d), pt(c - a, d - b)],
-      String.raw`$$T(a, b): (x, y) \to (x + a,\ y + b)$$`); },
+      L`$$T(a, b): (x, y) \to (x + a,\ y + b)$$`, '',
+      L`$$(${a} + (${c}),\ ${b} + (${d})) = (${a + c}, ${b + d})$$`); },
   () => { const m = shuffle([2, 3, 4, 5]), a = m[0] * pick([1, -1]), b = m[1] * pick([1, -1]), k = pick([2, 3, -2]);
     return pg(`Bayangan titik ${pt(a, b)} oleh dilatasi pusat O(0, 0) dengan faktor skala ${k} adalah ....`,
       pt(k * a, k * b), [pt(k * a, b), pt(a, k * b), pt(a + k, b + k), pt(-k * a, -k * b)],
-      String.raw`$$[O, k]: (x, y) \to (kx,\ ky)$$`); },
+      L`$$[O, k]: (x, y) \to (kx,\ ky)$$`, '',
+      L`$$(${k} \times ${a},\ ${k} \times ${b}) = (${k * a}, ${k * b})$$`); },
 ],
 mcma: [
-  () => { const m = shuffle([2, 3, 4, 5, 6]), a = m[0] * pick([1, -1]), b = m[1] * pick([1, -1]), c = m[2], d = m[3], k = pick([2, 3]);
-    const s1 = tw(pt(-a, b), pt(a, -b)), s2 = tw(pt(a + c, b + d), pt(a - c, b - d)), s3 = tw(pt(k * a, k * b), pt(k * a, b)), s4 = tw(pt(a, -b), pt(-a, -b)), s5 = tw(pt(-a, -b), pt(-a, b));
-    return { type: 'mcma', q: `Titik P${pt(a, b)} ditransformasikan. Pilih semua pernyataan yang benar.`, st: [
-      [`Pencerminan terhadap sumbu y memetakan P ke ${s1.v}`, s1.t],
-      [`Translasi ${pt(c, d)} memetakan P ke ${s2.v}`, s2.t],
-      [`Dilatasi pusat O faktor ${k} memetakan P ke ${s3.v}`, s3.t],
-      [`Pencerminan terhadap sumbu x memetakan P ke ${s4.v}`, s4.t],
-      [`Pencerminan terhadap titik asal O memetakan P ke ${s5.v}`, s5.t]],
-    rumus: String.raw`$$\begin{aligned}&\text{sumbu } x: (x, y) \to (x, -y)\\ &\text{sumbu } y: (x, y) \to (-x, y)\\ &\text{titik } O: (x, y) \to (-x, -y)\\ &T(a, b): (x, y) \to (x+a,\ y+b)\\ &[O, k]: (x, y) \to (kx,\ ky)\end{aligned}$$` }; },
+  () => { const luas = (p, q, r) => Math.abs(p[0] * (q[1] - r[1]) + q[0] * (r[1] - p[1]) + r[0] * (p[1] - q[1])) / 2;
+    let A, B, Cc; do { A = [R(1, 5), R(1, 5)]; B = [R(1, 5), R(1, 5)]; Cc = [R(1, 5), R(1, 5)]; } while (luas(A, B, Cc) < 2);
+    const map = { y: p => [-p[0], p[1]], x: p => [p[0], -p[1]], O: p => [-p[0], -p[1]] }, nama = { y: 'sumbu y', x: 'sumbu x', O: 'titik asal O' };
+    const k = pick(['y', 'x', 'O']), klaim = pick(['y', 'x', 'O']), c = R(1, 3) * pick([1, -1]), d = R(1, 3) * pick([1, -1]), Ls = luas(A, B, Cc);
+    const s2 = tw(pt(A[0] + c, A[1] + d), pt(A[0] - c, A[1] - d)), s3 = tw(pt(2 * Cc[0], 2 * Cc[1]), pt(2 * Cc[0], Cc[1])), s4 = tw(pt(B[0], -B[1]), pt(-B[0], B[1])), s5 = tw(Ls, Ls + 1);
+    const fig = svgKoordinat([{ pts: [A, B, Cc], lab: ['A', 'B', 'C'] }, { pts: [A, B, Cc].map(map[k]), lab: ['A′', 'B′', 'C′'], putus: true }]);
+    return { type: 'mcma', q: `Perhatikan segitiga ABC (garis utuh) dan bayangannya A′B′C′ (garis putus-putus) berikut. Pilih semua pernyataan yang benar.${fig}`, st: [
+      [`Segitiga A′B′C′ adalah bayangan ABC oleh pencerminan terhadap ${nama[klaim]}`, klaim === k],
+      [`Translasi ${pt(c, d)} memetakan titik A ke ${s2.v}`, s2.t],
+      [`Dilatasi pusat O faktor 2 memetakan titik C ke ${s3.v}`, s3.t],
+      [`Pencerminan terhadap sumbu x memetakan titik B ke ${s4.v}`, s4.t],
+      [`Luas segitiga ABC adalah ${dsp(s5.v)} satuan luas`, s5.t]],
+    rumus: L`$$\begin{aligned}&\text{sumbu } x: (x, y) \to (x, -y), \quad \text{sumbu } y: (x, y) \to (-x, y), \quad O: (x, y) \to (-x, -y)\\ &T(a, b): (x, y) \to (x+a,\ y+b), \quad [O, k]: (x, y) \to (kx,\ ky)\end{aligned}$$ Luas segitiga dari koordinat: $$L = \tfrac12\,\bigl|x_A(y_B - y_C) + x_B(y_C - y_A) + x_C(y_A - y_B)\bigr|$$`,
+    bahas: L`A${pt(A[0], A[1])}, B${pt(B[0], B[1])}, C${pt(Cc[0], Cc[1])}, dan A′${pt(...map[k](A))} sehingga bayangan dibuat oleh pencerminan terhadap ${nama[k]}. $$A + (${c}, ${d}) = (${A[0] + c}, ${A[1] + d}), \quad 2C = (${2 * Cc[0]}, ${2 * Cc[1]}), \quad B \xrightarrow{\text{sumbu } x} (${B[0]}, ${-B[1]})$$ $$L = \tfrac12\,\bigl|${A[0]}(${B[1]} - ${Cc[1]}) + ${B[0]}(${Cc[1]} - ${A[1]}) + ${Cc[0]}(${A[1]} - ${B[1]})\bigr| = ${dsp(Ls).replace(',', '{,}')}$$` }; },
 ]},
 
-statistika: { nama: 'Statistika', rumus: String.raw`$$\bar{x} = \frac{\sum x_i}{n}, \qquad \bar{x} = \frac{\sum f_i x_i}{\sum f_i}$$ Median: nilai tengah data terurut. Modus: nilai paling sering muncul. $$J = x_{\text{maks}} - x_{\text{min}}$$ Diagram lingkaran: $$\text{sudut juring} = \frac{\text{persen}}{100} \times 360^\circ$$`,
+statistika: { nama: 'Statistika', rumus: L`$$\bar{x} = \frac{\sum x_i}{n}, \qquad \bar{x} = \frac{\sum f_i x_i}{\sum f_i}$$ Median: nilai tengah data terurut. Modus: nilai paling sering muncul. $$J = x_{\text{maks}} - x_{\text{min}}, \qquad SR = \frac{\sum |x_i - \bar{x}|}{n}$$ Diagram lingkaran: $$\text{sudut juring} = \frac{\text{persen}}{100} \times 360^\circ$$`,
 pg: [
   () => { const d = []; while (d.length < 5) { const v = R(3, 15); if (!d.includes(v)) d.push(v); }
     const s = [...d].sort((x, y) => x - y);
     return pg(`Median dari data ${d.join(', ')} adalah ....`, s[2], [s[1], s[3], s[0], s[4]],
-      String.raw`Urutkan data. Untuk $n$ ganjil: $$Me = x_{\frac{n+1}{2}}$$`); },
+      L`Urutkan data. Untuk $n$ ganjil: $$Me = x_{\frac{n+1}{2}}$$`, '',
+      L`Data terurut: ${s.join(', ')}. $$n = 5 \Rightarrow Me = x_3 = ${s[2]}$$`); },
   () => { const v = shuffle([3, 4, 5, 6, 7, 8, 9]), m = v[0], d = shuffle([m, m, m, v[1], v[2], v[3]]);
     return pg(`Modus dari data ${d.join(', ')} adalah ....`, m, [v[1], v[2], v[3], v[4]],
-      `Modus = nilai yang paling sering muncul.`); },
+      'Modus = nilai yang paling sering muncul.', '', `Nilai ${m} muncul 3 kali, nilai lain hanya 1 kali. Jadi modusnya ${m}.`); },
   () => { const d = []; while (d.length < 5) { const v = R(4, 25); if (!d.includes(v)) d.push(v); }
     const mx = Math.max(...d), mn = Math.min(...d);
     return pg(`Jangkauan dari data ${d.join(', ')} adalah ....`, mx - mn, [mx, mn, mx + mn, [...d].sort((a, b) => a - b)[2]],
-      String.raw`$$J = x_{\text{maks}} - x_{\text{min}}$$`); },
+      L`$$J = x_{\text{maks}} - x_{\text{min}}$$`, '', L`$$J = ${mx} - ${mn} = ${mx - mn}$$`); },
   () => { let d, M, e; do { d = [R(4, 9), R(4, 9), R(4, 9), R(4, 9)]; M = R(6, 9); e = 5 * M - d.reduce((x, y) => x + y); } while (e < 1 || e > 20);
     d.push(e); d = shuffle(d);
-    return pg(`Rata-rata dari data ${d.join(', ')} adalah ....`, M, [M + 1, M - 1, Math.max(...d), d.reduce((x, y) => x + y)],
-      String.raw`$$\bar{x} = \frac{\sum x_i}{n}$$`); },
+    return pg(`Rata-rata dari data ${d.join(', ')} adalah ....`, M, [M + 1, M - 1, Math.max(...d), 5 * M],
+      L`$$\bar{x} = \frac{\sum x_i}{n}$$`, '', L`$$\bar{x} = \frac{${d.join(' + ')}}{5} = \frac{${5 * M}}{5} = ${M}$$`); },
+  () => { let d, M, sum; do { M = R(5, 9); d = [R(2, 12), R(2, 12), R(2, 12), R(2, 12)]; const e = 5 * M - d.reduce((x, y) => x + y); d.push(e); sum = d.reduce((a, x) => a + Math.abs(x - M), 0); } while (d[4] < 1 || d[4] > 15 || !sum);
+    d = shuffle(d);
+    return pg(`Simpangan rata-rata dari data ${d.join(', ')} adalah ....`, dsp(sum / 5), [dsp(sum), dsp(sum / 4), dsp(sum / 5 + 1), String(M), dsp(sum / 10)],
+      L`$$SR = \frac{\sum |x_i - \bar{x}|}{n}$$ Hitung rata-rata dahulu.`, '',
+      L`$$\bar{x} = \frac{${5 * M}}{5} = ${M}$$ $$SR = \frac{${d.map(x => `|${x} - ${M}|`).join(' + ')}}{5} = \frac{${sum}}{5} = ${dsp(sum / 5).replace(',', '{,}')}$$`); },
+  () => { const lab = ['HTML', 'CSS', 'JS', 'PHP', 'Python'], val = lab.map(() => R(3, 12)), tot = val.reduce((a, b) => a + b), mx = Math.max(...val), mn = Math.min(...val);
+    const fig = svgBatang(lab, val, 'bahasa pemrograman favorit');
+    return pick([
+      () => pg(`Diagram batang berikut menunjukkan bahasa pemrograman favorit siswa kelas XII RPL. Jumlah seluruh siswa yang disurvei adalah ....${fig}`,
+        tot, [tot - 2, tot + 3, mx * 5, tot + mx], 'Jumlahkan tinggi semua batang (baca nilainya pada sumbu tegak).', ' siswa',
+        L`$$${val.join(' + ')} = ${tot}$$`),
+      () => pg(`Diagram batang berikut menunjukkan bahasa pemrograman favorit siswa kelas XII RPL. Selisih banyak siswa pada bahasa terbanyak dan tersedikit adalah ....${fig}`,
+        mx - mn, [mx, mn, mx + mn, mx - mn + 2], 'Cari batang tertinggi dan terendah, lalu kurangkan.', ' siswa',
+        L`$$${mx} - ${mn} = ${mx - mn}$$`),
+    ])(); },
 ],
 bs: [
-  () => { const nilai = [60, 70, 80, 85, 90, 95], f = nilai.map(() => R(1, 3)); f[R(0, 5)] += 2;
+  () => { const nilai = [60, 70, 80, 85, 90, 95], f = nilai.map(() => R(1, 3)); f[R(0, 5)] += 3;
     const n = f.reduce((a, b) => a + b), total = nilai.reduce((a, v, i) => a + v * f[i], 0), mean = total / n;
     const exp = []; nilai.forEach((v, i) => { for (let j = 0; j < f[i]; j++) exp.push(v); });
     const med = n % 2 ? exp[(n - 1) / 2] : (exp[n / 2 - 1] + exp[n / 2]) / 2;
-    const im = f.indexOf(Math.max(...f)), mod = nilai[im];
-    const off = pick([-1, 1]), X = Math.floor(mean) + off;
+    const im = f.indexOf(Math.max(...f)), mod = nilai[im], off = pick([-1, 1]), X = Math.floor(mean) + off;
     const s2 = tw(med, med + 2), s3 = tw(mod, nilai[(im + 1) % 6]), s4 = tw(35, 30);
-    return { type: 'bs', q: `Nilai praktikum ${n} siswa: nilai ${nilai.join(', ')} dengan frekuensi berturut-turut ${f.join(', ')}.`, st: [
+    const tabel = `<table class="data"><tr><th>Nilai</th>${nilai.map(v => `<td>${v}</td>`).join('')}</tr><tr><th>Frekuensi</th>${f.map(v => `<td>${v}</td>`).join('')}</tr></table>`;
+    const posMed = n % 2 ? L`$Me = x_{${(n + 1) / 2}}$` : L`$Me = \tfrac12\,(x_{${n / 2}} + x_{${n / 2 + 1}})$`;
+    return { type: 'bs', q: `Tabel berikut menunjukkan nilai praktikum ${n} siswa kelas XII RPL.${tabel}`, st: [
       [`Rata-rata nilai siswa lebih dari ${X}`, off === -1],
       [`Median data tersebut adalah ${dsp(s2.v)}`, s2.t],
       [`Modus data tersebut adalah ${s3.v}`, s3.t],
       [`Jangkauan data tersebut adalah ${s4.v}`, s4.t]],
-    rumus: String.raw`$$\bar{x} = \frac{\sum f_i x_i}{\sum f_i}$$ Median = nilai tengah data terurut, modus = frekuensi terbesar, $$J = x_{\text{maks}} - x_{\text{min}}$$` }; },
+    rumus: L`$$\bar{x} = \frac{\sum f_i x_i}{\sum f_i}$$ Median = nilai tengah data terurut, modus = frekuensi terbesar, $$J = x_{\text{maks}} - x_{\text{min}}$$`,
+    bahas: L`$$\bar{x} = \frac{${nilai.map((v, i) => `${v} \cdot ${f[i]}`).join(' + ')}}{${n}} = \frac{${total}}{${n}} \approx ${dsp(mean).replace(',', '{,}')}$$ $n = ${n}$, jadi ${posMed} $= ${dsp(med).replace(',', '{,}')}$. Modus $= ${mod}$ (frekuensi ${f[im]}). $J = 95 - 60 = 35$.` }; },
   () => { const N = pick([200, 400, 600]), a = pick([50, 55, 60]), b = pick([20, 25]), c = 100 - a - b;
     const s1 = tw(N * a / 100, N * a / 100 + 10), s2 = tw(3.6 * b, 3.6 * b + 18), s3 = tw(N * c / 100, N * c / 100 + 10), s4 = tw(N * (a - b) / 100, N * (a - b) / 100 + 20);
-    return { type: 'bs', q: `Sebuah aplikasi dipakai ${N} pengguna: Android ${a}%, iOS ${b}%, dan Web ${c}% (data diagram lingkaran).`, st: [
+    return { type: 'bs', q: `Sebuah aplikasi kasir dipakai oleh ${N} pengguna. Diagram lingkaran berikut menunjukkan perangkat yang mereka gunakan.${svgLingkaran(['Android', 'iOS', 'Web'], [a, b, c])}`, st: [
       [`Pengguna Android berjumlah ${s1.v} orang`, s1.t],
       [`Besar sudut juring pengguna iOS adalah ${s2.v}°`, s2.t],
       [`Pengguna Web berjumlah ${s3.v} orang`, s3.t],
       [`Selisih pengguna Android dan iOS adalah ${s4.v} orang`, s4.t]],
-    rumus: String.raw`$$\text{jumlah} = \frac{\text{persen}}{100} \times N, \qquad \text{sudut juring} = \frac{\text{persen}}{100} \times 360^\circ$$` }; },
+    rumus: L`$$\text{jumlah} = \frac{\text{persen}}{100} \times N, \qquad \text{sudut juring} = \frac{\text{persen}}{100} \times 360^\circ$$`,
+    bahas: L`$$\text{Android} = \tfrac{${a}}{100} \times ${N} = ${N * a / 100}, \quad \text{iOS} = \tfrac{${b}}{100} \times ${N} = ${N * b / 100}, \quad \text{Web} = \tfrac{${c}}{100} \times ${N} = ${N * c / 100}$$ $$\text{sudut iOS} = \tfrac{${b}}{100} \times 360^\circ = ${3.6 * b}^\circ, \qquad \text{selisih} = ${N * a / 100} - ${N * b / 100} = ${N * (a - b) / 100}$$` }; },
+],
+mcma: [
+  () => { const hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+    let v, naik; do { v = shuffle([30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]).slice(0, 5); naik = Math.max(...v.slice(1).map((x, i) => x - v[i])); } while (naik <= 0);
+    const S = v.reduce((a, b) => a + b), med = [...v].sort((a, b) => a - b)[2], iMax = v.indexOf(Math.max(...v));
+    const s1 = tw(hari[iMax], hari[(iMax + 1) % 5]), s2 = tw(S, S + 10), s3 = tw(S / 5, S / 5 + 2), s4 = tw(med, med + 5), s5 = tw(naik, naik + 5);
+    return { type: 'mcma', q: `Diagram garis berikut menunjukkan jumlah pengunjung website sekolah selama lima hari kerja. Pilih semua pernyataan yang benar.${svgGaris(hari.map(h => h.slice(0, 3)), v)}`, st: [
+      [`Pengunjung terbanyak terjadi pada hari ${s1.v}`, s1.t],
+      [`Total pengunjung dari Senin sampai Jumat adalah ${s2.v}`, s2.t],
+      [`Rata-rata pengunjung per hari adalah ${s3.v}`, s3.t],
+      [`Median data jumlah pengunjung adalah ${s4.v}`, s4.t],
+      [`Kenaikan terbesar dari satu hari ke hari berikutnya adalah ${s5.v} pengunjung`, s5.t]],
+    rumus: L`$$\bar{x} = \frac{\sum x_i}{n}$$ Median: urutkan dahulu, ambil nilai tengah. Kenaikan = nilai hari ini $-$ nilai hari sebelumnya.`,
+    bahas: L`Data: ${v.join(', ')}. Terbanyak ${Math.max(...v)} (hari ${hari[iMax]}). $$\sum = ${S}, \qquad \bar{x} = \frac{${S}}{5} = ${S / 5}$$ Terurut: ${[...v].sort((a, b) => a - b).join(', ')}, median $= ${med}$. Kenaikan: ${v.slice(1).map((x, i) => x - v[i]).join(', ')}, terbesar $${naik}$.` }; },
 ]},
 
-peluang: { nama: 'Peluang & Pencacahan', rumus: String.raw`$$P(A) = \frac{n(A)}{n(S)}, \qquad P(A^c) = 1 - P(A)$$ Permutasi (urutan diperhatikan): $$P(n,k) = \frac{n!}{(n-k)!}$$ Kombinasi (urutan tidak diperhatikan): $$C(n,k) = \frac{n!}{k!\,(n-k)!}$$`,
+peluang: { nama: 'Peluang & Pencacahan', rumus: L`$$P(A) = \frac{n(A)}{n(S)}, \qquad P(A^c) = 1 - P(A)$$ Permutasi (urutan diperhatikan): $$P(n,k) = \frac{n!}{(n-k)!}$$ Kombinasi (urutan tidak diperhatikan): $$C(n,k) = \frac{n!}{k!\,(n-k)!}$$`,
 pg: [
   () => { const n = R(5, 10), k = pick([2, 3]), a = C(n, k);
     return pg(`Dari ${n} siswa akan dipilih ${k} orang untuk menjadi pengurus tanpa memperhatikan urutan. Banyak cara memilih adalah ....`,
-      a, [a * fact(k), n * k, n + k, n], String.raw`Urutan tidak diperhatikan: $$C(n,k) = \frac{n!}{k!\,(n-k)!}$$`); },
-  () => { const s = R(4, 10), w = 6 - Math.abs(7 - s);
+      a, [a * fact(k), n * k, n + k, n], L`Urutan tidak diperhatikan: $$C(n,k) = \frac{n!}{k!\,(n-k)!}$$`, ' cara',
+      L`$$C(${n}, ${k}) = \frac{${n}!}{${k}!\,${n - k}!} = ${a}$$`); },
+  () => { const s = R(4, 10), w = 6 - Math.abs(7 - s), pas = [];
+    for (let a = 1; a <= 6; a++) if (s - a >= 1 && s - a <= 6) pas.push(`(${a},${s - a})`);
     return pg(`Dua buah dadu dilempar satu kali. Peluang muncul mata dadu berjumlah ${s} adalah ....`,
-      frac(w, 36), [frac(w + 1, 36), frac(w - 1, 36), '1/36', '1/4', '2/9'].filter(x => x !== frac(w, 36)),
-      String.raw`$$P(A) = \frac{n(A)}{n(S)}, \qquad n(S) = 36$$ Hitung pasangan dadu yang jumlahnya sesuai.`); },
+      frac(w, 36), [frac(w + 1, 36), frac(w - 1, 36), '1/36', '1/4', '2/9'],
+      L`$$P(A) = \frac{n(A)}{n(S)}, \qquad n(S) = 6 \times 6 = 36$$`, '',
+      L`Pasangan berjumlah ${s}: ${pas.join(', ')}, jadi $n(A) = ${w}$. $$P = \frac{${w}}{36} = ${frac(w, 36).replace(/(\d+)\/(\d+)/, '\\frac{$1}{$2}')}$$`); },
   () => { const n = R(4, 7), k = R(2, 3), P = fact(n) / fact(n - k);
     return pg(`Banyak susunan ${k} pengurus (ketua, sekretaris${k === 3 ? ', bendahara' : ''}) yang dipilih dari ${n} calon adalah ....`,
-      P, [C(n, k), n * k, fact(n), Math.pow(n, k)], String.raw`Urutan diperhatikan: $$P(n,k) = \frac{n!}{(n-k)!}$$`); },
+      P, [C(n, k), n * k, fact(n), Math.pow(n, k)], L`Urutan diperhatikan: $$P(n,k) = \frac{n!}{(n-k)!}$$`, ' cara',
+      L`Jabatan berbeda berarti urutan diperhatikan. $$P(${n}, ${k}) = \frac{${n}!}{${n - k}!} = ${P}$$`); },
 ],
 bs: [
   () => { const h = R(2, 6), c = R(2, 6), j = R(2, 6), t = h + c + j;
@@ -234,7 +447,8 @@ bs: [
       [`Peluang terambil kartu HTML adalah ${s2.v}`, s2.t],
       [`Peluang terambil kartu yang bukan CSS adalah ${s3.v}`, s3.t],
       [`Jika 2 kartu diambil sekaligus, banyak kemungkinan pengambilan adalah ${s4.v} cara`, s4.t]],
-    rumus: String.raw`$$P(A) = \frac{n(A)}{n(S)}, \qquad P(A^c) = 1 - P(A)$$ Mengambil 2 sekaligus: $$C(n, 2) = \frac{n\,(n-1)}{2}$$` }; },
+    rumus: L`$$P(A) = \frac{n(A)}{n(S)}, \qquad P(A^c) = 1 - P(A)$$ Mengambil 2 sekaligus: $$C(n, 2) = \frac{n\,(n-1)}{2}$$`,
+    bahas: L`$$P(\text{JS}) = \frac{${j}}{${t}}, \quad P(\text{HTML}) = \frac{${h}}{${t}}, \quad P(\text{bukan CSS}) = 1 - \frac{${c}}{${t}} = \frac{${t - c}}{${t}}$$ $$C(${t}, 2) = \frac{${t} \times ${t - 1}}{2} = ${C(t, 2)}$$ (Pecahan disederhanakan bila bisa.)` }; },
 ],
 mcma: [
   () => { const n = R(4, 6), d = R(5, 8);
@@ -245,43 +459,48 @@ mcma: [
       [`Banyak cara memilih 2 ketua tim dari ${d} anggota adalah ${s3.v}`, s3.t],
       [`Banyak susunan 3 huruf berbeda dari A, B, C, D (urutan diperhatikan) adalah ${s4.v}`, s4.t],
       [`Banyak susunan huruf dari kata WEB adalah 6`, true]],
-    rumus: String.raw`$$n! = n \times (n-1) \times \cdots \times 1$$ $$P(n,k) = \frac{n!}{(n-k)!}, \qquad C(n,k) = \frac{n!}{k!\,(n-k)!}$$ Susunan semua $n$ huruf berbeda $= n!$` }; },
+    rumus: L`$$n! = n \times (n-1) \times \cdots \times 1$$ $$P(n,k) = \frac{n!}{(n-k)!}, \qquad C(n,k) = \frac{n!}{k!\,(n-k)!}$$ Susunan semua $n$ huruf berbeda $= n!$`,
+    bahas: L`$$${n}! = ${fact(n)}, \quad P(10, 3) = 10 \cdot 9 \cdot 8 = 720, \quad C(${d}, 2) = ${C(d, 2)}$$ $$P(4, 3) = 4 \cdot 3 \cdot 2 = 24, \qquad 3! = 6$$` }; },
 ]},
 
-pecahan: { nama: 'Pecahan, Persen & Aritmetika Sosial', rumus: String.raw`$$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$ Persen: $$p\% \times H = \frac{p}{100} \times H$$ Bunga tunggal: $$B = M \times \frac{p}{100} \times t$$`,
+pecahan: { nama: 'Pecahan, Persen & Aritmetika Sosial', rumus: L`$$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$ Persen: $$p\% \times H = \frac{p}{100} \times H$$ Bunga tunggal: $$B = M \times \frac{p}{100} \times t$$`,
 pg: [
   () => { let a, b, c, d; do { b = pick([2, 3, 4, 5]); d = pick([2, 3, 4, 5]); a = R(1, b - 1); c = R(1, d - 1); } while (b === d || (a * d + c * b) % (b * d) === 0);
     const ans = frac(a * d + c * b, b * d);
     return pg(`Hasil dari ${a}/${b} + ${c}/${d} adalah ....`, ans,
-      [`${a + c}/${b + d}`, `${a * c}/${b * d}`, `${a + c}/${b * d}`, `${a * d + c * b}/${b + d}`, `${a}/${b + d}`].filter(x => x !== ans),
-      String.raw`Samakan penyebut: $$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$`); },
+      [`${a + c}/${b + d}`, `${a * c}/${b * d}`, `${a + c}/${b * d}`, `${a * d + c * b}/${b + d}`, `${a}/${b + d}`],
+      L`Samakan penyebut: $$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$`, '',
+      L`$$\frac{${a}}{${b}} + \frac{${c}}{${d}} = \frac{${a} \cdot ${d} + ${c} \cdot ${b}}{${b} \cdot ${d}} = \frac{${a * d + c * b}}{${b * d}}$$ lalu sederhanakan: ${ans}.`); },
   () => { const H = R(40, 90) * 1000, p = pick([10, 20, 25, 50]), B = H * p / 100;
     return pg(`Harga sebuah barang Rp${fmt(H)}. Jika mendapat diskon ${p}%, besar potongan harganya adalah ....`,
-      `Rp${fmt(B)}`, [`Rp${fmt(H - B)}`, `Rp${fmt(H + B)}`, `Rp${fmt(B / 2)}`, `Rp${fmt(B * 2)}`], String.raw`$$\text{diskon} = \frac{p}{100} \times H$$`); },
+      `Rp${fmt(B)}`, [`Rp${fmt(H - B)}`, `Rp${fmt(H + B)}`, `Rp${fmt(B / 2)}`, `Rp${fmt(B * 2)}`], L`$$\text{diskon} = \frac{p}{100} \times H$$`, '',
+      L`$$\frac{${p}}{100} \times ${fmt(H)} = ${fmt(B)}$$ Potongan Rp${fmt(B)}; harga bayar Rp${fmt(H - B)} (bukan yang ditanya).`); },
 ],
 mcma: [
-  () => { const Tt = pick([2400000, 3200000, 4000000]), hvs = Tt / 4, tinta = 0.35 * Tt, map = 0.2 * Tt, sisa = Tt - hvs - tinta - map;
+  () => { const Tt = pick([2400000, 3200000, 4000000]), hvs = Tt / 4, tinta = Tt * 35 / 100, map = Tt * 20 / 100, sisa = Tt - hvs - tinta - map;
     const s1 = tw(hvs, hvs + 100000), s2 = tw(tinta, tinta - 100000), s3 = tw(map, map + 80000), s4 = tw(sisa, sisa + 100000);
     return { type: 'mcma', q: `Anggaran Rp${fmt(Tt)} dialokasikan: 1/4 untuk kertas HVS, 0,35 bagian untuk tinta printer, 20% untuk map arsip, dan sisanya untuk alat tulis. Pilih semua pernyataan yang benar.`, st: [
       [`Anggaran kertas HVS adalah Rp${fmt(s1.v)}`, s1.t],
       [`Anggaran tinta printer adalah Rp${fmt(s2.v)}`, s2.t],
       [`Anggaran map arsip adalah Rp${fmt(s3.v)}`, s3.t],
       [`Sisa anggaran alat tulis adalah Rp${fmt(s4.v)}`, s4.t],
-      [`Total belanja HVS, tinta, dan map melebihi Rp${fmt(0.75 * Tt)}`, true]],
-    rumus: String.raw`Samakan bentuknya dahulu: $$\tfrac14 = 0{,}25 = 25\%$$ lalu kalikan tiap bagian dengan total anggaran. Sisa $= 1 -$ jumlah semua bagian.` }; },
+      [`Total belanja HVS, tinta, dan map melebihi Rp${fmt(Tt * 3 / 4)}`, true]],
+    rumus: L`Samakan bentuknya dahulu: $$\tfrac14 = 0{,}25 = 25\%$$ lalu kalikan tiap bagian dengan total anggaran. Sisa $= 1 -$ jumlah semua bagian.`,
+    bahas: L`$$\text{HVS} = 25\% = ${fmt(hvs)}, \quad \text{tinta} = 35\% = ${fmt(tinta)}, \quad \text{map} = 20\% = ${fmt(map)}$$ $$\text{sisa} = 20\% = ${fmt(sisa)}, \qquad \text{HVS + tinta + map} = 80\% = ${fmt(Tt - sisa)}$$` }; },
 ]},
 
-eksponen: { nama: 'Eksponen & Bentuk Akar', rumus: String.raw`$$a^m \times a^n = a^{m+n}, \quad a^m : a^n = a^{m-n}, \quad (a^m)^n = a^{mn}, \quad a^0 = 1$$ $$\sqrt{a}\,\sqrt{b} = \sqrt{ab}, \qquad \sqrt{a^2 b} = a\sqrt{b}$$`,
+eksponen: { nama: 'Eksponen & Bentuk Akar', rumus: L`$$a^m \times a^n = a^{m+n}, \quad a^m : a^n = a^{m-n}, \quad (a^m)^n = a^{mn}, \quad a^0 = 1$$ $$\sqrt{a}\,\sqrt{b} = \sqrt{ab}, \qquad \sqrt{a^2 b} = a\sqrt{b}$$`,
 pg: [
   () => { const a = R(2, 5), b = R(2, 5), c = R(2, 6), e = a + b - c;
     return pg(`Bentuk sederhana dari 2${sup(a)} × 2${sup(b)} : 2${sup(c)} adalah ....`,
-      '2' + sup(e), ['2' + sup(a + b + c), '2' + sup(a * b - c), '2' + sup(e + 1), '2' + sup(e - 1), '2' + sup(c - a - b)].filter(x => x !== '2' + sup(e)),
-      String.raw`$$a^m \times a^n = a^{m+n}, \qquad a^m : a^n = a^{m-n}$$`); },
+      '2' + sup(e), ['2' + sup(a + b + c), '2' + sup(a * b - c), '2' + sup(e + 1), '2' + sup(e - 1), '2' + sup(c - a - b)],
+      L`$$a^m \times a^n = a^{m+n}, \qquad a^m : a^n = a^{m-n}$$`, '',
+      L`$$2^{${a} + ${b} - ${c}} = 2^{${e}}$$`); },
   () => { let k1, k2, k3, m2; do { const ks = shuffle([2, 3, 4, 5]); k1 = ks[0]; k2 = ks[1]; k3 = ks[2]; m2 = k1 + k2 - k3; } while (m2 <= 0);
-    const f = x => x === 1 ? '√3' : `${x}√3`;
     return pg(`Bentuk sederhana dari √${3 * k1 * k1} + √${3 * k2 * k2} − √${3 * k3 * k3} adalah ....`,
-      f(m2), [f(k1 + k2 + k3), f(m2 + 2), f(k1 + k2), f(k3), `${3 * m2}`].filter(x => x !== f(m2)),
-      String.raw`Sederhanakan tiap akar dahulu: $$\sqrt{a^2 b} = a\sqrt{b}$$ lalu jumlahkan koefisien akar sejenis.`); },
+      sq(m2, 3), [sq(k1 + k2 + k3, 3), sq(m2 + 2, 3), sq(k1 + k2, 3), sq(k3, 3), `${3 * m2}`],
+      L`Sederhanakan tiap akar dahulu: $$\sqrt{a^2 b} = a\sqrt{b}$$ lalu jumlahkan koefisien akar sejenis.`, '',
+      L`$$${k1}\sqrt3 + ${k2}\sqrt3 - ${k3}\sqrt3 = ${m2}\sqrt3$$`); },
 ],
 mcma: [
   () => { const s1 = tw('4√3', '6√3'), s2 = tw('2⁷', '2¹²'), s3 = tw('2⁶', '2⁹'), s4 = tw('4', '16'), s5 = tw('1', '0');
@@ -291,42 +510,49 @@ mcma: [
       [`(2³)² = ${s3.v}`, s3.t],
       [`√2 × √8 = ${s4.v}`, s4.t],
       [`5⁰ = ${s5.v}`, s5.t]],
-    rumus: String.raw`$$a^m a^n = a^{m+n}, \quad (a^m)^n = a^{mn}, \quad a^0 = 1, \quad \sqrt{a}\,\sqrt{b} = \sqrt{ab}, \quad \sqrt{a^2 b} = a\sqrt{b}$$` }; },
+    rumus: L`$$a^m a^n = a^{m+n}, \quad (a^m)^n = a^{mn}, \quad a^0 = 1, \quad \sqrt{a}\,\sqrt{b} = \sqrt{ab}, \quad \sqrt{a^2 b} = a\sqrt{b}$$`,
+    bahas: L`$$\sqrt{48} = \sqrt{16 \cdot 3} = 4\sqrt3, \quad 2^3 \cdot 2^4 = 2^7, \quad (2^3)^2 = 2^6, \quad \sqrt2 \cdot \sqrt8 = \sqrt{16} = 4, \quad 5^0 = 1$$` }; },
 ]},
 
-barisan: { nama: 'Barisan, Deret & Bunga', rumus: String.raw`Aritmetika: $$U_n = a + (n-1)\,b, \qquad S_n = \tfrac{n}{2}\,\bigl(2a + (n-1)\,b\bigr)$$ Geometri: $$U_n = a\,r^{\,n-1}, \qquad S_n = \frac{a\,(r^n - 1)}{r - 1}$$ Bunga tunggal: $$B = M \cdot \frac{p}{100} \cdot t$$ Bunga majemuk: $$M_t = M_0\,(1 + i)^t$$`,
+barisan: { nama: 'Barisan, Deret & Bunga', rumus: L`Aritmetika: $$U_n = a + (n-1)\,b, \qquad S_n = \tfrac{n}{2}\,\bigl(2a + (n-1)\,b\bigr)$$ Geometri: $$U_n = a\,r^{\,n-1}, \qquad S_n = \frac{a\,(r^n - 1)}{r - 1}$$ Bunga tunggal: $$B = M \cdot \frac{p}{100} \cdot t$$ Bunga majemuk: $$M_t = M_0\,(1 + i)^t$$`,
 pg: [
   () => { const a = R(2, 6), b = R(3, 6), n = R(8, 15), u = a + (n - 1) * b;
     return pg(`Suku ke-${n} dari barisan aritmetika ${a}, ${a + b}, ${a + 2 * b}, ... adalah ....`,
-      u, [a + n * b, a * n, u + b, u - b], String.raw`$$U_n = a + (n-1)\,b$$`); },
+      u, [a + n * b, a * n, u + b, u - b], L`$$U_n = a + (n-1)\,b$$`, '',
+      L`$a = ${a}$, $b = ${b}$: $$U_{${n}} = ${a} + ${n - 1} \times ${b} = ${u}$$`); },
   () => { const a = R(2, 6), b = R(3, 6), S = 5 * (2 * a + 9 * b);
     return pg(`Jumlah 10 suku pertama dari barisan aritmetika ${a}, ${a + b}, ${a + 2 * b}, ... adalah ....`,
-      S, [a + 9 * b, 10 * (a + 9 * b), S / 5, 2 * a + 9 * b], String.raw`$$S_n = \tfrac{n}{2}\,\bigl(2a + (n-1)\,b\bigr)$$`); },
+      S, [a + 9 * b, 10 * (a + 9 * b), S / 5, 2 * a + 9 * b], L`$$S_n = \tfrac{n}{2}\,\bigl(2a + (n-1)\,b\bigr)$$`, '',
+      L`$$S_{10} = \tfrac{10}{2}\,(2 \cdot ${a} + 9 \cdot ${b}) = 5 \times ${2 * a + 9 * b} = ${S}$$`); },
   () => { const a = pick([2, 3, 5]), r = pick([2, 3]), n = R(4, 6), u = a * Math.pow(r, n - 1);
     return pg(`Suku ke-${n} dari barisan geometri ${a}, ${a * r}, ${a * r * r}, ... adalah ....`,
-      u, [u * r, u / r, a * n * r, u + a], String.raw`$$U_n = a\,r^{\,n-1}$$`); },
+      u, [u * r, u / r, a * n * r, u + a], L`$$U_n = a\,r^{\,n-1}$$`, '',
+      L`$a = ${a}$, $r = ${r}$: $$U_{${n}} = ${a} \times ${r}^{${n - 1}} = ${u}$$`); },
   () => { const M = R(1, 5) * 1000000, p = pick([6, 8, 10, 12]), t = R(2, 4), B = M * p * t / 100;
     return pg(`Rina meminjam uang Rp${fmt(M)} dengan bunga tunggal ${p}% per tahun. Besar bunga selama ${t} tahun adalah ....`,
       `Rp${fmt(B)}`, [`Rp${fmt(M * p / 100)}`, `Rp${fmt(M + B)}`, `Rp${fmt(B / 2)}`, `Rp${fmt(B * 2)}`, `Rp${fmt(M - B)}`],
-      String.raw`$$B = M \times \frac{p}{100} \times t$$`); },
+      L`$$B = M \times \frac{p}{100} \times t$$`, '',
+      L`$$B = ${fmt(M)} \times \frac{${p}}{100} \times ${t} = ${fmt(B)}$$`); },
 ],
 bs: [
-  () => { const a = pick([400, 500, 600]), d = pick([100, 150, 200]);
-    const s1 = tw(a - d, a - d + 50), s2 = tw(a + 9 * d, a + 10 * d), s3 = tw(3 * (2 * a + 5 * d), 3 * (2 * a + 5 * d) + 100);
+  () => { const a = pick([400, 500, 600]), d = pick([100, 150, 200]), S6 = 3 * (2 * a + 5 * d);
+    const s1 = tw(a - d, a - d + 50), s2 = tw(a + 9 * d, a + 10 * d), s3 = tw(S6, S6 + 100);
     return { type: 'bs', q: `Aplikasi baru memiliki ${fmt(a)} pengguna pada bulan pertama. Setiap bulan jumlah pengguna bertambah tetap ${fmt(d)} orang.`, st: [
       [`Rumus jumlah pengguna bulan ke-n adalah Uₙ = ${d}n + ${fmt(s1.v)}`, s1.t],
       [`Pada bulan ke-10, jumlah pengguna mencapai ${fmt(s2.v)} orang`, s2.t],
       [`Jumlah seluruh pengguna dari bulan ke-1 sampai ke-6 adalah ${fmt(s3.v)}`, s3.t],
       [`Barisan ini merupakan barisan geometri dengan rasio ${d}`, false]],
-    rumus: String.raw`$$U_n = a + (n-1)\,d = dn + (a - d), \qquad S_n = \tfrac{n}{2}\,(2a + (n-1)\,d)$$ Beda tetap = aritmetika, rasio tetap = geometri.` }; },
-  () => { const M = pick([4, 5, 6]) * 1000000;
-    const s1 = tw(M * 1.1, M * 1.1 + 100000), s2 = tw(M * 1.21, M * 1.2), s4 = tw(M * 0.01, M * 0.02);
+    rumus: L`$$U_n = a + (n-1)\,d, \qquad S_n = \tfrac{n}{2}\,(2a + (n-1)\,d)$$ Beda tetap = aritmetika, rasio tetap = geometri.`,
+    bahas: L`$$U_n = ${a} + (n-1)\,${d} = ${d}n + ${a - d}$$ $$U_{10} = ${a} + 9 \cdot ${d} = ${fmt(a + 9 * d)}, \qquad S_6 = 3\,(2 \cdot ${a} + 5 \cdot ${d}) = ${fmt(S6)}$$ Bertambah tetap berarti barisan aritmetika, bukan geometri.` }; },
+  () => { const M = pick([4, 5, 6]) * 1000000, M1 = M * 11 / 10, M2 = M * 121 / 100, sel = M / 100;
+    const s1 = tw(M1, M1 + 100000), s2 = tw(M2, M * 12 / 10), s4 = tw(sel, sel * 2);
     return { type: 'bs', q: `Dimas menabung Rp${fmt(M)} di bank dengan bunga majemuk 10% per tahun.`, st: [
       [`Setelah 1 tahun, tabungan menjadi Rp${fmt(s1.v)}`, s1.t],
       [`Setelah 2 tahun, tabungan menjadi Rp${fmt(s2.v)}`, s2.t],
       [`Bunga majemuk 2 tahun lebih besar daripada bunga tunggal 2 tahun dengan persentase sama`, true],
       [`Selisih bunga majemuk dan bunga tunggal selama 2 tahun adalah Rp${fmt(s4.v)}`, s4.t]],
-    rumus: String.raw`Bunga majemuk: $$M_t = M_0\,(1+i)^t$$ Bunga tunggal: $$B = M_0 \cdot i \cdot t$$ Bandingkan hasil keduanya pada $t$ yang sama.` }; },
+    rumus: L`Bunga majemuk: $$M_t = M_0\,(1+i)^t$$ Bunga tunggal: $$B = M_0 \cdot i \cdot t$$ Bandingkan hasil keduanya pada $t$ yang sama.`,
+    bahas: L`$$M_1 = ${fmt(M)} \times 1{,}1 = ${fmt(M1)}, \qquad M_2 = ${fmt(M)} \times 1{,}1^2 = ${fmt(M2)}$$ $$\text{bunga majemuk} = ${fmt(M2 - M)}, \quad \text{bunga tunggal} = ${fmt(M)} \times 0{,}1 \times 2 = ${fmt(M / 5)}, \quad \text{selisih} = ${fmt(sel)}$$` }; },
 ],
 mcma: [
   () => { const a = pick([100, 200, 300]);
@@ -337,26 +563,35 @@ mcma: [
       [`Rumus request hari ke-n: Uₙ = ${a} · 2ⁿ⁻¹`, true],
       [`Total request hari ke-1 sampai ke-3 adalah ${fmt(s4.v)}`, s4.t],
       [`Barisan jumlah request tersebut adalah barisan aritmetika`, false]],
-    rumus: String.raw`$$U_n = a\,r^{\,n-1}, \qquad S_n = \frac{a\,(r^n - 1)}{r - 1}$$` }; },
+    rumus: L`$$U_n = a\,r^{\,n-1}, \qquad S_n = \frac{a\,(r^n - 1)}{r - 1}$$`,
+    bahas: L`$a = ${a}$, $r = 2$: $$U_4 = ${a} \cdot 2^3 = ${fmt(8 * a)}, \quad U_5 = ${a} \cdot 2^4 = ${fmt(16 * a)}, \quad S_3 = \frac{${a}\,(2^3 - 1)}{2 - 1} = ${fmt(7 * a)}$$ Rasio tetap berarti barisan geometri.` }; },
 ]},
 
-persamaan: { nama: 'Persamaan & Pertidaksamaan', rumus: String.raw`Linear: pindahkan suku, bagi koefisien. Pertidaksamaan: tanda berbalik jika dikali/dibagi bilangan negatif. SPLDV: eliminasi atau substitusi. Kuadrat: $$x^2 - (p+q)\,x + pq = (x - p)(x - q)$$ $$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$`,
+persamaan: { nama: 'Persamaan & Pertidaksamaan', rumus: L`Linear: pindahkan suku, bagi koefisien. Pertidaksamaan: tanda berbalik jika dikali/dibagi bilangan negatif. SPLDV/SPLTV: eliminasi atau substitusi. Kuadrat: $$x^2 - (p+q)\,x + pq = (x - p)(x - q)$$ $$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$`,
 pg: [
   () => { const x0 = R(2, 9), a = R(2, 4), b = R(1, 6), c = a * (x0 + b);
     return pg(`Penyelesaian dari persamaan ${a}(x + ${b}) = ${c} adalah x = ....`,
-      x0, [c - b, x0 + b, b, c], String.raw`$$a\,(x + b) = c \;\Rightarrow\; x = \frac{c}{a} - b$$`); },
+      x0, [c - b, x0 + b, b, c], L`$$a\,(x + b) = c \;\Rightarrow\; x = \frac{c}{a} - b$$`, '',
+      L`$$x + ${b} = \frac{${c}}{${a}} = ${x0 + b} \Rightarrow x = ${x0}$$`); },
   () => { const a = R(2, 4), x0 = R(2, 8), b = R(2, 9), c = a * x0 - b;
     return pg(`Penyelesaian dari pertidaksamaan ${a}x − ${b} > ${c} adalah ....`,
-      `x > ${x0}`, [`x < ${x0}`, `x > ${x0 + a}`, `x < ${x0 + b}`, `x > ${b + c}`].filter(x => x !== `x > ${x0}`),
-      String.raw`$$ax - b > c \;\Rightarrow\; x > \frac{b + c}{a}$$`); },
+      `x > ${x0}`, [`x < ${x0}`, `x > ${x0 + a}`, `x < ${x0 + b}`, `x > ${b + c}`],
+      L`$$ax - b > c \;\Rightarrow\; x > \frac{b + c}{a}$$`, '',
+      L`$$${a}x > ${c} + ${b} = ${b + c} \Rightarrow x > \frac{${b + c}}{${a}} = ${x0}$$`); },
   () => { const x0 = R(3, 7) * 1000, y0 = R(1, x0 / 1000 - 1) * 1000, t1 = 3 * x0 + 2 * y0, t2 = 2 * x0 + 5 * y0, j = x0 + y0;
     return pg(`Budi membeli 3 buku dan 2 pensil seharga Rp${fmt(t1)}. Di toko yang sama, Ani membeli 2 buku dan 5 pensil seharga Rp${fmt(t2)}. Total harga 1 buku dan 1 pensil adalah ....`,
       `Rp${fmt(j)}`, [`Rp${fmt(x0)}`, `Rp${fmt(y0)}`, `Rp${fmt(x0 - y0)}`, `Rp${fmt(2 * j)}`, `Rp${fmt(Math.abs(t1 - t2))}`],
-      String.raw`Bentuk SPLDV lalu eliminasi: $$\begin{cases}3x + 2y = t_1\\ 2x + 5y = t_2\end{cases}$$`); },
+      L`Bentuk SPLDV lalu eliminasi: $$\begin{cases}3x + 2y = t_1\\ 2x + 5y = t_2\end{cases}$$`, '',
+      L`$$\begin{cases}3x + 2y = ${t1}\ \ (\times 2)\\ 2x + 5y = ${t2}\ \ (\times 3)\end{cases} \Rightarrow 11y = ${3 * t2 - 2 * t1} \Rightarrow y = ${y0}$$ $$3x = ${t1} - 2 \cdot ${y0} \Rightarrow x = ${x0}, \qquad x + y = ${j}$$`); },
   () => { const p = R(1, 4), q = R(p + 1, 6);
     return pg(`Akar-akar persamaan kuadrat x² − ${p + q}x + ${p * q} = 0 adalah ....`,
       `${p} dan ${q}`, [`−${p} dan −${q}`, `${p} dan −${q}`, `−${p} dan ${q}`, `${p + q} dan ${p * q}`],
-      String.raw`Pemfaktoran: $$x^2 - (p+q)\,x + pq = (x - p)(x - q)$$ atau rumus abc: $$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$`); },
+      L`Pemfaktoran: $$x^2 - (p+q)\,x + pq = (x - p)(x - q)$$ atau rumus abc: $$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$`, '',
+      L`Cari dua bilangan yang jumlahnya $${p + q}$ dan hasil kalinya $${p * q}$: $$(x - ${p})(x - ${q}) = 0 \Rightarrow x = ${p} \text{ atau } x = ${q}$$`); },
+  () => { const [x, y, z] = shuffle([1, 2, 3, 4, 5, 6]).slice(0, 3), s1 = x + y + z, s2 = 2 * x - y + z, s3 = x + 2 * y - z;
+    return pg(`Diketahui sistem persamaan x + y + z = ${s1}, 2x − y + z = ${s2}, dan x + 2y − z = ${s3}. Nilai x adalah ....`,
+      x, [y, z, s1, x + 1], L`SPLTV: eliminasi satu variabel dari dua pasang persamaan, sehingga menjadi SPLDV, lalu selesaikan.`, '',
+      L`$$\text{(1)+(3)}: 2x + 3y = ${s1 + s3}, \qquad \text{(2)+(3)}: 3x + y = ${s2 + s3}$$ $$3\,(3x + y) - (2x + 3y) = 7x = ${3 * (s2 + s3) - (s1 + s3)} \Rightarrow x = ${x}$$`); },
 ],
 bs: [
   () => { const x0 = R(4, 8) * 10000, y0 = R(2, x0 / 10000 - 1) * 10000, A = 2 * x0 + 3 * y0, B = x0 + 2 * y0;
@@ -366,20 +601,33 @@ bs: [
       [`Harga 1 mouse adalah Rp${fmt(s2.v)}`, s2.t],
       [`Harga 1 flashdisk lebih mahal daripada harga 1 mouse`, true],
       [`Membeli 3 flashdisk dan 2 mouse membutuhkan biaya Rp${fmt(s4.v)}`, s4.t]],
-    rumus: String.raw`Eliminasi SPLDV: samakan koefisien salah satu variabel, kurangkan kedua persamaan, lalu substitusikan kembali.` }; },
+    rumus: L`Eliminasi SPLDV: samakan koefisien salah satu variabel, kurangkan kedua persamaan, lalu substitusikan kembali.`,
+    bahas: L`$$(x + 2y = ${fmt(B)}) \times 2: \ 2x + 4y = ${fmt(2 * B)}$$ $$\text{dikurangi } 2x + 3y = ${fmt(A)} \Rightarrow y = ${fmt(y0)}, \quad x = ${fmt(B)} - 2 \cdot ${fmt(y0)} = ${fmt(x0)}$$ $$3x + 2y = ${fmt(3 * x0 + 2 * y0)}$$` }; },
 ]},
 
-fungsi: { nama: 'Fungsi & Fungsi Kuadrat', rumus: String.raw`Invers fungsi linear: $$f(x) = ax + b \;\Rightarrow\; f^{-1}(x) = \frac{x - b}{a}$$ Komposisi: $$(f \circ g)(x) = f\bigl(g(x)\bigr)$$ Fungsi kuadrat $y = ax^2 + bx + c$: $$x_p = -\frac{b}{2a}, \qquad y_p = f(x_p)$$ $a > 0$ terbuka ke atas (minimum), $a < 0$ terbuka ke bawah (maksimum).`,
+fungsi: { nama: 'Fungsi & Fungsi Kuadrat', rumus: L`Invers: $$f(x) = ax + b \;\Rightarrow\; f^{-1}(x) = \frac{x - b}{a}$$ Komposisi: $$(f \circ g)(x) = f\bigl(g(x)\bigr)$$ Domain: $\sqrt{u}$ syaratnya $u \ge 0$; $\dfrac{p}{q}$ syaratnya $q \ne 0$. Fungsi kuadrat $y = ax^2 + bx + c$: $$x_p = -\frac{b}{2a}, \qquad y_p = f(x_p)$$ $a > 0$ terbuka ke atas, $a < 0$ terbuka ke bawah.`,
 pg: [
   () => { const a = pick([2, 3]), b = R(1, 5), x0 = R(1, 6), y0 = a * x0 + b;
     return pg(`Diketahui f(x) = ${a}x + ${b}. Nilai f⁻¹(${y0}) adalah ....`,
-      x0, [a * y0 + b, y0 - b, -x0, y0], String.raw`$$f^{-1}(x) = \frac{x - b}{a}$$`); },
+      x0, [a * y0 + b, y0 - b, -x0, y0], L`$$f^{-1}(x) = \frac{x - b}{a}$$`, '',
+      L`$$f^{-1}(${y0}) = \frac{${y0} - ${b}}{${a}} = ${x0}$$`); },
   () => { const p = R(1, 6), c = R(1, 9);
     return pg(`Sumbu simetri grafik fungsi y = x² − ${2 * p}x + ${c} adalah garis x = ....`,
-      p, [-p, 2 * p, c, -2 * p], String.raw`$$x = -\frac{b}{2a}$$`); },
+      p, [-p, 2 * p, c, -2 * p], L`$$x = -\frac{b}{2a}$$`, '',
+      L`$$x = -\frac{-${2 * p}}{2 \cdot 1} = ${p}$$`); },
   () => { const b = R(1, 5), c = R(2, 4), h = 2 * c * c + b;
     return pg(`Diketahui f(x) = 2x + ${b} dan g(x) = x². Nilai (f ∘ g)(${c}) adalah ....`,
-      h, [(2 * c + b) * (2 * c + b), 2 * c + b, c * c + b, 4 * c * c + b], String.raw`$$(f \circ g)(x) = f\bigl(g(x)\bigr)$$ Hitung $g$ dahulu, hasilnya masukkan ke $f$.`); },
+      h, [(2 * c + b) * (2 * c + b), 2 * c + b, c * c + b, 4 * c * c + b], L`$$(f \circ g)(x) = f\bigl(g(x)\bigr)$$ Hitung $g$ dahulu, hasilnya masukkan ke $f$.`, '',
+      L`$$g(${c}) = ${c * c}, \qquad f(${c * c}) = 2 \cdot ${c * c} + ${b} = ${h}$$`); },
+  () => { const a = pick([2, 3, 4]), k = R(1, 5), p = pick([1, 2, 3, 4, 5, 6].filter(x => x !== k));
+    return pick([
+      () => pg(`Domain fungsi f(x) = √(${a}x − ${a * k}) adalah ....`,
+        `x ≥ ${k}`, [`x ≤ ${k}`, `x > ${k}`, `x ≥ ${a * k}`, `x ≥ −${k}`], L`Di dalam akar tidak boleh negatif: $$\sqrt{u} \text{ terdefinisi jika } u \ge 0$$`, '',
+        L`$$${a}x - ${a * k} \ge 0 \Rightarrow x \ge ${k}$$`),
+      () => pg(`Domain fungsi f(x) = (x + ${p}) / (x − ${k}) adalah ....`,
+        `x ≠ ${k}`, [`x ≠ −${k}`, `x ≠ −${p}`, `x > ${k}`, `x ≥ ${k}`], L`Penyebut tidak boleh nol: $$\frac{p(x)}{q(x)} \text{ terdefinisi jika } q(x) \ne 0$$`, '',
+        L`$$x - ${k} \ne 0 \Rightarrow x \ne ${k}$$`),
+    ])(); },
 ],
 bs: [
   () => { const b = pick([4, 6, 8]);
@@ -389,10 +637,11 @@ bs: [
       [`Ketinggian maksimum karakter adalah ${s2.v} piksel`, s2.t],
       [`Ketinggian maksimum dicapai saat t = ${s3.v} detik`, s3.t],
       [`Grafik h(t) terbuka ke atas`, false]],
-    rumus: String.raw`Akar: selesaikan $h(t) = 0$. Puncak: $$t_p = -\frac{b}{2a}, \qquad h_{\text{maks}} = h(t_p)$$ Koefisien $t^2$ negatif berarti terbuka ke bawah.` }; },
+    rumus: L`Akar: selesaikan $h(t) = 0$. Puncak: $$t_p = -\frac{b}{2a}, \qquad h_{\text{maks}} = h(t_p)$$ Koefisien $t^2$ negatif berarti terbuka ke bawah.`,
+    bahas: L`$$-t^2 + ${b}t = 0 \Rightarrow t\,(${b} - t) = 0 \Rightarrow t = 0 \text{ atau } t = ${b}$$ $$t_p = -\frac{${b}}{2 \cdot (-1)} = ${b / 2}, \qquad h(${b / 2}) = -${b / 2}^2 + ${b} \cdot ${b / 2} = ${b * b / 4}$$ $a = -1 < 0$, jadi terbuka ke bawah.` }; },
 ],
 mcma: [
-  () => { const p = pick([1, 2]), q = p + 2 * R(1, 2), xp = (p + q) / 2, yp = p * q - (p + q) * (p + q) / 4;
+  () => { const p = pick([1, 2]), q = p + 2 * R(1, 2), xp = (p + q) / 2, yp = p * q - xp * xp;
     const s2 = tw(pt(xp, yp), pt(xp, yp - 1)), s4 = tw(pt(0, p * q), pt(0, -p * q)), s5 = tw(yp, yp - 1);
     return { type: 'mcma', q: `Perhatikan fungsi kuadrat y = x² − ${p + q}x + ${p * q}. Pilih semua pernyataan yang benar.`, st: [
       [`Grafik memotong sumbu x di ${pt(p, 0)} dan ${pt(q, 0)}`, true],
@@ -400,36 +649,45 @@ mcma: [
       [`Grafik terbuka ke bawah`, false],
       [`Grafik memotong sumbu y di titik ${s4.v}`, s4.t],
       [`Nilai minimum fungsi adalah ${s5.v}`, s5.t]],
-    rumus: String.raw`Faktorkan untuk titik potong sumbu x. Puncak: $$x_p = -\frac{b}{2a}, \quad y_p = f(x_p)$$ Titik potong sumbu y: $(0, c)$. $a > 0$ berarti terbuka ke atas dan $y_p$ adalah minimum.` }; },
+    rumus: L`Faktorkan untuk titik potong sumbu x. Puncak: $$x_p = -\frac{b}{2a}, \quad y_p = f(x_p)$$ Titik potong sumbu y: $(0, c)$. $a > 0$ berarti terbuka ke atas dan $y_p$ adalah nilai minimum.`,
+    bahas: L`$$(x - ${p})(x - ${q}) = 0 \Rightarrow x = ${p},\ ${q}$$ $$x_p = \frac{${p + q}}{2} = ${xp}, \quad y_p = ${xp}^2 - ${p + q} \cdot ${xp} + ${p * q} = ${yp}$$ Potong sumbu y di $(0, ${p * q})$. $a = 1 > 0$: terbuka ke atas, minimum $${yp}$.` }; },
 ]},
 
-matriks: { nama: 'Matriks', rumus: String.raw`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$ Penjumlahan dan pengurangan dilakukan per elemen seletak.`,
+matriks: { nama: 'Matriks', rumus: L`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$ Penjumlahan dan pengurangan dilakukan per elemen seletak.`,
 pg: [
   () => { const a = R(-5, 5) || 1, b = R(-5, 5), c = R(-5, 5), d = R(-5, 5) || 2, det = a * d - b * c;
     return pg(`Determinan matriks $\\begin{pmatrix}${a} & ${b}\\\\ ${c} & ${d}\\end{pmatrix}$ adalah ....`,
-      det, [a * d + b * c, a + d - b - c, a * b - c * d, b * c - a * d], String.raw`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$`); },
+      det, [a * d + b * c, a + d - b - c, a * b - c * d, b * c - a * d], L`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$`, '',
+      L`$$(${a})(${d}) - (${b})(${c}) = ${a * d} - (${b * c}) = ${det}$$`); },
 ],
 mcma: [
   () => { const a = R(1, 4), b = R(1, 4), c = R(1, 4), d = R(1, 4), e = R(1, 3), f = R(1, 3), g = R(1, 3), h = R(1, 3);
-    const mx = (w, x, y, z) => `\\begin{pmatrix}${w} & ${x}\\\\ ${y} & ${z}\\end{pmatrix}`;
-    const s1 = tw(mx(a + e, b + f, c + g, d + h), mx(a + e, b + f + 1, c + g, d + h));
-    const s2 = tw(a * d - b * c, a * d + b * c);
-    const s3 = tw(mx(a - e, b - f, c - g, d - h), mx(a - e, b - f, c - g + 1, d - h));
-    const s4 = tw(e * h - f * g, e * h + f * g);
+    const mx = (w, x, y, z) => L`\begin{pmatrix}${w} & ${x}\\ ${y} & ${z}\end{pmatrix}`;
+    const s1 = tw(mx(a + e, b + f, c + g, d + h), mx(a + e, b + f + 1, c + g, d + h)), s2 = tw(a * d - b * c, a * d + b * c);
+    const s3 = tw(mx(a - e, b - f, c - g, d - h), mx(a - e, b - f, c - g + 1, d - h)), s4 = tw(e * h - f * g, e * h + f * g);
     return { type: 'mcma', q: `Diketahui matriks $A = ${mx(a, b, c, d)}$ dan $B = ${mx(e, f, g, h)}$. Pilih semua pernyataan yang benar.`, st: [
       [`$A + B = ${s1.v}$`, s1.t],
       [`det A = ${s2.v}`, s2.t],
       [`$A - B = ${s3.v}$`, s3.t],
       [`det B = ${s4.v}`, s4.t]],
-    rumus: String.raw`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$ Penjumlahan/pengurangan matriks: operasikan elemen yang seletak.` }; },
+    rumus: L`$$\det\begin{pmatrix}a & b\\ c & d\end{pmatrix} = ad - bc$$ Penjumlahan/pengurangan matriks: operasikan elemen yang seletak.`,
+    bahas: L`$$A + B = ${mx(a + e, b + f, c + g, d + h)}, \qquad A - B = ${mx(a - e, b - f, c - g, d - h)}$$ $$\det A = ${a} \cdot ${d} - ${b} \cdot ${c} = ${a * d - b * c}, \qquad \det B = ${e} \cdot ${h} - ${f} \cdot ${g} = ${e * h - f * g}$$` }; },
 ]},
 
-programLinear: { nama: 'Program Linear', rumus: String.raw`Langkah: susun model matematika (pertidaksamaan kendala), gambar daerah penyelesaian, tentukan titik pojok, lalu uji tiap titik ke fungsi tujuan $$f(x, y) = px + qy$$ Nilai optimum ada di salah satu titik pojok.`,
+programLinear: { nama: 'Program Linear', rumus: L`Langkah: susun model matematika (pertidaksamaan kendala), gambar daerah penyelesaian, tentukan titik pojok, lalu uji tiap titik ke fungsi tujuan $$f(x, y) = px + qy$$ Nilai optimum ada di salah satu titik pojok.`,
 pg: [
   () => { const p = R(2, 5), q = R(2, 5), x1 = R(4, 8), y3 = R(4, 8), x2 = R(2, x1 - 1), y2 = R(2, y3 - 1);
     const v = [p * x1, q * y3, p * x2 + q * y2], mx = Math.max(...v);
     return pg(`Nilai maksimum f(x, y) = ${p}x + ${q}y pada daerah dengan titik pojok (0, 0), (${x1}, 0), (${x2}, ${y2}), dan (0, ${y3}) adalah ....`,
-      mx, v.filter(x => x !== mx).concat([p * x1 + q * y3, Math.min(...v) - 1]), String.raw`Substitusikan setiap titik pojok ke $$f(x, y) = px + qy$$ lalu ambil hasil terbesar.`); },
+      mx, v.filter(x => x !== mx).concat([p * x1 + q * y3, Math.min(...v) - 1]), L`Substitusikan setiap titik pojok ke $$f(x, y) = px + qy$$ lalu ambil hasil terbesar.`, '',
+      L`$$f(0,0) = 0, \quad f(${x1},0) = ${v[0]}, \quad f(${x2},${y2}) = ${v[2]}, \quad f(0,${y3}) = ${v[1]}$$ Terbesar: $${mx}$.`); },
+  () => { let a1, b1, a2, b2; do { [a1, b1] = shuffle([1, 2, 3]); a2 = R(1, 4); b2 = R(1, 4); } while (a2 === b2 || b1 === a2 || a1 === b2);
+    const K = R(10, 20), P = R(12, 24), m = (u, v, w, s, z, y) => `${u}x + ${v}y ${z} ${w}; ${s}`;
+    const ans = `${a1}x + ${b1}y ≤ ${K}; ${a2}x + ${b2}y ≤ ${P}; x ≥ 0; y ≥ 0`;
+    return pg(`Seragam jenis A memerlukan ${a1} m kain katun dan ${a2} m kain polos. Seragam jenis B memerlukan ${b1} m kain katun dan ${b2} m kain polos. Persediaan kain katun ${K} m dan kain polos ${P} m. Jika banyak seragam A = x dan seragam B = y, model matematikanya adalah ....`,
+      ans, [`${b1}x + ${a1}y ≤ ${K}; ${b2}x + ${a2}y ≤ ${P}; x ≥ 0; y ≥ 0`, `${a1}x + ${b1}y ≥ ${K}; ${a2}x + ${b2}y ≥ ${P}; x ≥ 0; y ≥ 0`, `${a1}x + ${a2}y ≤ ${K}; ${b1}x + ${b2}y ≤ ${P}; x ≥ 0; y ≥ 0`, `${a1}x + ${b1}y ≤ ${P}; ${a2}x + ${b2}y ≤ ${K}; x ≥ 0; y ≥ 0`],
+      L`Tiap bahan menjadi satu kendala: $$(\text{kebutuhan A})\,x + (\text{kebutuhan B})\,y \le \text{persediaan}$$ ditambah $x \ge 0$, $y \ge 0$.`, '',
+      L`Katun: $${a1}x + ${b1}y \le ${K}$. Polos: $${a2}x + ${b2}y \le ${P}$. Banyak seragam tidak negatif: $x \ge 0,\ y \ge 0$.`); },
 ]},
 
 };
@@ -443,8 +701,7 @@ function math(el) {
 }
 
 function tampilMenu() {
-  builder = null;
-  app.innerHTML = `<p>Soal dibangkitkan acak dengan gaya PEMANTAPAN TKA. Tiap soal punya tombol "Tampilkan rumus" yang hanya berisi rumus umum, tanpa jawaban.</p>
+  app.innerHTML = `<p>Soal dibangkitkan acak dengan gaya PEMANTAPAN TKA. "Tampilkan rumus" hanya berisi rumus umum; pembahasan lengkap muncul setelah jawaban diperiksa.</p>
   <nav class="menu">
     <a class="kartu" href="#simulasi"><b>Simulasi TKA</b><span>25 soal campuran: 17 PG, 4 Benar/Salah, 4 MCMA</span></a>
     <a class="kartu" href="#materi"><b>Materi &amp; Rumus</b><span>Ringkasan rumus semua materi</span></a>
@@ -454,17 +711,14 @@ function tampilMenu() {
 }
 
 function tampilMateri() {
-  builder = null;
   app.innerHTML = `<p><a href="#">← Menu</a></p><h2>Materi &amp; Rumus</h2>` +
     Object.entries(T).map(([id, t]) => `<section class="soal"><h2>${t.nama}</h2><div class="rumus">${t.rumus}</div><p><a href="#latihan-${id}">Latihan ${t.nama} →</a></p></section>`).join('');
   math(app);
 }
 
 function buatSimulasi() {
-  const pgs = shuffle(Object.values(T).flatMap(t => t.pg)).slice(0, 17).map(g => g());
-  const bss = shuffle(Object.values(T).flatMap(t => t.bs || [])).slice(0, 4).map(g => g());
-  const mcs = shuffle(Object.values(T).flatMap(t => t.mcma || [])).slice(0, 4).map(g => g());
-  return [...pgs, ...bss, ...mcs];
+  const ambil = (k, n) => shuffle(Object.values(T).flatMap(t => t[k] || [])).slice(0, n).map(g => g());
+  return [...ambil('pg', 17), ...ambil('bs', 4), ...ambil('mcma', 4)];
 }
 const buatLatihan = id => [...T[id].pg, ...(T[id].bs || []), ...(T[id].mcma || [])].map(g => g());
 
@@ -477,15 +731,15 @@ function renderKuis() {
   let bag = '';
   soal.forEach((s, i) => {
     if (s.type !== bag) { bag = s.type; html += `<h2>${judul[bag]}</h2>`; }
-    html += `<fieldset class="soal" style="border:1px solid var(--line)"><legend><b>${i + 1}.</b></legend><p>${s.q}</p>`;
+    html += `<fieldset class="soal"><legend><b>${i + 1}.</b></legend><div>${s.q}</div>`;
     if (s.type === 'pg') html += s.opts.map((o, j) => `<label><input type="radio" name="q${i}" value="${j}">${'ABCDE'[j]}. ${o}</label>`).join('');
     if (s.type === 'bs') html += `<table><tr><th>Pernyataan</th><th>Benar</th><th>Salah</th></tr>` + s.st.map((t, j) =>
-      `<tr><td>${t[0]}</td><td class="c"><label><input type="radio" name="q${i}_${j}" value="1" aria-label="Benar"></label></td><td class="c"><label><input type="radio" name="q${i}_${j}" value="0" aria-label="Salah"></label></td></tr>`).join('') + '</table>';
+      `<tr><td>${t[0]}</td><td class="c"><label><input type="radio" name="q${i}_${j}" value="1" aria-label="Pernyataan ${j + 1} benar"></label></td><td class="c"><label><input type="radio" name="q${i}_${j}" value="0" aria-label="Pernyataan ${j + 1} salah"></label></td></tr>`).join('') + '</table>';
     if (s.type === 'mcma') html += s.st.map((t, j) => `<label><input type="checkbox" name="q${i}" value="${j}">${'ABCDE'[j]}. ${t[0]}</label>`).join('');
-    html += `<div class="hasil" id="h${i}"></div><details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}</div></details></fieldset>`;
+    html += `<div class="hasil" id="h${i}"></div><div class="bahas" id="b${i}" hidden><b>Pembahasan</b><div>${s.bahas}</div></div><details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}</div></details></fieldset>`;
   });
   app.innerHTML = html;
-  document.getElementById('baru').onclick = () => { soal = builder(); renderKuis(); };
+  document.getElementById('baru').onclick = () => { soal = builder(); renderKuis(); window.scrollTo(0, 0); };
   document.getElementById('cek').onclick = periksa;
   math(app);
 }
@@ -501,6 +755,7 @@ function periksa() {
     const h = document.getElementById('h' + i);
     h.className = 'hasil ' + (ok ? 'ok' : 'bad');
     h.textContent = ok ? '✓ Benar' : `✗ Salah. Kunci: ${kunci}`;
+    document.getElementById('b' + i).hidden = false;
   });
   document.getElementById('skor').textContent = `Skor: ${benar} / ${soal.length}`;
 }
@@ -509,19 +764,23 @@ function route() {
   const h = location.hash;
   if (h === '#simulasi') tampilKuis(buatSimulasi, 'Simulasi TKA');
   else if (h === '#materi') tampilMateri();
-  else if (h.startsWith('#latihan-')) { const id = h.slice(9); if (T[id]) tampilKuis(() => buatLatihan(id), 'Latihan: ' + T[id].nama); else tampilMenu(); }
+  else if (h.startsWith('#latihan-') && T[h.slice(9)]) { const id = h.slice(9); tampilKuis(() => buatLatihan(id), 'Latihan: ' + T[id].nama); }
   else tampilMenu();
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', route);
-window.addEventListener('load', route); // KaTeX dimuat defer, jadi render setelah halaman siap.
+window.addEventListener('load', route); // KaTeX is loaded with defer, so render only after the page has fully loaded.
 
-// Self-check: buka index.html#test lalu lihat console.
+// Self-check: open index.html#test, then read the console.
 if (location.hash === '#test') { let n = 0;
   Object.entries(T).forEach(([id, t]) => {
     for (let i = 0; i < 100; i++) {
-      t.pg.forEach(g => { const s = g(); console.assert(s.type === 'pg' && s.ans >= 0 && new Set(s.opts).size === 5, 'PG', id, s); n++; });
-      (t.bs || []).concat(t.mcma || []).forEach(g => { const s = g(); console.assert(s.st.length >= 4 && s.st.every(x => typeof x[0] === 'string' && typeof x[1] === 'boolean'), s.type, id, s); n++; });
+      [...t.pg, ...(t.bs || []), ...(t.mcma || [])].forEach(g => {
+        const s = g(), js = JSON.stringify(s); n++;
+        console.assert(s.bahas && s.rumus && !/NaN|undefined|Infinity/.test(js), 'isi', id, s);
+        if (s.type === 'pg') console.assert(s.ans >= 0 && new Set(s.opts).size === 5, 'PG', id, s);
+        else console.assert(s.st.length >= 4 && s.st.every(x => typeof x[0] === 'string' && typeof x[1] === 'boolean'), s.type, id, s);
+      });
     }
   });
   console.log('self-check selesai:', n, 'soal dibangkitkan');
