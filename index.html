@@ -21,9 +21,12 @@
   button.primary { background:var(--acc); color:#fff; }
   :focus-visible { outline:3px solid var(--acc); outline-offset:2px; }
   .menu { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:.5rem; padding:0; }
-  .kartu { display:flex; flex-direction:column; gap:.25rem; justify-content:center; min-height:44px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; text-decoration:none; color:var(--fg); }
+  .kartu { display:flex; align-items:center; gap:.75rem; min-height:44px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; text-decoration:none; color:var(--fg); }
   .kartu:hover { border-color:var(--acc); }
   .kartu b { color:var(--acc); }
+  .kartu span { display:block; }
+  .ikon { flex:none; width:44px; height:44px; padding:9px; border-radius:8px; background:#eef4f1; color:var(--acc); fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .ikon .f { fill:currentColor; stroke:none; }
   .soal { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; margin:.75rem 0; min-width:0; }
   .soal p { margin:0 0 .5rem; }
   label { display:flex; gap:.5rem; align-items:flex-start; min-height:44px; padding:.4rem 0; cursor:pointer; }
@@ -845,14 +848,37 @@ function math(el) {
   if (window.renderMathInElement) renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
 }
 
+const IKON = {
+  simulasi: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/>',
+  materi: '<path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2zM22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/>',
+  bangunDatar: '<path d="M3 13h8v8H3zM17 3l4 7h-8z"/><circle cx="17" cy="17" r="4"/>',
+  bangunRuang: '<path d="M12 2l9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10"/>',
+  dimensiTiga: '<path d="M3 8h13v13H3zM3 8l5-5h13v13l-5 5M16 8l5-5"/><path d="M3 21L16 8" stroke-dasharray="2 2"/>',
+  konversi: '<path d="M4 8h15l-4-4M20 16H5l4 4"/>',
+  trigonometri: '<path d="M3 20h18V6zM17 20v-4h4M8 20a5 5 0 0 0-1.5-3.5"/>',
+  garisSudut: '<path d="M2 8h20M2 16h20M8 22L16 2"/>',
+  pythagoras: '<path d="M5 19V5l14 14zM5 15h4v4"/>',
+  transformasi: '<path d="M20 12a8 8 0 1 1-2.3-5.7M20 3v4h-4"/>',
+  statistika: '<path d="M2 21h20M5 21V11M11 21V4M17 21v-7"/>',
+  peluang: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle class="f" cx="8" cy="8" r="1.5"/><circle class="f" cx="12" cy="12" r="1.5"/><circle class="f" cx="16" cy="16" r="1.5"/>',
+  pecahan: '<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+  eksponen: '<path d="M3 9l8 11M11 9l-8 11M14 3h5l-5 6h5"/>',
+  barisan: '<path d="M3 18l6-6 4 4 8-8M15 8h6v6"/>',
+  persamaan: '<path d="M5 9h14M5 15h14"/>',
+  fungsi: '<path d="M3 3v18h18M6 5q6 18 12 0"/>',
+  matriks: '<path d="M7 4H4v16h3M17 4h3v16h-3"/><circle class="f" cx="10" cy="9" r="1.3"/><circle class="f" cx="14" cy="9" r="1.3"/><circle class="f" cx="10" cy="15" r="1.3"/><circle class="f" cx="14" cy="15" r="1.3"/>',
+  programLinear: '<path d="M3 3v18h18"/><path d="M3 21V10l8 2 6 9z" fill="currentColor" fill-opacity=".2"/>',
+};
+const ikon = id => `<svg class="ikon" viewBox="0 0 24 24" aria-hidden="true">${IKON[id] || ''}</svg>`;
+
 function tampilMenu() {
   app.innerHTML = `<p>Soal dibangkitkan acak dengan gaya PEMANTAPAN TKA. "Tampilkan rumus" hanya berisi rumus umum; pembahasan lengkap muncul setelah jawaban diperiksa.</p>
   <nav class="menu">
-    <a class="kartu" href="#simulasi"><b>Simulasi TKA</b><span>25 soal campuran: 17 PG, 4 Benar/Salah, 4 MCMA</span></a>
-    <a class="kartu" href="#materi"><b>Materi &amp; Rumus</b><span>Ringkasan rumus semua materi</span></a>
+    <a class="kartu" href="#simulasi">${ikon('simulasi')}<span><b>Simulasi TKA</b><span>25 soal campuran: 17 PG, 4 Benar/Salah, 4 MCMA</span></span></a>
+    <a class="kartu" href="#materi">${ikon('materi')}<span><b>Materi &amp; Rumus</b><span>Ringkasan rumus semua materi</span></span></a>
   </nav>
   <h2>Latihan per materi</h2>
-  <nav class="menu">${Object.entries(T).map(([id, t]) => `<a class="kartu" href="#latihan-${id}"><b>${t.nama}</b></a>`).join('')}</nav>`;
+  <nav class="menu">${Object.entries(T).map(([id, t]) => `<a class="kartu" href="#latihan-${id}">${ikon(id)}<b>${t.nama}</b></a>`).join('')}</nav>`;
 }
 
 function tampilMateri() {
