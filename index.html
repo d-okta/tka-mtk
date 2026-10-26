@@ -40,6 +40,7 @@
   summary { cursor:pointer; color:var(--acc); min-height:44px; display:flex; align-items:center; }
   .rumus, .bahas { overflow-x:auto; }
   .bahas { margin-top:.5rem; padding:.75rem; background:#eef4f1; border-radius:6px; }
+  .bahas ol { margin:.25rem 0; padding-left:1.25rem; } .bahas li, .rumus p { margin:.4rem 0; }
   .hasil { font-weight:600; margin-top:.5rem; }
   .ok { color:var(--ok); } .bad { color:var(--bad); }
   #skor { font-weight:700; align-self:center; }
@@ -622,11 +623,13 @@ pg: [
   () => { const a = pick([2, 3, 4]), k = R(1, 5), p = pick([1, 2, 3, 4, 5, 6].filter(x => x !== k));
     return pick([
       () => pg(`Domain fungsi f(x) = √(${a}x − ${a * k}) adalah ....`,
-        `x ≥ ${k}`, [`x ≤ ${k}`, `x > ${k}`, `x ≥ ${a * k}`, `x ≥ −${k}`], L`Di dalam akar tidak boleh negatif: $$\sqrt{u} \text{ terdefinisi jika } u \ge 0$$`, '',
-        L`$$${a}x - ${a * k} \ge 0 \Rightarrow x \ge ${k}$$`),
+        `x ≥ ${k}`, [`x ≤ ${k}`, `x > ${k}`, `x ≥ ${a * k}`, `x ≥ −${k}`],
+        L`<p>Domain adalah semua nilai $x$ yang membuat $f(x)$ punya hasil (bilangan real).</p><p>Akar dari bilangan negatif tidak punya hasil real, misalnya $\sqrt{-4}$. Akar dari nol boleh, karena $\sqrt{0} = 0$. Jadi syaratnya: $$\sqrt{u} \text{ terdefinisi jika } u \ge 0$$</p><p>Langkah: tulis isi akar $\ge 0$, lalu selesaikan seperti persamaan linear. Tanda $\ge$ hanya berbalik jika kedua ruas dibagi bilangan negatif.</p>`, '',
+        L`<ol><li>Syarat: isi akar tidak boleh negatif. $$${a}x - ${a * k} \ge 0$$</li><li>Pindahkan $-${a * k}$ ke ruas kanan, tandanya menjadi $+$: $$${a}x \ge ${a * k}$$</li><li>Bagi kedua ruas dengan $${a}$. Karena $${a}$ positif, tanda $\ge$ tidak berbalik: $$x \ge \frac{${a * k}}{${a}} = ${k}$$</li><li>Cek dengan mencoba angka:<br>$x = ${k + 1}$: isi akar $= ${a}(${k + 1}) - ${a * k} = ${a}$, hasilnya ada.<br>$x = ${k}$: isi akar $= 0$ dan $\sqrt0 = 0$, boleh. Karena itu memakai $\ge$, bukan $>$.<br>$x = ${k - 1}$: isi akar $= ${a}(${k - 1}) - ${a * k} = -${a}$, tidak boleh. Karena itu bukan $\le$.</li></ol>`),
       () => pg(`Domain fungsi f(x) = (x + ${p}) / (x − ${k}) adalah ....`,
-        `x ≠ ${k}`, [`x ≠ −${k}`, `x ≠ −${p}`, `x > ${k}`, `x ≥ ${k}`], L`Penyebut tidak boleh nol: $$\frac{p(x)}{q(x)} \text{ terdefinisi jika } q(x) \ne 0$$`, '',
-        L`$$x - ${k} \ne 0 \Rightarrow x \ne ${k}$$`),
+        `x ≠ ${k}`, [`x ≠ −${k}`, `x ≠ −${p}`, `x > ${k}`, `x ≥ ${k}`],
+        L`<p>Domain adalah semua nilai $x$ yang membuat $f(x)$ punya hasil (bilangan real).</p><p>Pembagian dengan nol tidak punya hasil, jadi penyebut tidak boleh nol. Pembilang boleh bernilai berapa saja, termasuk nol. $$\frac{p(x)}{q(x)} \text{ terdefinisi jika } q(x) \ne 0$$</p><p>Langkah: tulis penyebut $\ne 0$, lalu selesaikan seperti persamaan linear.</p>`, '',
+        L`<ol><li>Penyebutnya $x - ${k}$. Syarat: $$x - ${k} \ne 0$$</li><li>Pindahkan $-${k}$ ke ruas kanan: $$x \ne ${k}$$</li><li>Cek: jika $x = ${k}$, penyebut $= ${k} - ${k} = 0$ sehingga terjadi pembagian dengan nol. Nilai lain, misalnya $x = -${p}$, hanya membuat pembilang nol: $\frac{0}{${-p - k}} = 0$, dan itu boleh. Jadi syaratnya hanya $x \ne ${k}$.</li></ol>`),
     ])(); },
 ],
 bs: [
