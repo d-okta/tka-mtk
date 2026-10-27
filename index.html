@@ -964,7 +964,7 @@ function renderKuis() {
     if (s.type === 'bs') html += `<table><tr><th>Pernyataan</th><th>Benar</th><th>Salah</th></tr>` + s.st.map((t, j) =>
       `<tr><td>${t[0]}</td><td class="c"><label><input type="radio" name="q${i}_${j}" value="1" aria-label="Pernyataan ${j + 1} benar"></label></td><td class="c"><label><input type="radio" name="q${i}_${j}" value="0" aria-label="Pernyataan ${j + 1} salah"></label></td></tr>`).join('') + '</table>';
     if (s.type === 'mcma') html += s.st.map((t, j) => `<label><input type="checkbox" name="q${i}" value="${j}">${'ABCDE'[j]}. ${t[0]}</label>`).join('');
-    html += `<div class="hasil" id="h${i}"></div><div class="bahas" id="b${i}" hidden><b>Pembahasan</b><div>${s.bahas}</div></div><details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}</div></details></fieldset>`;
+    html += `<div class="hasil" id="h${i}"></div><div class="bahas" id="b${i}" hidden><b>Pembahasan</b><div>${s.bahas}</div></div>${sim ? '' : `<details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}</div></details>`}</fieldset>`;
   });
   if (sim) html += `<div class="bar nav"><button id="prev">← Sebelumnya</button><button id="next">Berikutnya →</button></div>`;
   app.innerHTML = html;
