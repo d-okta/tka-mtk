@@ -29,6 +29,9 @@
   .ikon .f { fill:currentColor; stroke:none; }
   .soal { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; margin:.75rem 0; min-width:0; }
   .soal p { margin:0 0 .5rem; }
+  .soal.salah { border:2px solid var(--bad); background:#fdf0ee; }
+  .soal.salah legend b { color:var(--bad); }
+  .soal.benar { border-left:4px solid var(--ok); }
   label { display:flex; gap:.5rem; align-items:flex-start; min-height:44px; padding:.4rem 0; cursor:pointer; }
   input { width:1.2rem; height:1.2rem; margin-top:.2rem; accent-color:var(--acc); flex:none; }
   table { width:100%; border-collapse:collapse; }
@@ -993,7 +996,7 @@ function renderKuis() {
   let html = `<p><a href="#">← Menu</a></p><h2>${judulKuis}</h2>
   <div class="bar"><button id="baru">Soal baru</button><button id="cek" class="primary">Periksa jawaban</button>${st.salah.length ? `<button id="ulang">Ulangi yang salah (${st.salah.length})</button>` : ''}<button id="cetak">Cetak</button>${sim ? '<span id="waktu" aria-live="off"></span>' : ''}<span id="skor" aria-live="polite"></span></div>`;
   if (sim) html += `<nav class="nomor" aria-label="Nomor soal">${soal.map((_, i) => `<button data-n="${i}" aria-label="Soal ${i + 1}">${i + 1}</button>`).join('')}</nav>`;
-  let bag = '';
+  let bag = ''; html += '<div id="daftar">';
   soal.forEach((s, i) => {
     if (s.type !== bag) { bag = s.type; html += `<h2 class="jenis" data-j="${bag}">${judul[bag]}</h2>`; }
     html += `<fieldset class="soal" id="s${i}"><legend><b>${i + 1}.</b>${sim ? ` <label class="ragu"><input type="checkbox" data-ragu="${i}">Ragu-ragu</label>` : ''}</legend><div>${s.q}</div>`;
@@ -1003,6 +1006,7 @@ function renderKuis() {
     if (s.type === 'mcma') html += s.st.map((t, j) => `<label><input type="checkbox" name="q${i}" value="${j}">${'ABCDE'[j]}. ${t[0]}</label>`).join('');
     html += `<div class="hasil" id="h${i}"></div><div class="bahas" id="b${i}" hidden><b>Pembahasan</b><div>${s.bahas}</div></div>${sim ? '' : `<details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}${ket((s.src || '').split('.')[0])}</div></details>`}</fieldset>`;
   });
+  html += '</div>';
   if (sim) html += `<div class="bar nav"><button id="prev">← Sebelumnya</button><button id="next">Berikutnya →</button></div>`;
   app.innerHTML = html;
   const $ = id => document.getElementById(id);
@@ -1060,7 +1064,7 @@ function tandai() {
 }
 
 function periksa(ulang) {
-  let benar = 0; const salah = [];
+  let benar = 0; const salah = [], salahEl = [], benarEl = [];
   soal.forEach((s, i) => {
     let ok, kunci;
     if (s.type === 'pg') { const v = document.querySelector(`[name=q${i}]:checked`); ok = v && +v.value === s.ans; kunci = 'ABCDE'[s.ans]; }
@@ -1071,9 +1075,16 @@ function periksa(ulang) {
     h.className = 'hasil ' + (ok ? 'ok' : 'bad');
     h.textContent = ok ? '✓ Benar' : `✗ Salah. Kunci: ${kunci}`;
     document.getElementById('b' + i).hidden = false;
+    const f = document.getElementById('s' + i);
+    f.classList.add(ok ? 'benar' : 'salah'); (ok ? benarEl : salahEl).push(f);
   });
   document.getElementById('skor').textContent = `Skor: ${benar} / ${soal.length}`;
-  if (ulang) return;
+  if (ulang) {
+    // After checking: wrong answers first (moved in the DOM so tab and print order follow), original numbers kept.
+    const d = document.getElementById('daftar'), h = t => Object.assign(document.createElement('h2'), { textContent: t });
+    d.replaceChildren(...(salahEl.length ? [h(`Jawaban salah (${salahEl.length})`), ...salahEl] : []), ...(benarEl.length ? [h(`Jawaban benar (${benarEl.length})`), ...benarEl] : []));
+    return;
+  }
   const r = muat('riwayat') || {};
   (r[st.id] = r[st.id] || []).push({ b: benar, n: soal.length, t: Date.now() });
   r[st.id] = r[st.id].slice(-10);
