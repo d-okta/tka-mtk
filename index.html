@@ -47,6 +47,7 @@
   .hasil { font-weight:600; margin-top:.5rem; }
   .ok { color:var(--ok); } .bad { color:var(--bad); }
   #skor, #waktu { font-weight:700; align-self:center; font-variant-numeric:tabular-nums; }
+  .ket { font-size:.92rem; color:var(--muted); border-left:3px solid var(--line); padding-left:.6rem; margin-top:.6rem; }
   .kartu small { display:block; color:var(--muted); font-size:.85rem; }
   .nomor { display:grid; grid-template-columns:repeat(auto-fill, minmax(44px, 1fr)); gap:.35rem; margin:.5rem 0; }
   .nomor button { padding:0; }
@@ -915,9 +916,31 @@ function tampilMenu() {
 
 function tampilMateri() {
   app.innerHTML = `<p><a href="#">← Menu</a></p><h2>Materi &amp; Rumus</h2>` +
-    Object.entries(T).map(([id, t]) => `<section class="soal"><h2>${t.nama}</h2><div class="rumus">${t.rumus}</div><p><a href="#latihan-${id}">Latihan ${t.nama} →</a></p></section>`).join('');
+    Object.entries(T).map(([id, t]) => `<section class="soal"><h2>${t.nama}</h2><div class="rumus">${t.rumus}${ket(id)}</div><p><a href="#latihan-${id}">Latihan ${t.nama} →</a></p></section>`).join('');
   math(app);
 }
+
+// Arti simbol per materi, ditampilkan di bawah setiap rumus.
+const KET = {
+  bangunDatar: L`$K$ = keliling, $L$ = luas, $p$ = panjang, $\ell$ = lebar, $a$ = alas, $t$ = tinggi, $r$ = jari-jari, $\pi \approx \tfrac{22}{7}$ atau $3{,}14$, $\theta$ = sudut pusat juring, $d$ = jarak titik ke pusat lingkaran.`,
+  bangunRuang: L`$V$ = volume, $L$ = luas permukaan, $p$ = panjang, $\ell$ = lebar, $t$ = tinggi, $s$ = panjang rusuk kubus, $r$ = jari-jari alas, $\pi \approx \tfrac{22}{7}$, $x$ = sisi persegi yang dipotong dari pojok karton.`,
+  dimensiTiga: L`$s$ = panjang rusuk kubus, $O$ = titik tengah (perpotongan diagonal), $\sqrt2$ dan $\sqrt3$ = pengali untuk diagonal sisi dan diagonal ruang.`,
+  konversi: L`GB = gigabyte, MB = megabyte, KB = kilobyte. Skala $1 : n$ = 1 cm di peta mewakili $n$ cm sebenarnya.`,
+  trigonometri: L`depan = sisi di hadapan sudut, samping = sisi yang menyentuh sudut (bukan sisi miring), miring = sisi terpanjang di depan sudut siku, $\theta$ = besar sudut, $\sec$ = sekan, $\csc$ = kosekan, $\cot$ = kotangen.`,
+  garisSudut: L`$\angle A_1$ = sudut nomor 1 di titik potong A, $x$ = bilangan yang dicari untuk menentukan besar sudut, $^\circ$ = derajat.`,
+  pythagoras: L`$a$, $b$ = sisi tegak (sisi siku-siku), $c$ = sisi miring (terpanjang), $AB$, $PQ$ dan seterusnya = panjang sisi antara dua titik.`,
+  transformasi: L`$(x, y)$ = titik asal, $(x', y')$ = bayangan, $T(a, b)$ = translasi $a$ ke kanan dan $b$ ke atas, $O$ = titik pusat $(0, 0)$, $k$ = faktor skala dilatasi, $R$ = rotasi dengan sudut putar.`,
+  statistika: L`$\bar{x}$ = rata-rata, $x_i$ = data ke-$i$, $f_i$ = frekuensi data ke-$i$, $n$ = banyak data, $\sum$ = jumlahkan semua, $J$ = jangkauan, $SR$ = simpangan rata-rata, $Q_1, Q_2, Q_3$ = kuartil bawah, tengah, atas, $H$ = jangkauan antarkuartil, $s^2$ = ragam, $s$ = simpangan baku, $Mo$ = modus, $t_b$ = tepi bawah kelas modus, $d_1$, $d_2$ = selisih frekuensi kelas modus dengan kelas sebelum dan sesudahnya, $p$ = panjang kelas.`,
+  peluang: L`$P(A)$ = peluang kejadian $A$, $n(A)$ = banyak hasil yang diinginkan, $n(S)$ = banyak semua hasil yang mungkin, $A^c$ = bukan $A$, $A \cup B$ = $A$ atau $B$, $A \cap B$ = $A$ dan $B$, $n!$ = $n$ faktorial, $P(n, k)$ = permutasi, $C(n, k)$ = kombinasi, $n$ = banyak benda, $k$ = banyak yang dipilih.`,
+  pecahan: L`$a, b, c, d$ = pembilang dan penyebut pecahan, $p\%$ = persentase, $H$ = harga atau nilai awal, $B$ = bunga, $M$ = modal, $t$ = lama waktu (tahun).`,
+  eksponen: L`$a$ = bilangan pokok, $m$, $n$ = pangkat, $\sqrt{\ }$ = akar, $\sqrt[n]{a}$ = akar pangkat $n$ dari $a$, $b$ = bilangan di dalam akar.`,
+  barisan: L`$U_n$ = suku ke-$n$, $S_n$ = jumlah $n$ suku pertama, $a$ = suku pertama, $b$ = beda, $r$ = rasio, $n$ = nomor suku, $M$ atau $M_0$ = modal awal, $M_t$ = nilai setelah $t$ periode, $p$ atau $i$ = persentase per periode, $t$ = lama waktu, $B$ = bunga.`,
+  persamaan: L`$x$, $y$, $z$ = variabel yang dicari, $a$, $b$, $c$ = koefisien dan konstanta pada $ax^2 + bx + c = 0$, $p$, $q$ = akar-akar persamaan kuadrat, $\le$ = kurang dari atau sama dengan, $\ge$ = lebih dari atau sama dengan.`,
+  fungsi: L`$f(x)$ = nilai fungsi di $x$, $f^{-1}$ = fungsi invers, $f \circ g$ = fungsi komposisi ($g$ dahulu, lalu $f$), $a$, $b$, $c$ = koefisien, $x_p$, $y_p$ = koordinat titik puncak, $R_f$ = daerah hasil, $u$ = isi akar, $q$ = penyebut.`,
+  matriks: L`$a, b, c, d$ = elemen matriks berordo $2 \times 2$ (baris 1: $a, b$; baris 2: $c, d$), $\det$ = determinan.`,
+  programLinear: L`$x$, $y$ = banyak barang jenis pertama dan kedua, $f(x, y)$ = fungsi tujuan (keuntungan atau biaya), $p$, $q$ = keuntungan per barang, $O(0, 0)$ = titik asal yang dipakai untuk uji daerah.`,
+};
+const ket = id => KET[id] ? `<p class="ket"><b>Keterangan:</b> ${KET[id]}</p>` : '';
 
 // Every generator gets a stable key so "ulangi yang salah" can rebuild the same question type.
 const GEN = {};
@@ -964,7 +987,7 @@ function renderKuis() {
     if (s.type === 'bs') html += `<table><tr><th>Pernyataan</th><th>Benar</th><th>Salah</th></tr>` + s.st.map((t, j) =>
       `<tr><td>${t[0]}</td><td class="c"><label><input type="radio" name="q${i}_${j}" value="1" aria-label="Pernyataan ${j + 1} benar"></label></td><td class="c"><label><input type="radio" name="q${i}_${j}" value="0" aria-label="Pernyataan ${j + 1} salah"></label></td></tr>`).join('') + '</table>';
     if (s.type === 'mcma') html += s.st.map((t, j) => `<label><input type="checkbox" name="q${i}" value="${j}">${'ABCDE'[j]}. ${t[0]}</label>`).join('');
-    html += `<div class="hasil" id="h${i}"></div><div class="bahas" id="b${i}" hidden><b>Pembahasan</b><div>${s.bahas}</div></div>${sim ? '' : `<details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}</div></details>`}</fieldset>`;
+    html += `<div class="hasil" id="h${i}"></div><div class="bahas" id="b${i}" hidden><b>Pembahasan</b><div>${s.bahas}</div></div>${sim ? '' : `<details><summary>Tampilkan rumus</summary><div class="rumus">${s.rumus}${ket((s.src || '').split('.')[0])}</div></details>`}</fieldset>`;
   });
   if (sim) html += `<div class="bar nav"><button id="prev">← Sebelumnya</button><button id="next">Berikutnya →</button></div>`;
   app.innerHTML = html;
