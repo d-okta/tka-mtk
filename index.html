@@ -885,6 +885,199 @@ T.dimensiTiga.mcma.push(
       rumus: `<p>Dua garis di ruang memiliki tiga kemungkinan hubungan.</p><p>Sejajar: terletak pada satu bidang dan tidak pernah bertemu. Berpotongan: punya tepat satu titik persekutuan. Bersilangan: tidak sejajar dan tidak berpotongan, artinya tidak ada bidang yang memuat keduanya.</p><p>Cara cek: cari bidang yang memuat kedua garis. Jika ada, garisnya sejajar atau berpotongan. Jika tidak ada, bersilangan.</p>`,
       bahas: `<ol>${data.map(([g, h, r, why], i) => `<li>${'ABCDE'[i]}. ${g} dan ${h} ${r}: ${why}. Pernyataan ${st[i][1] ? 'benar' : 'salah'}.</li>`).join('')}</ol>` }; });
 
+// ===== variasi tambahan: materi yang jenis soalnya masih sedikit =====
+const mx2 = (a, b, c, d) => L`\begin{pmatrix}${a} & ${b}\\ ${c} & ${d}\end{pmatrix}`;
+const beda = a => new Set(a.map(String)).size === a.length;
+
+T.matriks.rumus += L` Perkalian: baris matriks kiri dikali kolom matriks kanan. $$\begin{pmatrix}a & b\\ c & d\end{pmatrix}\begin{pmatrix}e & f\\ g & h\end{pmatrix} = \begin{pmatrix}ae + bg & af + bh\\ ce + dg & cf + dh\end{pmatrix}$$ Transpose $A^T$: baris menjadi kolom. Invers: $$A^{-1} = \frac{1}{ad - bc}\begin{pmatrix}d & -b\\ -c & a\end{pmatrix}$$`;
+T.matriks.pg.push(
+  () => { let a, b, c, d, e, f, g, h, o;
+    do { a = R(-2, 3); b = R(1, 3); c = R(-1, 3); d = R(1, 4); e = R(1, 3); f = R(-2, 2); g = R(1, 3); h = R(0, 3);
+      o = [mx2(a * e + b * g, a * f + b * h, c * e + d * g, c * f + d * h), mx2(a * e, b * f, c * g, d * h), mx2(e * a + f * c, e * b + f * d, g * a + h * c, g * b + h * d), mx2(a * e + b * f, a * g + b * h, c * e + d * f, c * g + d * h), mx2(a * e + b * g, a * f + b * h + 1, c * e + d * g, c * f + d * h)];
+    } while (!beda(o));
+    const el = [[1, 1, a, b, e, g], [1, 2, a, b, f, h], [2, 1, c, d, e, g], [2, 2, c, d, f, h]];
+    return pg(`Diketahui $A = ${mx2(a, b, c, d)}$ dan $B = ${mx2(e, f, g, h)}$. Hasil $AB$ adalah ....`, `$${o[0]}$`, o.slice(1).map(x => `$${x}$`),
+      L`<p>Perkalian matriks bukan perkalian per posisi. Elemen baris ke-$i$ kolom ke-$j$ pada $AB$ diperoleh dari baris $i$ matriks $A$ dikali kolom $j$ matriks $B$: kalikan pasangan elemen yang berurutan, lalu jumlahkan.</p><p>$$\begin{pmatrix}a & b\\ c & d\end{pmatrix}\begin{pmatrix}e & f\\ g & h\end{pmatrix} = \begin{pmatrix}ae + bg & af + bh\\ ce + dg & cf + dh\end{pmatrix}$$ Urutan penting: $AB$ umumnya tidak sama dengan $BA$.</p>`, '',
+      '<ol>' + el.map(([i, j, p, q, r, s]) => L`<li>Baris ${i} kolom ${j}: baris ${i} matriks $A$, yaitu $(${p}, ${q})$, dikali kolom ${j} matriks $B$, yaitu $(${r}, ${s})$. Kalikan pasangan yang berurutan lalu jumlahkan: $$(${p})(${r}) + (${q})(${s}) = ${p * r} + (${q * s}) = ${p * r + q * s}$$</li>`).join('') + L`<li>Susun keempat hasil: $$AB = ${o[0]}$$</li><li>Cek: mengalikan per posisi memberi $${o[1]}$, dan menghitung $BA$ memberi $${o[2]}$. Keduanya berbeda dari $AB$, jadi cara dan urutan perkalian memang penting.</li></ol>`); },
+  () => { let x, y, k1, k2, w, z, u, v;
+    do { x = R(1, 6); y = R(1, 6); k1 = R(1, 5); k2 = R(1, 5); w = R(2, 6); z = R(1, 9); u = 2 * x - k1; v = y + k2; } while (v === w || w - k2 === y);
+    return pg(`Diketahui $A = ${mx2(`2x - ${k1}`, w, `y + ${k2}`, z)}$ dan $B = ${mx2(u, v, w, z)}$. Jika $A = B^T$, nilai $x + y$ adalah ....`, x + y, [x + w - k2, Math.abs(x - y), x * y, u + v],
+      L`<p>Transpose $B^T$ diperoleh dengan mengubah baris menjadi kolom: baris pertama $B$ menjadi kolom pertama $B^T$. $$B = \begin{pmatrix}a & b\\ c & d\end{pmatrix} \;\Rightarrow\; B^T = \begin{pmatrix}a & c\\ b & d\end{pmatrix}$$</p><p>Dua matriks sama jika ordonya sama dan setiap elemen yang seletak sama besar. Dari kesamaan itu dibentuk persamaan untuk mencari variabel.</p>`, '',
+      L`<ol><li>Tentukan $B^T$ dahulu (baris menjadi kolom): $$B^T = ${mx2(u, w, v, z)}$$</li><li>Samakan elemen baris 1 kolom 1: $2x - ${k1} = ${u}$, jadi $2x = ${u + k1}$ dan $x = ${x}$.</li><li>Samakan elemen baris 2 kolom 1: $y + ${k2} = ${v}$, jadi $y = ${v} - ${k2} = ${y}$.</li><li>$x + y = ${x} + ${y} = ${x + y}$.</li><li>Cek: elemen lain juga cocok, baris 1 kolom 2 sama-sama ${w} dan baris 2 kolom 2 sama-sama ${z}. Jika $A$ langsung disamakan dengan $B$ (lupa transpose), didapat $y = ${w - k2}$. Itu jebakan.</li></ol>`); },
+  () => { let a, b, c, d, o;
+    do { a = R(1, 5); b = R(1, 4); c = R(1, 4); d = (1 + b * c) / a; o = [mx2(d, -b, -c, a), mx2(a, -b, -c, d), mx2(d, b, c, a), mx2(-d, b, c, -a), mx2(d, -c, -b, a)]; } while (d % 1 || d > 9 || !beda(o));
+    return pg(`Invers matriks $A = ${mx2(a, b, c, d)}$ adalah ....`, `$${o[0]}$`, o.slice(1).map(x => `$${x}$`),
+      L`<p>Invers $A^{-1}$ adalah matriks yang jika dikali $A$ menghasilkan matriks identitas $I = \begin{pmatrix}1 & 0\\ 0 & 1\end{pmatrix}$.</p><p>Untuk ordo 2×2: tukar posisi $a$ dan $d$, beri tanda negatif pada $b$ dan $c$, lalu kalikan dengan $\frac{1}{\det A}$. $$A^{-1} = \frac{1}{ad - bc}\begin{pmatrix}d & -b\\ -c & a\end{pmatrix}$$ Invers hanya ada jika $\det A \ne 0$.</p>`, '',
+      L`<ol><li>Hitung determinan: $\det A = (${a})(${d}) - (${b})(${c}) = ${a * d} - ${b * c} = 1$.</li><li>Tukar elemen diagonal utama: ${a} dan ${d} bertukar tempat.</li><li>Elemen diagonal samping diberi tanda negatif: ${b} menjadi $-${b}$ dan ${c} menjadi $-${c}$.</li><li>Kalikan dengan $\frac{1}{1}$, jadi tidak berubah: $$A^{-1} = ${o[0]}$$</li><li>Cek dengan $A A^{-1}$: baris 1 kolom 1 $= (${a})(${d}) + (${b})(-${c}) = 1$, baris 1 kolom 2 $= (${a})(-${b}) + (${b})(${a}) = 0$. Sesuai matriks identitas.</li></ol>`); });
+T.matriks.bs = [
+  () => { let a, b, c, d; do { a = R(-3, 5); b = R(-3, 5); c = R(-3, 5); d = R(-3, 5); } while (b === c || a * d - b * c === 0 || (c === 0 && d === 0));
+    const k = pick([2, 3]), D = a * d - b * c;
+    const s1 = tw(mx2(k * a, k * b, k * c, k * d), mx2(k * a, k * b, c, d)), s2 = tw(k * k * D, k * D), s3 = tw(mx2(a, c, b, d), mx2(a, b, c, d)), s4 = tw(D, -D);
+    return { type: 'bs', q: `Diketahui matriks $A = ${mx2(a, b, c, d)}$. Tentukan benar atau salah setiap pernyataan berikut.`, st: [
+      [`$${k}A = ${s1.v}$`, s1.t],
+      [`$\\det(${k}A) = ${s2.v}$`, s2.t],
+      [`$A^T = ${s3.v}$`, s3.t],
+      [`$\\det(A^T) = ${s4.v}$`, s4.t]],
+    rumus: L`<p>Perkalian skalar $kA$: setiap elemen dikali $k$. Determinan $\det A = ad - bc$. Karena kedua baris ikut dikali $k$, untuk ordo 2×2 berlaku $\det(kA) = k^2 \det A$.</p><p>Transpose $A^T$: baris menjadi kolom. Transpose tidak mengubah determinan.</p>`,
+    bahas: L`<ol><li>Pernyataan 1: semua elemen dikali ${k}, bukan hanya baris pertama: $$${k}A = ${mx2(k * a, k * b, k * c, k * d)}$$</li><li>Pernyataan 2: $\det A = (${a})(${d}) - (${b})(${c}) = ${D}$. Lalu $\det(${k}A) = (${k * a})(${k * d}) - (${k * b})(${k * c}) = ${k * k * D}$, sama dengan $${k}^2 \times (${D})$. Nilai ${k * D} adalah jebakan (lupa dikuadratkan).</li><li>Pernyataan 3: baris $(${a}, ${b})$ menjadi kolom pertama: $$A^T = ${mx2(a, c, b, d)}$$</li><li>Pernyataan 4: $\det(A^T) = (${a})(${d}) - (${c})(${b}) = ${D}$, sama dengan $\det A$.</li><li>Bandingkan setiap hasil dengan nilai di pernyataan: sama berarti Benar, berbeda berarti Salah.</li></ol>` }; }];
+
+T.dimensiTiga.rumus += L` Jarak titik ke garis: panjang garis dari titik yang tegak lurus garis. Segitiga siku-siku dengan sisi tegak $a$, $b$ dan sisi miring $c$ memiliki tinggi ke sisi miring $\frac{a\,b}{c}$.`;
+T.dimensiTiga.pg.push(
+  () => { const s = pick([6, 12]), h = s / 2, t = s / 3;
+    const v = pick([
+      ['Jarak titik A ke titik P, dengan P titik tengah rusuk CG,', String(3 * h), L`<ol><li>Hubungkan A ke C. AC adalah diagonal sisi alas: $AC = ${s}\sqrt2$, jadi $AC^2 = ${2 * s * s}$.</li><li>P di tengah CG, jadi $CP = \tfrac12 \times ${s} = ${h}$. Rusuk CG tegak lurus alas, sehingga segitiga ACP siku-siku di C.</li><li>Pythagoras: $$AP^2 = AC^2 + CP^2 = ${2 * s * s} + ${h * h} = ${9 * h * h}$$</li><li>$AP = \sqrt{${9 * h * h}} = ${3 * h}$ cm.</li><li>Cek: AP harus lebih panjang dari AC $\approx ${dl(s * 1.414)}$ dan lebih pendek dari diagonal ruang AG $\approx ${dl(s * 1.732)}$. ${3 * h} ada di antaranya.</li></ol>`],
+      ['Jarak titik C ke garis BD', sq(h, 2), L`<ol><li>BD dan AC adalah diagonal alas. Diagonal persegi saling tegak lurus dan berpotongan di titik tengah O.</li><li>Karena CO tegak lurus BD, jarak C ke garis BD adalah $CO$.</li><li>$CO = \tfrac12\,AC$ dan $AC = ${s}\sqrt2$.</li><li>$$CO = \tfrac12 \times ${s}\sqrt2 = ${h}\sqrt2\ \text{cm}$$</li><li>Cek: jarak ini lebih pendek dari rusuk CB $= ${s}$, karena CB miring terhadap BD. $${h}\sqrt2 \approx ${dl(h * 1.414)}$. Cocok.</li></ol>`],
+      ['Jarak titik A ke garis CE', sq(t, 6), L`<ol><li>Perhatikan segitiga ACE. Rusuk AE tegak lurus alas, jadi segitiga ini siku-siku di A dengan $AE = ${s}$, $AC = ${s}\sqrt2$, dan sisi miring CE = diagonal ruang $= ${s}\sqrt3$.</li><li>Jarak A ke garis CE adalah tinggi segitiga dari A ke sisi miring CE. Sebut kakinya Q.</li><li>Luas segitiga dihitung dua cara: $\tfrac12 \times AC \times AE = \tfrac12 \times CE \times AQ$.</li><li>$$AQ = \frac{AC \times AE}{CE} = \frac{${s}\sqrt2 \times ${s}}{${s}\sqrt3} = \frac{${s}\sqrt2}{\sqrt3} = \frac{${s}\sqrt6}{3} = ${t}\sqrt6\ \text{cm}$$ (dirasionalkan dengan mengalikan $\tfrac{\sqrt3}{\sqrt3}$).</li><li>Cek: tinggi ke sisi miring selalu lebih pendek dari sisi tegak AE $= ${s}$. $${t}\sqrt6 \approx ${dl(t * 2.449)}$. Cocok.</li></ol>`],
+      ['Jarak titik E ke garis BD', sq(h, 6), L`<ol><li>EB, ED, dan BD masing-masing diagonal sisi, panjangnya $${s}\sqrt2$. Jadi segitiga EBD sama sisi.</li><li>Jarak E ke garis BD adalah tinggi segitiga itu, jatuh di titik tengah O dari BD. $BO = \tfrac12 \times ${s}\sqrt2 = ${h}\sqrt2$.</li><li>Segitiga EOB siku-siku di O: $$EO^2 = EB^2 - BO^2 = ${2 * s * s} - ${2 * h * h} = ${6 * h * h}$$</li><li>$EO = \sqrt{${6 * h * h}} = \sqrt{${h * h} \times 6} = ${h}\sqrt6$ cm.</li><li>Cek dengan rumus tinggi segitiga sama sisi $\tfrac12 \times \text{sisi} \times \sqrt3 = \tfrac12 \times ${s}\sqrt2 \times \sqrt3 = ${h}\sqrt6$. Sama.</li></ol>`]]);
+    return pg(`Perhatikan kubus ABCD.EFGH dengan panjang rusuk ${s} cm. ${v[0]} adalah ....${svgKubus()}`,
+      v[1], [String(3 * h), sq(h, 2), sq(t, 6), sq(h, 6), sq(s, 2), sq(s, 3), String(s)], L`<p>Jarak titik ke garis adalah panjang ruas garis dari titik itu yang tegak lurus garis. Jarak titik ke titik cukup dihubungkan langsung.</p><p>Caranya: cari segitiga siku-siku yang memuat jarak tersebut, lalu pakai Pythagoras. Diagonal sisi $= s\sqrt2$, diagonal ruang $= s\sqrt3$.</p><p>Jika jaraknya adalah tinggi ke sisi miring segitiga siku-siku, pakai luas dua cara: $$\tfrac12\,a\,b = \tfrac12\,c\,d \;\Rightarrow\; d = \frac{a\,b}{c}$$</p>`, ' cm', v[2]); });
+
+T.konversi.rumus += L` Kecepatan: $$1\ \tfrac{\text{km}}{\text{jam}} = \frac{1000\ \text{m}}{3600\ \text{detik}} = \tfrac{5}{18}\ \tfrac{\text{m}}{\text{detik}}$$ Volume: $$1\ \text{liter} = 1\ \text{dm}^3 = 1000\ \text{cm}^3$$ Luas: $1\ \text{m}^2 = 10.000\ \text{cm}^2$. Waktu: $1$ jam $= 60$ menit, $1$ menit $= 60$ detik.`;
+T.konversi.pg.push(
+  () => { const v = pick([36, 54, 72, 90, 108]), ans = v * 5 / 18;
+    return pg(`Sebuah mobil melaju dengan kecepatan ${v} km/jam. Kecepatan tersebut sama dengan ....`, ans, [dsp(v * 3.6), Math.round(v * 1000 / 60), dsp(v / 10), ans * 2],
+      L`<p>Ubah pembilang dan penyebut satu per satu: $1\ \text{km} = 1000\ \text{m}$ dan $1\ \text{jam} = 3600\ \text{detik}$. $$1\ \tfrac{\text{km}}{\text{jam}} = \frac{1000}{3600}\ \tfrac{\text{m}}{\text{detik}} = \frac{5}{18}\ \tfrac{\text{m}}{\text{detik}}$$</p><p>Cara cepat: dari km/jam ke m/detik dibagi $3{,}6$; sebaliknya dikali $3{,}6$.</p>`, ' m/detik',
+      L`<ol><li>Ganti km dengan 1000 m dan jam dengan 3600 detik: $$${v}\ \tfrac{\text{km}}{\text{jam}} = \frac{${v} \times 1000\ \text{m}}{3600\ \text{detik}} = \frac{${fmt(v * 1000)}}{3600}$$</li><li>Sederhanakan: $$\frac{${fmt(v * 1000)}}{3600} = ${ans}\ \text{m/detik}$$</li><li>Cek dengan cara cepat: $${v} : 3{,}6 = ${ans}$. Sama. Mengalikan 3,6 (hasil ${dsp(v * 3.6)}) adalah arah yang terbalik.</li></ol>`); },
+  () => { const n = R(2, 6), sp = pick([8, 16, 32]), t = n * 1024 / sp, w = x => `${Math.floor(x / 60)} menit ${x % 60} detik`;
+    return pg(`Sebuah file berukuran ${n} GB diunduh dengan kecepatan stabil ${sp} MB/detik. Jika 1 GB = 1.024 MB, waktu yang diperlukan adalah ....`,
+      w(t), [w(t + 60), w(Math.round(n * 1000 / sp)), `${Math.floor(t / 100)} menit ${t % 100} detik`, w(2 * t)],
+      L`<p>Waktu unduh = ukuran file dibagi kecepatan: $$t = \frac{\text{ukuran}}{\text{kecepatan}}$$ Satuan ukuran harus sama dengan satuan pada kecepatan (di sini MB). Ingat $1\ \text{GB} = 1024\ \text{MB}$.</p><p>Hasilnya dalam detik. Ubah ke menit dengan membagi 60; sisa pembagiannya adalah detik.</p>`, '',
+      L`<ol><li>Samakan satuan: $${n}\ \text{GB} = ${n} \times 1024 = ${fmt(n * 1024)}\ \text{MB}$.</li><li>Waktu: $$t = \frac{${fmt(n * 1024)}}{${sp}} = ${t}\ \text{detik}$$</li><li>Ubah ke menit: $${t} : 60 = ${Math.floor(t / 60)}$ sisa ${t % 60}, jadi ${w(t)}.</li><li>Cek: $${Math.floor(t / 60)} \times 60 + ${t % 60} = ${t}$ detik. Jebakan: ${t} detik bukan "${Math.floor(t / 100)} menit ${t % 100} detik", karena 1 menit = 60 detik, bukan 100.</li></ol>`); },
+  () => { const p = R(5, 12) * 10, l = R(4, 8) * 10, t = R(4, 8) * 10, V = p * l * t;
+    return pg(`Sebuah bak air berbentuk balok berukuran ${p} cm × ${l} cm × ${t} cm. Jika bak terisi penuh, volume air di dalamnya adalah ....`,
+      fmt(V / 1000), [fmt(V / 100), fmt(V / 10000), fmt(V), fmt(V / 1e6)],
+      L`<p>Volume balok $V = p \times \ell \times t$. Jika ukuran dalam cm, hasilnya cm³.</p><p>Liter sama dengan dm³: $$1\ \text{liter} = 1\ \text{dm}^3 = 10 \times 10 \times 10\ \text{cm}^3 = 1000\ \text{cm}^3$$ Jadi dari cm³ ke liter dibagi 1000.</p>`, ' liter',
+      L`<ol><li>Volume dalam cm³: $$V = ${p} \times ${l} \times ${t} = ${fmt(V)}\ \text{cm}^3$$</li><li>Ubah ke liter (bagi 1000, karena 1 liter = 1000 cm³): $$\frac{${fmt(V)}}{1000} = ${fmt(V / 1000)}\ \text{liter}$$</li><li>Cek dengan cara lain: ubah ukuran ke dm dahulu, yaitu ${p / 10} dm × ${l / 10} dm × ${t / 10} dm $= ${fmt(V / 1000)}$ dm³ = ${fmt(V / 1000)} liter. Sama.</li></ol>`); },
+  () => { const h = R(6, 9), m = pick([15, 30, 40, 45, 50]), d = R(100, 200), a = h * 60 + m + d, q = Math.floor(d / 60), r = d % 60, mm = m + r;
+    const jam = x => `${String(Math.floor(x / 60)).padStart(2, '0')}.${String(x % 60).padStart(2, '0')}`;
+    return pg(`Sebuah kereta berangkat pukul ${jam(h * 60 + m)} dan menempuh perjalanan selama ${d} menit. Kereta tiba pukul ....`,
+      jam(a), [jam((h + Math.floor(d / 100)) * 60 + m + d % 100), jam(a + 60), jam(a - 60), jam(a + 10)],
+      L`<p>Waktu memakai basis 60, bukan 100: $1\ \text{jam} = 60\ \text{menit}$. Ubah lama perjalanan dalam menit menjadi jam dan menit dengan membagi 60.</p><p>Tambahkan jam ke jam dan menit ke menit. Jika menitnya 60 atau lebih, ambil 60 menit menjadi 1 jam.</p>`, '',
+      L`<ol><li>Ubah ${d} menit: $${d} : 60 = ${q}$ sisa ${r}, jadi ${q} jam ${r} menit.</li><li>Tambahkan jam: ${h} + ${q} = ${h + q}.</li><li>Tambahkan menit: ${m} + ${r} = ${mm}${mm >= 60 ? `, sudah mencapai 60, jadi menjadi 1 jam ${mm - 60} menit dan jamnya bertambah satu` : ''}.</li><li>Kereta tiba pukul ${jam(a)}.</li><li>Cek: dari pukul ${jam(h * 60 + m)} ke ${jam(a)} lamanya ${Math.floor((a - h * 60 - m) / 60)} jam ${(a - h * 60 - m) % 60} menit $= ${d}$ menit. Jebakan: membaca ${d} menit seperti ${Math.floor(d / 100)} jam ${d % 100} menit.</li></ol>`); });
+T.konversi.bs = [
+  () => { const a = R(2, 9), b = R(2, 9), c = R(2, 6), d = R(1, 3), e = R(5, 55), f = R(2, 8);
+    const s1 = tw(a * 1000, a * 100), s2 = tw(b * 1000, b * 100), s3 = tw(c * 10000, c * 100), s4 = tw(d * 60 + e, d * 100 + e), s5 = tw(f * 1024, f * 1000);
+    return { type: 'bs', q: 'Tentukan benar atau salah setiap pernyataan konversi satuan berikut.', st: [
+      [`${a} kg = ${fmt(s1.v)} g`, s1.t],
+      [`${b} liter = ${fmt(s2.v)} cm³`, s2.t],
+      [`${c} m² = ${fmt(s3.v)} cm²`, s3.t],
+      [`${d} jam ${e} menit = ${s4.v} menit`, s4.t],
+      [`${f} MB = ${fmt(s5.v)} KB`, s5.t]],
+    rumus: L`<p>Massa dan panjang: setiap turun satu tangga dikali 10 (kg, hg, dag, g), jadi $1\ \text{kg} = 1000\ \text{g}$.</p><p>Luas memakai satuan kuadrat, jadi pengalinya ikut dikuadratkan: $1\ \text{m} = 100\ \text{cm}$ sehingga $1\ \text{m}^2 = 100 \times 100 = 10.000\ \text{cm}^2$. Volume: $1\ \text{liter} = 1\ \text{dm}^3 = 1000\ \text{cm}^3$.</p><p>Waktu: $1\ \text{jam} = 60\ \text{menit}$. Data: $1\ \text{MB} = 1024\ \text{KB}$.</p>`,
+    bahas: L`<ol><li>Pernyataan 1: kg ke g turun 3 tangga, dikali 1000: $${a} \times 1000 = ${fmt(a * 1000)}$ g.</li><li>Pernyataan 2: 1 liter = 1000 cm³, jadi $${b} \times 1000 = ${fmt(b * 1000)}$ cm³.</li><li>Pernyataan 3: 1 m² = 100 cm × 100 cm = 10.000 cm², jadi $${c} \times 10.000 = ${fmt(c * 10000)}$ cm². Mengalikan 100 saja adalah jebakan.</li><li>Pernyataan 4: $${d} \times 60 + ${e} = ${d * 60 + e}$ menit.</li><li>Pernyataan 5: $${f} \times 1024 = ${fmt(f * 1024)}$ KB.</li><li>Pernyataan bernilai Benar jika angkanya sama dengan hasil di atas.</li></ol>` }; }];
+
+const svgLuar = () => svg(320, 190, 'Segitiga ABC dengan sisi BC diperpanjang sampai titik D',
+  `<polygon points="30,160 200,160 110,30" fill="#eef4f1" stroke="#0f6b4f" stroke-width="2"/><line x1="200" y1="160" x2="300" y2="160" stroke="#0f6b4f" stroke-width="2"/><text x="104" y="22" font-weight="600">A</text><text x="16" y="178" font-weight="600">B</text><text x="196" y="180" font-weight="600">C</text><text x="296" y="180" font-weight="600">D</text>`);
+T.garisSudut.rumus += L` Berpenyiku: jumlahnya $90^\circ$. Sudut dalam segitiga: $$\angle A + \angle B + \angle C = 180^\circ$$ Sudut luar segitiga = jumlah dua sudut dalam yang tidak bersebelahan dengannya. Jarum jam bergerak $30^\circ$ per jam ($0{,}5^\circ$ per menit), jarum menit $6^\circ$ per menit.`;
+T.garisSudut.pg.push(
+  () => { const h = R(1, 11), m = pick([0, 10, 20, 30, 40, 50]), J = 30 * h + m / 2, M = 6 * m, dl1 = Math.abs(J - M), ans = Math.min(dl1, 360 - dl1), t1 = Math.abs(30 * h - M);
+    return pg(`Besar sudut terkecil yang dibentuk jarum jam dan jarum menit pada pukul ${h}.${String(m).padStart(2, '0')} adalah ....`,
+      ans, [Math.min(t1, 360 - t1), 360 - ans, ans + 15, Math.abs(180 - ans)],
+      L`<p>Satu putaran penuh $360^\circ$. Jarum menit menempuh satu putaran dalam 60 menit, jadi bergerak $\tfrac{360^\circ}{60} = 6^\circ$ per menit.</p><p>Jarum jam menempuh satu putaran dalam 12 jam, jadi $30^\circ$ per jam. Selama 60 menit itu ia ikut bergeser $30^\circ$, yaitu $0{,}5^\circ$ per menit.</p><p>Ukur posisi kedua jarum dari angka 12, lalu ambil selisihnya. Jika lebih dari $180^\circ$, sudut terkecilnya $360^\circ$ dikurangi selisih itu.</p>`, '°',
+      L`<ol><li>Jarum menit: $6^\circ \times ${m} = ${M}^\circ$ dari angka 12.</li><li>Jarum jam: $30^\circ \times ${h} + 0{,}5^\circ \times ${m} = ${30 * h}^\circ + ${m / 2}^\circ = ${J}^\circ$ dari angka 12.</li><li>Selisih: $|${J} - ${M}| = ${dl1}^\circ$.</li><li>${dl1 > 180 ? L`Lebih dari $180^\circ$, jadi sudut terkecil $= 360^\circ - ${dl1}^\circ = ${ans}^\circ$.` : L`Tidak lebih dari $180^\circ$, jadi sudut terkecil $${ans}^\circ$.`}</li><li>Cek: ${m ? `jika jarum jam dianggap diam di angka ${h}, hasilnya ${Math.min(t1, 360 - t1)}°. Itu jebakan, karena jarum jam ikut bergeser selama ${m} menit.` : 'pada jam tepat, jarum menit di angka 12 dan jarum jam tepat di angka ' + h + ', jadi sudutnya kelipatan 30°.'}</li></ol>`); },
+  () => { const [J, nm] = pick([[90, 'berpenyiku'], [180, 'berpelurus']]); let x, a, b;
+    do { x = R(J === 90 ? 6 : 15, J === 90 ? 14 : 30); a = R(2, 20); b = J - 5 * x - a; } while (b < 1 || b > 40);
+    const s1 = 3 * x + a;
+    return pg(`Dua sudut saling ${nm}. Besar sudut pertama (3x + ${a})° dan sudut kedua (2x + ${b})°. Besar sudut pertama adalah ....`,
+      s1, [x, 2 * x + b, 3 * x, s1 + 10, J - s1 + 10],
+      L`<p>Dua sudut berpenyiku jumlahnya $90^\circ$ (membentuk sudut siku-siku). Dua sudut berpelurus jumlahnya $180^\circ$ (membentuk garis lurus).</p><p>Jika besar sudut ditulis dalam bentuk aljabar, jumlahkan keduanya dan samakan dengan $90^\circ$ atau $180^\circ$, lalu cari $x$. Yang ditanya besar sudut, jadi substitusikan $x$ kembali.</p>`, '°',
+      L`<ol><li>Sudut ${nm}, jadi jumlahnya $${J}^\circ$: $$(3x + ${a}) + (2x + ${b}) = ${J}$$</li><li>Kumpulkan suku sejenis: $5x + ${a + b} = ${J}$, jadi $5x = ${J - a - b}$.</li><li>$x = ${J - a - b} : 5 = ${x}$.</li><li>Sudut pertama: $3(${x}) + ${a} = ${3 * x} + ${a} = ${s1}^\circ$.</li><li>Cek: sudut kedua $2(${x}) + ${b} = ${2 * x + b}^\circ$, dan $${s1} + ${2 * x + b} = ${J}$. Cocok. Jawaban ${x} adalah jebakan (nilai $x$, bukan besar sudut).</li></ol>`); },
+  () => { let p, q; do { p = R(35, 85); q = R(30, 80); } while (p + q >= 160);
+    return pg(`Perhatikan gambar. Sisi BC pada segitiga ABC diperpanjang sampai titik D. Jika ∠BAC = ${p}° dan ∠ABC = ${q}°, besar ∠ACD adalah ....${svgLuar()}`,
+      p + q, [180 - p - q, 180 - p, 180 - q, 360 - p - q],
+      L`<p>Jumlah ketiga sudut dalam segitiga $180^\circ$. Sudut luar terbentuk jika satu sisi diperpanjang; sudut luar dan sudut dalam di sebelahnya berpelurus (jumlahnya $180^\circ$).</p><p>Akibatnya, sudut luar sama dengan jumlah dua sudut dalam yang tidak bersebelahan dengannya.</p>`, '°',
+      L`<ol><li>Sudut dalam di C: $\angle ACB = 180^\circ - ${p}^\circ - ${q}^\circ = ${180 - p - q}^\circ$ (jumlah sudut segitiga).</li><li>B, C, D segaris, jadi $\angle ACB$ dan $\angle ACD$ berpelurus.</li><li>$\angle ACD = 180^\circ - ${180 - p - q}^\circ = ${p + q}^\circ$.</li><li>Cek dengan sifat sudut luar: $\angle BAC + \angle ABC = ${p}^\circ + ${q}^\circ = ${p + q}^\circ$. Sama. Jawaban ${180 - p - q}° adalah jebakan (itu sudut dalam di C).</li></ol>`); });
+T.garisSudut.bs = [
+  () => { const a = R(20, 70), b = R(20, 80), p = R(40, 80), q = R(30, 70), c = pick([35, 50, 65, 110, 125, 140]), d = pick([45, 75, 89, 95, 120, 160]);
+    const s1 = tw(90 - a, 180 - a), s2 = tw(180 - b, 90 - b), s3 = tw(180 - p - q, 190 - p - q), s4 = tw(c, 180 - c);
+    return { type: 'bs', q: 'Tentukan benar atau salah setiap pernyataan berikut.', st: [
+      [`Penyiku sudut ${a}° adalah ${s1.v}°`, s1.t],
+      [`Pelurus sudut ${b}° adalah ${s2.v}°`, s2.t],
+      [`Jika dua sudut sebuah segitiga ${p}° dan ${q}°, sudut ketiganya ${s3.v}°`, s3.t],
+      [`Dua garis berpotongan membentuk sudut ${c}°. Sudut yang bertolak belakang dengannya ${s4.v}°`, s4.t],
+      [`Sudut ${d}° termasuk sudut tumpul`, d > 90]],
+    rumus: L`<p>Penyiku: dua sudut yang jumlahnya $90^\circ$. Pelurus: dua sudut yang jumlahnya $180^\circ$.</p><p>Sudut dalam segitiga jumlahnya $180^\circ$. Sudut bertolak belakang (berhadapan di titik potong) sama besar.</p><p>Jenis sudut: lancip kurang dari $90^\circ$, siku-siku tepat $90^\circ$, tumpul antara $90^\circ$ dan $180^\circ$.</p>`,
+    bahas: L`<ol><li>Pernyataan 1: penyiku $= 90^\circ - ${a}^\circ = ${90 - a}^\circ$.</li><li>Pernyataan 2: pelurus $= 180^\circ - ${b}^\circ = ${180 - b}^\circ$.</li><li>Pernyataan 3: $180^\circ - ${p}^\circ - ${q}^\circ = ${180 - p - q}^\circ$.</li><li>Pernyataan 4: sudut bertolak belakang sama besar, jadi $${c}^\circ$. Nilai $${180 - c}^\circ$ adalah sudut pelurusnya (bersebelahan).</li><li>Pernyataan 5: $${d}^\circ$ ${d > 90 ? 'lebih dari' : 'kurang dari'} $90^\circ$, jadi sudut ${d > 90 ? 'tumpul' : 'lancip'}.</li></ol>` }; }];
+
+T.pecahan.rumus += L` Untung atau rugi dihitung dari harga beli: $$\%\,\text{untung} = \frac{\text{jual} - \text{beli}}{\text{beli}} \times 100\%$$ Perbandingan $a : b$ dengan selisih $d$: satu bagian $= \frac{d}{b - a}$. Berbalik nilai: $$n_1 \times d_1 = n_2 \times d_2$$`;
+T.pecahan.pg.push(
+  () => { const B = R(20, 80) * 1000, p = pick([10, 15, 20, 25, 30, 40]), rugi = Math.random() < .5, u = B * p / 100, J = rugi ? B - u : B + u, kata = rugi ? 'rugi' : 'untung';
+    return pg(`Seorang pedagang membeli barang seharga Rp${fmt(B)} lalu menjualnya Rp${fmt(J)}. Persentase ${kata} pedagang tersebut adalah ....`,
+      `${p}%`, [`${dsp(u / J * 100)}%`, `${dsp(p / 2)}%`, `${p + 5}%`, `${100 - p}%`],
+      L`<p>Untung terjadi jika harga jual lebih dari harga beli; rugi jika kurang. Besarnya $|\text{jual} - \text{beli}|$.</p><p>Persentase selalu dibandingkan dengan harga beli (modal): $$\%\,\text{untung/rugi} = \frac{\text{besar untung/rugi}}{\text{harga beli}} \times 100\%$$</p>`, '',
+      L`<ol><li>Harga jual ${rugi ? 'lebih kecil' : 'lebih besar'} dari harga beli, jadi pedagang ${kata}.</li><li>Besar ${kata}: $|${fmt(J)} - ${fmt(B)}| = ${fmt(u)}$.</li><li>Bandingkan dengan harga beli: $$\frac{${fmt(u)}}{${fmt(B)}} \times 100\% = ${p}\%$$</li><li>Cek: $${p}\% \times ${fmt(B)} = ${fmt(u)}$, dan $${fmt(B)} ${rugi ? '-' : '+'} ${fmt(u)} = ${fmt(J)}$. Cocok. Membagi dengan harga jual (hasil ${dsp(u / J * 100)}%) adalah jebakan.</li></ol>`); },
+  () => { let a, b; do { a = R(2, 6); b = R(a + 1, 9); } while (gcd(a, b) !== 1);
+    const k = R(3, 12), d = (b - a) * k, [benda, sat] = pick([['kelereng', 'butir'], ['buku', 'buah'], ['stiker', 'lembar']]);
+    return pg(`Perbandingan banyak ${benda} Andi dan Budi adalah ${a} : ${b}. Jika selisih ${benda} mereka ${d} ${sat}, jumlah ${benda} mereka adalah ....`,
+      (a + b) * k, [b * k, a * k, d * (a + b), (a + b) * k + d],
+      L`<p>Perbandingan $a : b$ artinya benda dibagi menjadi bagian-bagian yang sama besar: Andi mendapat $a$ bagian, Budi $b$ bagian.</p><p>Selisih mereka $b - a$ bagian. Jika selisih diketahui, $$\text{satu bagian} = \frac{\text{selisih}}{b - a}$$ lalu kalikan dengan banyak bagian yang ditanya.</p>`, ` ${sat}`,
+      L`<ol><li>Selisih bagian: $${b} - ${a} = ${b - a}$ bagian, nilainya ${d} ${sat}.</li><li>Satu bagian: $${d} : ${b - a} = ${k}$ ${sat}.</li><li>Jumlah bagian: $${a} + ${b} = ${a + b}$, jadi jumlah ${benda} $= ${a + b} \times ${k} = ${(a + b) * k}$ ${sat}.</li><li>Cek: Andi $${a} \times ${k} = ${a * k}$, Budi $${b} \times ${k} = ${b * k}$. Selisihnya $${b * k - a * k} = ${d}$ dan jumlahnya ${(a + b) * k}. Cocok.</li></ol>`); },
+  () => { const H = R(10, 40) * 10000, p = pick([20, 25, 30, 40]), q = pick([10, 20]), h1 = H * (100 - p) / 100, F = h1 * (100 - q) / 100;
+    return pg(`Sebuah toko memberi diskon ${p}% + ${q}% untuk sepatu seharga Rp${fmt(H)}. Diskon kedua dihitung dari harga setelah diskon pertama. Harga yang harus dibayar adalah ....`,
+      `Rp${fmt(F)}`, [`Rp${fmt(H * (100 - p - q) / 100)}`, `Rp${fmt(h1)}`, `Rp${fmt(H - F)}`, `Rp${fmt(F + 10000)}`],
+      L`<p>Diskon bertingkat $p\% + q\%$ tidak sama dengan diskon $(p + q)\%$. Diskon pertama dihitung dari harga awal, lalu diskon kedua dihitung dari harga yang sudah dipotong.</p><p>$$\text{harga akhir} = H \times \frac{100 - p}{100} \times \frac{100 - q}{100}$$</p>`, '',
+      L`<ol><li>Diskon pertama: $${p}\% \times ${fmt(H)} = ${fmt(H - h1)}$. Harga menjadi $${fmt(H)} - ${fmt(H - h1)} = ${fmt(h1)}$.</li><li>Diskon kedua dari harga baru: $${q}\% \times ${fmt(h1)} = ${fmt(h1 - F)}$. Harga menjadi $${fmt(h1)} - ${fmt(h1 - F)} = ${fmt(F)}$.</li><li>Harga yang dibayar Rp${fmt(F)}.</li><li>Cek: diskon total $${fmt(H - F)}$ dari $${fmt(H)}$ adalah ${dsp((H - F) / H * 100)}%, lebih kecil dari ${p + q}%. Jawaban Rp${fmt(H * (100 - p - q) / 100)} adalah jebakan (diskon langsung dijumlahkan).</li></ol>`); },
+  () => { let n, d, d2; do { n = R(6, 15); d = R(12, 30); d2 = R(Math.ceil(d / 2), d - 2); } while ((n * d) % d2); const n2 = n * d / d2, tb = n2 - n;
+    return pg(`Suatu pekerjaan dapat diselesaikan oleh ${n} pekerja dalam ${d} hari. Agar pekerjaan selesai dalam ${d2} hari, banyak pekerja tambahan yang diperlukan adalah ....`,
+      tb, [n2, d - d2, Math.round(n * d2 / d), tb + 1],
+      L`<p>Makin banyak pekerja, makin cepat pekerjaan selesai. Ini perbandingan berbalik nilai: hasil kali banyak pekerja dan lama hari tetap. $$n_1 \times d_1 = n_2 \times d_2$$</p><p>Baca yang ditanya: banyak pekerja seluruhnya atau tambahannya saja.</p>`, ' orang',
+      L`<ol><li>Berbalik nilai, jadi $${n} \times ${d} = n_2 \times ${d2}$.</li><li>$n_2 = \frac{${n * d}}{${d2}} = ${n2}$ pekerja.</li><li>Yang ditanya tambahan: $${n2} - ${n} = ${tb}$ orang.</li><li>Cek: $${n2} \times ${d2} = ${n2 * d2}$, sama dengan $${n} \times ${d} = ${n * d}$. Jawaban ${n2} adalah jebakan (jumlah seluruh pekerja, bukan tambahan).</li></ol>`); });
+
+T.bangunRuang.rumus += L` Kerucut: $$V = \tfrac13\,\pi r^2 t$$ Limas: $$V = \tfrac13 \times L_{alas} \times t$$ Prisma: $$V = L_{alas} \times t$$`;
+T.bangunRuang.pg.push(
+  () => { const rumus = L`<p>Prisma dan tabung (alas dan tutup sama): $V = L_{alas} \times t$.</p><p>Limas dan kerucut (meruncing ke satu titik puncak) volumenya sepertiga prisma atau tabung dengan alas dan tinggi yang sama: $$V = \tfrac13 \times L_{alas} \times t$$</p><p>Luas alas: persegi $s^2$, segitiga $\tfrac12\,a\,t$, lingkaran $\pi r^2$.</p>`;
+    const v = pick(['kerucut', 'limas', 'prisma']);
+    if (v === 'kerucut') { const r = pick([7, 14]), t = pick([3, 6, 9, 12]), A = 22 * r * r / 7, V = A * t / 3;
+      return pg(`Sebuah kerucut memiliki jari-jari alas ${r} cm dan tinggi ${t} cm. Volume kerucut tersebut adalah .... (π = 22/7)`, fmt(V), [fmt(A * t), fmt(2 * V), fmt(A * t / 2), fmt(V + A)], rumus, ' cm³',
+        L`<ol><li>Luas alas lingkaran: $\tfrac{22}{7} \times ${r} \times ${r} = ${fmt(A)}\ \text{cm}^2$.</li><li>Kerucut meruncing, jadi pakai $\tfrac13$: $$V = \tfrac13 \times ${fmt(A)} \times ${t} = ${fmt(A)} \times ${t / 3} = ${fmt(V)}\ \text{cm}^3$$</li><li>Cek: tabung dengan alas dan tinggi sama bervolume $${fmt(A * t)}$, dan $${fmt(A * t)} : 3 = ${fmt(V)}$. Jawaban ${fmt(A * t)} adalah jebakan (lupa $\tfrac13$).</li></ol>`); }
+    if (v === 'limas') { const s = R(4, 12), t = pick([6, 9, 12, 15]), V = s * s * t / 3;
+      return pg(`Sebuah limas beralas persegi dengan panjang sisi alas ${s} cm dan tinggi ${t} cm. Volume limas tersebut adalah ....`, fmt(V), [fmt(s * s * t), fmt(2 * V), fmt(s * t), fmt(V + s * s)], rumus, ' cm³',
+        L`<ol><li>Luas alas persegi: $${s} \times ${s} = ${s * s}\ \text{cm}^2$.</li><li>Limas meruncing, jadi pakai $\tfrac13$: $$V = \tfrac13 \times ${s * s} \times ${t} = ${s * s} \times ${t / 3} = ${fmt(V)}\ \text{cm}^3$$</li><li>Cek: balok dengan alas dan tinggi sama bervolume $${fmt(s * s * t)}$, dan sepertiganya ${fmt(V)}. Cocok.</li></ol>`); }
+    const a = R(2, 6) * 2, b = R(3, 9), T2 = R(5, 15), V = a * b / 2 * T2;
+    return pg(`Sebuah prisma tegak beralas segitiga siku-siku. Sisi siku-siku alasnya ${a} cm dan ${b} cm, sedangkan tinggi prisma ${T2} cm. Volume prisma tersebut adalah ....`, fmt(V), [fmt(a * b * T2), fmt(V / 3), fmt((a + b) * T2), fmt(V + a * b)], rumus, ' cm³',
+      L`<ol><li>Luas alas segitiga siku-siku (dua sisi sikunya menjadi alas dan tinggi segitiga): $\tfrac12 \times ${a} \times ${b} = ${a * b / 2}\ \text{cm}^2$.</li><li>Prisma tidak meruncing, jadi tanpa $\tfrac13$: $$V = ${a * b / 2} \times ${T2} = ${fmt(V)}\ \text{cm}^3$$</li><li>Cek: prisma ini separuh balok ${a} × ${b} × ${T2} $= ${fmt(a * b * T2)}$, dan separuhnya ${fmt(V)}. Cocok.</li></ol>`); });
+T.bangunRuang.mcma = [
+  () => { const q = pick([[1, 2, 2, 3], [2, 3, 6, 7], [1, 4, 8, 9], [4, 4, 7, 9], [2, 6, 9, 11], [6, 6, 7, 11]]), k = q[0] < 2 ? 2 : 1, [l, t, p, d] = q.map(x => x * k);
+    const V = p * l * t, Lp = 2 * (p * l + p * t + l * t), K = 4 * (p + l + t);
+    const s1 = tw(V, Lp), s2 = tw(Lp, Lp / 2), s3 = tw(d, p + l + t), s4 = tw(K, K / 2), s5 = tw('8 kali', '2 kali');
+    return { type: 'mcma', q: `Sebuah kotak berbentuk balok berukuran ${p} cm × ${l} cm × ${t} cm. Pilih semua pernyataan yang benar.`, st: [
+      [`Volume kotak ${fmt(s1.v)} cm³`, s1.t],
+      [`Luas permukaan kotak ${fmt(s2.v)} cm²`, s2.t],
+      [`Panjang diagonal ruang kotak ${s3.v} cm`, s3.t],
+      [`Panjang kawat untuk membuat kerangka kotak ${s4.v} cm`, s4.t],
+      [`Jika panjang, lebar, dan tinggi masing-masing dijadikan 2 kali, volumenya menjadi ${s5.v} semula`, s5.t]],
+    rumus: L`<p>Volume $V = p \times \ell \times t$. Luas permukaan = jumlah luas 6 sisi (3 pasang): $$L = 2\,(p\ell + pt + \ell t)$$</p><p>Diagonal ruang: $\sqrt{p^2 + \ell^2 + t^2}$. Kerangka balok terdiri dari 12 rusuk (4 panjang, 4 lebar, 4 tinggi): $4\,(p + \ell + t)$.</p><p>Jika setiap ukuran dikali $k$, volume dikali $k^3$.</p>`,
+    bahas: L`<ol><li>A. $V = ${p} \times ${l} \times ${t} = ${fmt(V)}$ cm³.</li><li>B. $L = 2\,(${p * l} + ${p * t} + ${l * t}) = 2 \times ${Lp / 2} = ${fmt(Lp)}$ cm². Nilai ${fmt(Lp / 2)} adalah jebakan (lupa dikali 2).</li><li>C. $\sqrt{${p}^2 + ${l}^2 + ${t}^2} = \sqrt{${p * p} + ${l * l} + ${t * t}} = \sqrt{${d * d}} = ${d}$ cm.</li><li>D. 12 rusuk: $4 \times (${p} + ${l} + ${t}) = 4 \times ${p + l + t} = ${K}$ cm.</li><li>E. Volume baru $= 2p \times 2\ell \times 2t = 8\,p\ell t$, jadi 8 kali semula.</li></ol>` }; }];
+
+T.pythagoras.mcma = [
+  () => { const jenis = (a, b, c) => c * c === a * a + b * b ? 'siku-siku' : c * c < a * a + b * b ? 'lancip' : 'tumpul', seen = new Set(), data = [];
+    while (data.length < 5) {
+      let s;
+      if (Math.random() < .4) s = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10], [9, 12, 15], [7, 24, 25]]);
+      else { const a = R(3, 12), b = R(a, 14); s = [a, b, R(b, a + b - 1)]; }
+      if (seen.has(s.join())) continue;
+      seen.add(s.join());
+      const j = jenis(...s), klaim = Math.random() < .5 ? j : pick(['siku-siku', 'lancip', 'tumpul'].filter(x => x !== j)), tm = shuffle(s);
+      data.push({ s, j, klaim, tm });
+    }
+    return { type: 'mcma', q: 'Pilih semua pernyataan yang benar tentang jenis segitiga berikut.',
+      st: data.map(({ j, klaim, tm }) => [`Segitiga dengan sisi ${tm[0]} cm, ${tm[1]} cm, dan ${tm[2]} cm adalah segitiga ${klaim}`, klaim === j]),
+      rumus: L`<p>Jenis segitiga ditentukan dari sisi terpanjang $c$ dan dua sisi lainnya $a$, $b$: $$c^2 = a^2 + b^2 \Rightarrow \text{siku-siku}$$ $$c^2 \lt a^2 + b^2 \Rightarrow \text{lancip}, \qquad c^2 \gt a^2 + b^2 \Rightarrow \text{tumpul}$$</p><p>Cari sisi terpanjang dahulu, karena urutan sisi pada soal bisa diacak.</p>`,
+      bahas: '<ol>' + data.map(({ s: [a, b, c], j, klaim }, i) => L`<li>${'ABCDE'[i]}. Sisi terpanjang ${c}. $${c}^2 = ${c * c}$ dan $${a}^2 + ${b}^2 = ${a * a} + ${b * b} = ${a * a + b * b}$. Karena $${c * c} ${c * c === a * a + b * b ? '=' : c * c < a * a + b * b ? '\\lt' : '\\gt'} ${a * a + b * b}$, segitiganya ${j}. Pernyataan ${klaim === j ? 'benar' : 'salah'}.</li>`).join('') + '</ol>' }; }];
+
+T.programLinear.bs = [
+  () => { const s = R(5, 9), t = 2 * R(Math.ceil((s + 2) / 2), s - 1), p = R(2, 6), q = R(2, 6), X = [2 * s - t, t - s];
+    const f = (x, y) => p * x + q * y, P = [[0, 0], [s, 0], X, [0, t / 2]], nilai = P.map(([x, y]) => f(x, y)), mx = Math.max(...nilai);
+    const u = R(0, s), v = R(0, s), ok = u + v <= s && u + 2 * v <= t;
+    const s1 = X[0] !== X[1] ? tw(pt(...X), pt(X[1], X[0])) : tw(pt(...X), pt(X[0], X[1] + 1)), s2 = tw(f(...X), f(...X) + q), s3 = tw(mx, mx + p);
+    return { type: 'bs', q: `Diketahui sistem pertidaksamaan x + y ≤ ${s}; x + 2y ≤ ${t}; x ≥ 0; y ≥ 0 dan fungsi tujuan f(x, y) = ${p}x + ${q}y. Tentukan benar atau salah setiap pernyataan berikut.`, st: [
+      [`Titik potong garis x + y = ${s} dan x + 2y = ${t} adalah ${s1.v}`, s1.t],
+      [`Titik (${u}, ${v}) termasuk daerah penyelesaian`, ok],
+      [`Nilai f di titik potong kedua garis adalah ${s2.v}`, s2.t],
+      [`Nilai maksimum f pada daerah penyelesaian adalah ${s3.v}`, s3.t]],
+    rumus: L`<p>Titik potong dua garis dicari dengan eliminasi atau substitusi. Sebuah titik termasuk daerah penyelesaian jika memenuhi semua pertidaksamaan.</p><p>Nilai optimum fungsi tujuan $f(x, y) = px + qy$ ada di salah satu titik pojok daerah penyelesaian. Uji setiap titik pojok, lalu pilih yang terbesar.</p>`,
+    bahas: L`<ol><li>Pernyataan 1: kurangkan kedua persamaan, $(x + 2y) - (x + y) = ${t} - ${s}$, jadi $y = ${X[1]}$. Lalu $x = ${s} - ${X[1]} = ${X[0]}$. Titik potongnya $(${X[0]}, ${X[1]})$.</li><li>Pernyataan 2: uji $(${u}, ${v})$. $${u} + ${v} = ${u + v}$ ${u + v <= s ? '≤' : '>'} ${s}, dan $${u} + 2(${v}) = ${u + 2 * v}$ ${u + 2 * v <= t ? '≤' : '>'} ${t}. ${ok ? 'Keduanya terpenuhi, jadi termasuk daerah penyelesaian.' : 'Ada yang tidak terpenuhi, jadi tidak termasuk.'}</li><li>Pernyataan 3: $f(${X[0]}, ${X[1]}) = ${p}(${X[0]}) + ${q}(${X[1]}) = ${f(...X)}$.</li><li>Pernyataan 4: titik pojok daerah adalah ${P.map(([x, y]) => `(${x}, ${y})`).join(', ')}. Nilai f berturut-turut ${nilai.join(', ')}. Maksimum $= ${mx}$.</li><li>Cek: titik $(0, ${t / 2})$ berasal dari garis x + 2y = ${t} karena di sumbu y garis itu lebih rendah dari x + y = ${s}, dan $(${s}, 0)$ berasal dari x + y = ${s} karena di sumbu x garis itu lebih dekat ke O.</li></ol>` }; }];
+
 // ===== tampilan =====
 const app = document.getElementById('app');
 let builder = null, judulKuis = '', soal = [];
@@ -935,7 +1128,7 @@ function tampilMateri() {
 // Arti simbol per materi, ditampilkan di bawah setiap rumus.
 const KET = {
   bangunDatar: L`$K$ = keliling, $L$ = luas, $p$ = panjang, $\ell$ = lebar, $a$ = alas, $t$ = tinggi, $r$ = jari-jari, $\pi$ = $\tfrac{22}{7}$ atau $3{,}14$, $\theta$ = sudut pusat juring, $d$ = jarak titik ke pusat lingkaran.`,
-  bangunRuang: L`$V$ = volume, $L$ = luas permukaan, $p$ = panjang, $\ell$ = lebar, $t$ = tinggi, $s$ = panjang rusuk kubus, $r$ = jari-jari alas, $\pi$ = $\tfrac{22}{7}$, $x$ = sisi persegi yang dipotong dari pojok karton.`,
+  bangunRuang: L`$V$ = volume, $L$ = luas permukaan, $p$ = panjang, $\ell$ = lebar, $t$ = tinggi, $s$ = panjang rusuk kubus, $r$ = jari-jari alas, $\pi$ = $\tfrac{22}{7}$, $x$ = sisi persegi yang dipotong dari pojok karton, $L_{alas}$ = luas alas.`,
   dimensiTiga: L`$s$ = panjang rusuk kubus, $O$ = titik tengah (perpotongan diagonal), $\sqrt2$ dan $\sqrt3$ = pengali untuk diagonal sisi dan diagonal ruang.`,
   konversi: L`GB = gigabyte, MB = megabyte, KB = kilobyte, $1 : n$ = skala; 1 cm di peta mewakili $n$ cm sebenarnya.`,
   trigonometri: L`depan = sisi di hadapan sudut, samping = sisi yang menyentuh sudut (bukan sisi miring), miring = sisi terpanjang di depan sudut siku, $\theta$ = besar sudut, $\sec$ = sekan, $\csc$ = kosekan, $\cot$ = kotangen.`,
@@ -944,12 +1137,12 @@ const KET = {
   transformasi: L`$(x, y)$ = titik asal, $(x', y')$ = bayangan, $T(a, b)$ = translasi $a$ ke kanan dan $b$ ke atas, $O$ = titik pusat $(0, 0)$, $k$ = faktor skala dilatasi, $R$ = rotasi dengan sudut putar.`,
   statistika: L`$\bar{x}$ = rata-rata, $x_i$ = data ke-$i$, $f_i$ = frekuensi data ke-$i$, $n$ = banyak data, $\sum$ = jumlahkan semua, $J$ = jangkauan, $SR$ = simpangan rata-rata, $Q_1$ = kuartil bawah, $Q_2$ = kuartil tengah (median), $Q_3$ = kuartil atas, $H$ = jangkauan antarkuartil, $s^2$ = ragam, $s$ = simpangan baku, $Mo$ = modus, $t_b$ = tepi bawah kelas modus, $d_1$, $d_2$ = selisih frekuensi kelas modus dengan kelas sebelum dan sesudahnya, $p$ = panjang kelas.`,
   peluang: L`$P(A)$ = peluang kejadian $A$, $n(A)$ = banyak hasil yang diinginkan, $n(S)$ = banyak semua hasil yang mungkin, $A^c$ = bukan $A$, $A \cup B$ = $A$ atau $B$, $A \cap B$ = $A$ dan $B$, $n!$ = $n$ faktorial, $P(n, k)$ = permutasi, $C(n, k)$ = kombinasi, $n$ = banyak benda, $k$ = banyak yang dipilih.`,
-  pecahan: L`$a, b, c, d$ = pembilang dan penyebut pecahan, $p\%$ = persentase, $H$ = harga atau nilai awal, $B$ = bunga, $M$ = modal, $t$ = lama waktu (tahun).`,
+  pecahan: L`$a, b, c, d$ = pembilang dan penyebut pecahan, $p\%$ = persentase, $H$ = harga atau nilai awal, $B$ = bunga, $M$ = modal, $t$ = lama waktu (tahun), $n_1$, $n_2$ = banyak pekerja, $d_1$, $d_2$ = lama pengerjaan (hari).`,
   eksponen: L`$a$ = bilangan pokok, $m$, $n$ = pangkat, $\sqrt{\ }$ = akar, $\sqrt[n]{a}$ = akar pangkat $n$ dari $a$, $b$ = bilangan di dalam akar.`,
   barisan: L`$U_n$ = suku ke-$n$, $S_n$ = jumlah $n$ suku pertama, $a$ = suku pertama, $b$ = beda, $r$ = rasio, $n$ = nomor suku, $M$ atau $M_0$ = modal awal, $M_t$ = nilai setelah $t$ periode, $p$ atau $i$ = persentase per periode, $t$ = lama waktu, $B$ = bunga.`,
   persamaan: L`$x$, $y$, $z$ = variabel yang dicari, $a$, $b$, $c$ = koefisien dan konstanta pada $ax^2 + bx + c = 0$, $p$, $q$ = akar-akar persamaan kuadrat, $\le$ = kurang dari atau sama dengan, $\ge$ = lebih dari atau sama dengan.`,
   fungsi: L`$f(x)$ = nilai fungsi di $x$, $f^{-1}$ = fungsi invers, $f \circ g$ = fungsi komposisi ($g$ dahulu lalu $f$), $a$, $b$, $c$ = koefisien, $x_p$, $y_p$ = koordinat titik puncak, $R_f$ = daerah hasil, $u$ = isi akar, $q$ = penyebut.`,
-  matriks: L`$a, b, c, d$ = elemen matriks berordo $2 \times 2$ (baris 1: $a, b$; baris 2: $c, d$), $\det$ = determinan.`,
+  matriks: L`$a, b, c, d$ = elemen matriks berordo $2 \times 2$ (baris 1: $a, b$; baris 2: $c, d$), $\det$ = determinan, $A^T$ = transpose (baris menjadi kolom), $A^{-1}$ = invers, $I$ = matriks identitas, $k$ = bilangan pengali (skalar).`,
   programLinear: L`$x$, $y$ = banyak barang jenis pertama dan kedua, $f(x, y)$ = fungsi tujuan (keuntungan atau biaya), $p$, $q$ = keuntungan per barang, $O(0, 0)$ = titik asal yang dipakai untuk uji daerah.`,
 };
 // Split "sym = arti, sym = arti." into rows; commas inside $...$ are kept, items without "=" join the next one.
