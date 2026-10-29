@@ -969,9 +969,10 @@ Object.entries(T).forEach(([id, t]) => ['pg', 'bs', 'mcma'].forEach(k => (t[k] |
 const bangun = keys => keys.map(k => ({ ...GEN[k](), src: k }));
 const kunciDari = (pre, k) => Object.keys(GEN).filter(x => x.split('.')[pre ? 0 : 1] === (pre || k));
 
+// One PG per materi (17 materi = 17 PG), so every materi appears in every simulation; BS and MCMA come from 4 different materi each.
 function buatSimulasi() {
-  const ambil = (k, n) => shuffle(kunciDari(null, k)).slice(0, n);
-  return bangun([...ambil('pg', 17), ...ambil('bs', 4), ...ambil('mcma', 4)]);
+  const satuPer = k => shuffle(Object.keys(T).filter(id => (T[id][k] || []).length).map(id => pick(kunciDari(id).filter(x => x.split('.')[1] === k))));
+  return bangun([...satuPer('pg').slice(0, 17), ...satuPer('bs').slice(0, 4), ...satuPer('mcma').slice(0, 4)]);
 }
 const buatLatihan = id => bangun(kunciDari(id));
 
